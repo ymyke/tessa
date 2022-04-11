@@ -6,6 +6,7 @@ from frozendict import frozendict
 import pandas as pd
 import investpy
 from investpy.utils.search_obj import SearchObj
+from pycoingecko import CoinGeckoAPI
 
 # import api.investing
 # import api.yahooscraper
@@ -43,6 +44,17 @@ def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
     return rf
 
 
+def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
+    """Turn price list returned by Coingecko API into a pricing dataframe in the form
+    that we use.
+    """
+    df = pd.DataFrame(prices)
+    df.columns = ["date", "close"]
+    df["date"] = pd.to_datetime(df["date"] / 1000, unit="s", utc=True)
+    df = df.set_index("date")
+    return df
+
+
 # @cache
 # def price_history(ticker: str) -> pd.DataFrame:
 #     """Get price history for ticker and return dataframe.
@@ -73,8 +85,26 @@ def price_history(query: str, type_: str, country: str = None) -> pd.DataFrame:
     reasonable defaults wherever possible. I.e., set country to us if undefined or cycle
     through types if none given.
     """
-    investing_types = ["stock", "etf", "fund", "crypto", "bond", "index", "certificate"]
+    # FIXME Make sure we always return a copy of the resulting dataframe so the cached
+    # original does not get modified by the caller.
 
+    if type_ == "crypto":
+        try:
+            return turn_prices_list_into_df(
+                CoinGeckoAPI().get_coin_market_chart_by_id(
+                    # id=symbol_to_id(query), # FIXME Something for the lenient version?
+                    id=query,
+                    vs_currency="chf",  # FIXME What to do here?
+                    days="max",
+                    interval="daily",
+                )["prices"]
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Failed to look up crypto ticker {query}") from exc
+
+    # Investing / investpy:
+
+    investing_types = ["stock", "etf", "fund", "crypto", "bond", "index", "certificate"]
     commonargs = {
         "from_date": "01/01/1900",
         "to_date": datetime.now().strftime("%d/%m/%Y"),
