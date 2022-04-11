@@ -14,19 +14,19 @@ from investpy.utils.search_obj import SearchObj
 def freezeargs(func):
     """Transform mutable dictionary into immutable useful to be compatible with cache.
 
-    Source:
+    Based on:
     https://stackoverflow.com/questions/6358481/using-functools-lru-cache-with-dictionary-arguments
     """
 
     @functools.wraps(func)
     def wrapped(*args, **kwargs):
-        args = tuple(
-            [frozendict(arg) if isinstance(arg, dict) else arg for arg in args]
+        return func(
+            *[frozendict(x) if isinstance(x, dict) else x for x in args],
+            **{
+                k: frozendict(v) if isinstance(v, dict) else v
+                for k, v in kwargs.items()
+            },
         )
-        kwargs = {
-            k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
-        }
-        return func(*args, **kwargs)
 
     return wrapped
 
