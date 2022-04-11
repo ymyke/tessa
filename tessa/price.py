@@ -1,6 +1,6 @@
 """Generic module that provides central access to the underlying individual APIs."""
 
-import datetime
+from datetime import datetime
 import functools
 from frozendict import frozendict
 import pandas as pd
@@ -56,28 +56,40 @@ def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
 
 @freezeargs
 @functools.cache
-def price_history(
-    name: str, namespace: str, type: str, country: str = None
-) -> pd.DataFrame:
-    if namespace == "investing":
-        fromdate = "01/01/1900"
-        todate = datetime.datetime.now().strftime("%d/%m/%Y")
-        commonargs = {"country": country, "from_date": fromdate, "to_date": todate}
-        if type == "stock":
-            prices = investpy.get_stock_historical_data(stock=name, **commonargs)
-        elif type == "etf":
-            prices = investpy.get_etf_historical_data(etf=name, **commonargs)
-        elif type == "fund":
-            prices = investpy.get_fund_historical_data(fund=name, **commonargs)
-        else:
-            raise ValueError(f"Unsupported equity type {type}.")
-        # time.sleep(2)
-        return turn_price_history_into_prices(prices)
-    elif namespace == "investpy_searchobj":
-        # FIXME Is name really the right parameter for the searchobj spec? What if this
-        # was in a class, what would we use as the name then?
-        fromdate = "01/01/1900"
-        todate = datetime.datetime.now().strftime("%d/%m/%Y")
+def price_history(query: str, type_: str, country: str = None) -> pd.DataFrame:
+    """Get price history and return dataframe.
+
+    Args:
+
+    - query: FIXME
+    - type_: FIXME
+
+    Optional/situational args:
+
+    - country: Used w types "stock" and similar.
+
+    FIXME Make this function as simple and straightforward as possible and then add
+    another function that is as lenient and forgiving as possible and tries to assume
+    reasonable defaults wherever possible. I.e., set country to us if undefined or cycle
+    through types if none given.
+    """
+    investing_types = ["stock", "etf", "fund", "crypto", "bond", "index", "certificate"]
+
+    commonargs = {
+        "from_date": "01/01/1900",
+        "to_date": datetime.now().strftime("%d/%m/%Y"),
+    }
+
+    if type_ in investing_types:
+        commonargs["country"] = country
+        commonargs[type_] = query
         return turn_price_history_into_prices(
-            SearchObj(**name).retrieve_historical_data(fromdate, todate)
+            getattr(investpy, "get_" + type_ + "_historical_data")(**commonargs)
         )
+
+    if type_ == "searchobj":
+        return turn_price_history_into_prices(
+            SearchObj(**query).retrieve_historical_data(**commonargs)
+        )
+
+    raise ValueError(f"Unsupported equity type {type_}.")
