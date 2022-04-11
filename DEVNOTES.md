@@ -1,4 +1,45 @@
+
+# Asset factory
+
+def create_asset(str or spec):
+    # Should maybe have some default spec that simply assumes vanilla stock.
+
+
+a = create_asset("SLICHA.SW")
+a.price_history()
+
+
+# Asset v TCI
+
+Asset:
+    ticker, today, todayprice
+
+    latest_stableprice
+    price_history
+    get_strategy
+    lookup_price
+    pricegraph
+
+TickerConfigItem:
+    (type, country, watch, delisted, strategy, jurisdiction)
+    type, country, bloomberg, investpy, aliases
+
+    matches
+    get_strategy_string
+    is_investpy_direct
+
+
 # Functionality
+
+- Add one central module that handles all networked access, counts the time from the
+  last call to the network and waits if necessary. Also tracks status codes hinting at
+  rate limiting and also waits if necessary and repeats calls. -- Maybe use the
+  functools caching only in that module? (Watch out if any of the called functions
+  return objects such as dataframes. Could check for that within that wrapper function
+  and turn dataframes into copies of themselves?)
+  - Note that to be perfect, it would need to track time not overall but _per_ server.
+    Are there packages that do this already? Or would that be yet another separate
+    package?
 
 - Calls:
   - price_history(asset_spec, target_currency)
@@ -11,10 +52,14 @@
   - BTW, should target_currency be more like an asset_spec for the target?
     - Or is fiat enough? Or is there a need for something like history("BTC", "ETH"),
       i.e. retrieving the price of "BTC" in "ETH"?
+  - Or: Make this oo? asset.price_history, asset.price_point, asset.price_latest,
+    asset.convert_to(asset) -- Then we'd have an asset directory.
 - Should this be more generic?
   - history(asset_spec, return_spec)
     - asset_spec example: sren.sw, public stock, bloombergticker, switzerland
     - asset_spec example: metaportal-gaming-index, crypto, coingeckosymbol
+      - Is bloombergticker and coingeckosymbol a type or a namespace? I think rather a
+        namespace.
     - return_spec example: price, chf
   - => no, this is too generic.
 - Should there also be verbose variants that return all kind of additional information?
@@ -71,3 +116,5 @@
 - Would still need a wrapper/monkeypatching function in fignal to patch in the LNKD
   pricepoint.
 - Use tessa in pypme for the investpy variants?
+- Do we have a timezone issue? Do the different APIs return datetimes in different
+  timezones and should the standardized?
