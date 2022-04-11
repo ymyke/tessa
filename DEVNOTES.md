@@ -8,6 +8,23 @@ def create_asset(str or spec):
 a = create_asset("SLICHA.SW")
 a.price_history()
 
+# What namespaces/types do we have?
+
+- investpy ==> searchobj (as str or as dict)
+  - query (can get type implicitly)
+- coingecko ==> crypto
+  - query, type
+- investing/stock
+- investing/fund
+- investing/etf
+- investing/crypto
+- investing/bond
+- investing/index
+- investing/certificate
+  - query, type, sometimes country
+
+=> Work with a type hint in the investing cases? But otherwise try through all the
+types?
 
 # Asset v TCI
 
