@@ -2,3 +2,4 @@ poetry.lock
 *.pyc
 dist/
 settings.json
+http_cache.sqlite
