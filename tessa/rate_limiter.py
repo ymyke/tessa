@@ -3,28 +3,9 @@
 The goal is to never run into errors in the first place, bc at least investing takes
 substantial time until it allow-lists a blocked IP address again. That is also why we
 can't use a library such das Tenacity here. 
-
-Errors: Definitely 429. Maybe also 503, 504?
-
-Coingecko API: 4.2 Rate limit for the CoinGecko API is 8 calls each second per Internet
-Protocol ("IP") address, although such rate limit may be varied by CoinGecko at any time
-in its sole discretion without notice or reference to you or any Users. You agree not to
-exceed or circumvent (or make any attempts thereto) the aforesaid rate limitation,
-limitations on the calls and use of CoinGecko API as may be implemented by CoinGecko
-from time to time in its sole discretion (without any notice or reference to you), or
-otherwise use the CoinGecko API in a manner that can be anticipated to exceed reasonable
-request volume, constitute excessive or abusive usage, or otherwise fail to comply or is
-inconsistent with any part of this API Terms, the API Documentation, our Privacy Policy,
-our Website Terms of Use, or the limitations of your selected usage plan.
-https://www.coingecko.com/en/api_terms
 """
 
 # pylint: disable=eval-used,exec-used,unused-import
-
-# FIXME:
-# - Use status codes from requests package.
-# - Get wait time from response headers. (x-quota-resets-on or retry-after or ...?)
-# - Check url
 
 import atexit
 import time
@@ -72,7 +53,7 @@ def create_guard(func: callable, guard: dict) -> callable:
                 guard["wait_seconds"] *= 2
             raise exc
 
-        guard["wait_seconds"] = guard["initial_wait_seconds"]   # Reset if no error
+        guard["wait_seconds"] = guard["initial_wait_seconds"]  # Reset if no error
         return res
 
     return guarded_func
