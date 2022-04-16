@@ -37,12 +37,12 @@ def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
     """Small helper function to turn what investpy returns into a pricing dataframe in
     the form that we use it.
     """
-    rf = df.copy()  # To prevent the SettingWithCopyWarning
-    rf = rf[["Close"]]
-    rf.index = pd.to_datetime(rf.index, utc=True)
-    rf.index.name = "date"
-    rf.rename(columns={"Close": "close"}, inplace=True)
-    return rf
+    df = df.copy()  # To prevent the SettingWithCopyWarning
+    df = df[["Close"]]
+    df.index = pd.to_datetime(df.index, utc=True)
+    df.index.name = "date"
+    df.rename(columns={"Close": "close"}, inplace=True)
+    return df
 
 
 def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
