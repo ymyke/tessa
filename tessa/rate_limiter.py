@@ -27,22 +27,40 @@ https://www.coingecko.com/en/api_terms
 # - Check url
 
 import atexit
+import time
 import requests
+import pendulum as pdl
 
 hooks = {
-    "investing.com": {
+    "investing": {
         "func_name": "requests.post",
+        "wait_seconds": 2,
+        "pattern": "investing.com",
     },
-    "coingecko.com": {
+    "coingecko": {
         "func_name": "requests.Session.get",
+        "wait_seconds": 1,
+        "pattern": "coingecko.com",
     },
 }
 
 
-def create_guard(func: callable) -> callable:
+def create_guard(func: callable, hook: dict) -> callable:
     def guard(*args, **kwargs):
-        print(args)
-        print(kwargs)
+
+        # If the call is for the url pattern, check if the last call was long enough in
+        # the past and wait, if not:
+        if any(
+            hook["pattern"] in x
+            for x in args + tuple(kwargs.values())
+            if isinstance(x, str)
+        ):
+            diff = (pdl.now() - hook["last_call"]).total_seconds()
+            if diff < hook["wait_seconds"]:
+                time.sleep(hook["wait_seconds"] - diff)
+            hook["last_call"] = pdl.now()
+        
+        # Call the original function and return:
         return func(*args, **kwargs)
 
     return guard
@@ -58,8 +76,9 @@ def reset_functions():
 
 
 for hook in hooks.values():
+    hook["last_call"] = pdl.parse("1900")
     hook["func_orig"] = eval(hook["func_name"])
-    exec(f"{hook['func_name']} = create_guard({hook['func_name']})")
+    exec(f"{hook['func_name']} = create_guard({hook['func_name']}, hook)")
 
 
 atexit.register(reset_functions)
