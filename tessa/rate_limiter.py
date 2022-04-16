@@ -46,6 +46,8 @@ guards = {
 
 
 def create_guard(func: callable, guard: dict) -> callable:
+    """Create a guard."""
+
     def guarded_func(*args, **kwargs):
 
         # If the call is for the url pattern, check if the last call was long enough in
