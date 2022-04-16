@@ -66,21 +66,21 @@ def create_guard(func: callable, guard: dict) -> callable:
     return guarded_func
 
 
-def reset_guards():
+def setup_guards() -> None:
+    """Set up guards."""
+    for guard in guards.values():
+        guard["last_call"] = pdl.parse("1900")
+        guard["func_orig"] = eval(guard["func_name"])
+        exec(f"{guard['func_name']} = create_guard({guard['func_name']}, guard)")
+
+
+def reset_guards() -> None:
     """Reset to the originals."""
     for guard in guards.values():
         exec(f"{guard['func_name']} = {guard['orig_func']}")
 
 
-# Code that gets executed when the module gets loaded:
-
-
-for guard in guards.values():
-    guard["last_call"] = pdl.parse("1900")
-    guard["func_orig"] = eval(guard["func_name"])
-    exec(f"{guard['func_name']} = create_guard({guard['func_name']}, guard)")
-
-
+setup_guards()
 atexit.register(reset_guards)
 
 
