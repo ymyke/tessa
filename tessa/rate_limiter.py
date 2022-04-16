@@ -19,6 +19,8 @@ our Website Terms of Use, or the limitations of your selected usage plan.
 https://www.coingecko.com/en/api_terms
 """
 
+# pylint: disable=eval-used,exec-used,unused-import
+
 # FIXME:
 # - Use status codes from requests package.
 # - Get wait time from response headers. (x-quota-resets-on or retry-after or ...?)
@@ -26,6 +28,15 @@ https://www.coingecko.com/en/api_terms
 
 import atexit
 import requests
+
+hooks = {
+    "investing.com": {
+        "func_name": "requests.post",
+    },
+    "coingecko.com": {
+        "func_name": "requests.Session.get",
+    },
+}
 
 
 def create_guard(func: callable) -> callable:
@@ -39,22 +50,16 @@ def create_guard(func: callable) -> callable:
 
 def reset_functions():
     """Reset to the originals."""
-    requests.post = request_orig
-    requests.Session.get = session_orig
+    for hook in hooks.values():
+        exec(f"{hook['func_name']} = {hook['orig_func']}")
 
 
 # Code that gets executed when the module gets loaded:
 
-# Save the originals:
-request_orig = requests.post  # Used by investpy
-session_orig = requests.Session.get  # Used by coingecko
 
-# Set the guards:
-# requests.post = infoguard
-requests.post = create_guard(requests.post)
-requests.Session.get = create_guard(requests.Session.get)
-
-# Reset when the module unloads:
+for hook in hooks.values():
+    hook["func_orig"] = eval(hook["func_name"])
+    exec(f"{hook['func_name']} = create_guard({hook['func_name']})")
 
 
 atexit.register(reset_functions)
