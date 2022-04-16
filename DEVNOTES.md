@@ -135,3 +135,22 @@ TickerConfigItem:
 - Use tessa in pypme for the investpy variants?
 - Do we have a timezone issue? Do the different APIs return datetimes in different
   timezones and should the standardized?
+- investpy calls get split into a series of requests. See below. Is that a problem?
+
+
+```python
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/540.0 (KHTML,like Gecko) Chrome/9.1.0.0 Safari/540.0', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '92251770', 'header': 'AAPL Historical Data', 'st_date': '01/01/1900', 'end_date': '01/01/1919', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (Windows; Windows NT 6.1; rv:2.0b2) Gecko/20100720 Firefox/4.0b2', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '21131786', 'header': 'AAPL Historical Data', 'st_date': '01/02/1919', 'end_date': '01/02/1938', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (X11; U; SunOS sun4u; en-US; rv:1.9b5) Gecko/2008032620 Firefox/3.0b5', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '47294602', 'header': 'AAPL Historical Data', 'st_date': '01/03/1938', 'end_date': '01/03/1957', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3) Gecko/20090305 Firefox/3.1b3 GTB5', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '48552973', 'header': 'AAPL Historical Data', 'st_date': '01/04/1957', 'end_date': '01/04/1976', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '40542120', 'header': 'AAPL Historical Data', 'st_date': '01/05/1976', 'end_date': '01/05/1995', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.11 Safari/534.16', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '50407384', 'header': 'AAPL Historical Data', 'st_date': '01/06/1995', 'end_date': '01/06/2014', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+('https://www.investing.com/instruments/HistoricalDataAjax',)
+{'headers': {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.36 Safari/525.19', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive'}, 'data': {'curr_id': 6408, 'smlID': '19308678', 'header': 'AAPL Historical Data', 'st_date': '01/07/2014', 'end_date': '04/16/2022', 'interval_sec': 'Daily', 'sort_col': 'date', 'sort_ord': 'DESC', 'action': 'historical_data'}}
+```
