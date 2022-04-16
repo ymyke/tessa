@@ -31,7 +31,7 @@ import time
 import requests
 import pendulum as pdl
 
-hooks = {
+guards = {
     "investing": {
         "func_name": "requests.post",
         "wait_seconds": 2,
@@ -45,43 +45,43 @@ hooks = {
 }
 
 
-def create_guard(func: callable, hook: dict) -> callable:
-    def guard(*args, **kwargs):
+def create_guard(func: callable, guard: dict) -> callable:
+    def guarded_func(*args, **kwargs):
 
         # If the call is for the url pattern, check if the last call was long enough in
         # the past and wait, if not:
         if any(
-            hook["pattern"] in x
+            guard["pattern"] in x
             for x in args + tuple(kwargs.values())
             if isinstance(x, str)
         ):
-            diff = (pdl.now() - hook["last_call"]).total_seconds()
-            if diff < hook["wait_seconds"]:
-                time.sleep(hook["wait_seconds"] - diff)
-            hook["last_call"] = pdl.now()
-        
+            diff = (pdl.now() - guard["last_call"]).total_seconds()
+            if diff < guard["wait_seconds"]:
+                time.sleep(guard["wait_seconds"] - diff)
+            guard["last_call"] = pdl.now()
+
         # Call the original function and return:
         return func(*args, **kwargs)
 
-    return guard
+    return guarded_func
 
 
-def reset_functions():
+def reset_guards():
     """Reset to the originals."""
-    for hook in hooks.values():
-        exec(f"{hook['func_name']} = {hook['orig_func']}")
+    for guard in guards.values():
+        exec(f"{guard['func_name']} = {guard['orig_func']}")
 
 
 # Code that gets executed when the module gets loaded:
 
 
-for hook in hooks.values():
-    hook["last_call"] = pdl.parse("1900")
-    hook["func_orig"] = eval(hook["func_name"])
-    exec(f"{hook['func_name']} = create_guard({hook['func_name']}, hook)")
+for guard in guards.values():
+    guard["last_call"] = pdl.parse("1900")
+    guard["func_orig"] = eval(guard["func_name"])
+    exec(f"{guard['func_name']} = create_guard({guard['func_name']}, guard)")
 
 
-atexit.register(reset_functions)
+atexit.register(reset_guards)
 
 
 # investpy 429:
