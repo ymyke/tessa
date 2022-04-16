@@ -2,7 +2,7 @@
 
 The goal is to never run into errors in the first place, bc at least investing takes
 substantial time until it allow-lists a blocked IP address again. That is also why we
-can't use a library such das Tenacity here. 
+can't use a library such das Tenacity here.
 """
 
 # pylint: disable=eval-used,exec-used,unused-import
