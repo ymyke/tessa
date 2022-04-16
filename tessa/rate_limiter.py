@@ -32,14 +32,15 @@ import requests
 import pendulum as pdl
 
 guards = {
+    # Additional attributes that will be added dynamically are: last_call, wait_seconds
     "investing": {
         "func_name": "requests.post",
-        "wait_seconds": 2,
+        "initial_wait_seconds": 2,
         "pattern": "investing.com",
     },
     "coingecko": {
         "func_name": "requests.Session.get",
-        "wait_seconds": 1,
+        "initial_wait_seconds": 1,
         "pattern": "coingecko.com",
     },
 }
@@ -62,8 +63,17 @@ def create_guard(func: callable, guard: dict) -> callable:
                 time.sleep(guard["wait_seconds"] - diff)
             guard["last_call"] = pdl.now()
 
-        # Call the original function and return:
-        return func(*args, **kwargs)
+        # Call the original function and return, increase wait_seconds exponentially if
+        # a 429 error is encountered:
+        try:
+            res = func(*args, **kwargs)
+        except (requests.HTTPError, ConnectionError) as exc:
+            if "429" in exc:
+                guard["wait_seconds"] *= 2
+            raise exc
+
+        guard["wait_seconds"] = guard["initial_wait_seconds"]   # Reset if no error
+        return res
 
     return guarded_func
 
@@ -72,6 +82,7 @@ def setup_guards() -> None:
     """Set up guards."""
     for guard in guards.values():
         guard["last_call"] = pdl.parse("1900")
+        guard["wait_seconds"] = guard["initial_wait_seconds"]
         guard["func_orig"] = eval(guard["func_name"])
         exec(f"{guard['func_name']} = create_guard({guard['func_name']}, guard)")
 
