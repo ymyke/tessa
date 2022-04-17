@@ -34,8 +34,7 @@ def freezeargs(func):
 
 
 def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
-    """Turn what investpy returns into a pricing dataframe in the form that we use it.
-    """
+    """Turn what investpy returns into a pricing dataframe in the form that we use it."""
     df = df.copy()  # To prevent the SettingWithCopyWarning
     df = df[["Close"]]
     df.index = pd.to_datetime(df.index, utc=True)
