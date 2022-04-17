@@ -96,19 +96,6 @@ TickerConfigItem:
     "higher levels" such as Fignal.
 - Would this also include the base classes Asset, PublicEquityAsset, CryptoAsset, etc.?
 
-# Caching / rate limiting strategies
-
-- requests_cache
-- own caching, like in fx
-  - Why did I do this in the first place? => Bc it doesn't seem to work w investpy, at least not with the currency_cross function.
-- function-level caching w/ the corresponding fixtures -> Would be the best way I think
-- always get big chunks, even if smaller chunks requested -- in order to hit the api
-  fewer times
-- how often to check if there is new information available? (e.g., in long-running
-  applications that run for hours or days where a call to a date w/o data now can lead
-  to a call w/ data at some point in the future (still during runtime))
-    -> Simply use expiration in requests_cache?
-- maybe even make a full replica of things?
 
 # Other dependencies
 
