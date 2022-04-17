@@ -48,16 +48,6 @@ TickerConfigItem:
 
 # Functionality
 
-- Add one central module that handles all networked access, counts the time from the
-  last call to the network and waits if necessary. Also tracks status codes hinting at
-  rate limiting and also waits if necessary and repeats calls. -- Maybe use the
-  functools caching only in that module? (Watch out if any of the called functions
-  return objects such as dataframes. Could check for that within that wrapper function
-  and turn dataframes into copies of themselves?)
-  - Note that to be perfect, it would need to track time not overall but _per_ server.
-    Are there packages that do this already? Or would that be yet another separate
-    package?
-
 - Calls:
   - price_history(asset_spec, target_currency)
     - w/o target_currency: simply return whatever we get along with the currency?
