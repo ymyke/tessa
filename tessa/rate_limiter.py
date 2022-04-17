@@ -74,70 +74,7 @@ def reset_guards() -> None:
     for guard in guards.values():
         exec(f"{guard['func_name']} = {guard['orig_func']}")
 
+
 # FIXME Better remove this here and call these from __init__?
 setup_guards()
 atexit.register(reset_guards)
-
-
-# investpy 429:
-
-# ConnectionError                           Traceback (most recent call last)
-# c:\code\tessa\x.py in <cell line: 4>()
-#       20 while True:
-#       21     print(".", end="")
-# ----> 22     investpy.get_currency_cross_historical_data(
-#       23         "USD/CHF",
-#       24         from_date="01/01/2015",
-#       25         to_date=datetime.now().strftime("%d/%m/%Y"),
-#       26         as_json=True,
-#      27     )
-
-# File C:\code\tessa\.venv\lib\site-packages\investpy\currency_crosses.py:674, in get_currency_cross_historical_data(currency_cross, from_date, to_date, as_json, order, interval)
-#     671 req = requests.post(url, headers=head, data=params)
-#     673 if req.status_code != 200:
-# --> 674     raise ConnectionError(
-#     675         "ERR#0015: error " + str(req.status_code) + ", try again later."
-#     676     )
-#     678 if not req.text:
-#     679     continue
-
-# ConnectionError: ERR#0015: error 429, try again later.
-
-
-# Coingecko 429:
-
-# ---------------------------------------------------------------------------
-# HTTPError                                 Traceback (most recent call last)
-# c:\code\tessa\x.py in <cell line: 3>()
-#       19 while True:
-#       20     print(".", end="")
-# ----> 21     prices = CoinGeckoAPI().get_coin_market_chart_by_id(
-#       22             id="bitcoin",
-#       23             vs_currency="chf",
-#       24             days="max",
-#       25             interval="daily",
-#       26         )
-
-# File C:\code\tessa\.venv\lib\site-packages\pycoingecko\utils.py:12, in func_args_preprocessing.<locals>.input_args(*args, **kwargs)
-#       9 # check in *args for lists and booleans
-#      10 args = [arg_preprocessing(v) for v in args]
-# ---> 12 return func(*args, **kwargs)
-
-# File C:\code\tessa\.venv\lib\site-packages\pycoingecko\api.py:169, in CoinGeckoAPI.get_coin_market_chart_by_id(self, id, vs_currency, days, **kwargs)
-#     166 api_url = '{0}coins/{1}/market_chart?vs_currency={2}&days={3}'.format(self.api_base_url, id, vs_currency, days)
-#     167 api_url = self.__api_url_params(api_url, kwargs, api_url_has_params=True)
-# --> 169 return self.__request(api_url)
-
-# File C:\code\tessa\.venv\lib\site-packages\pycoingecko\api.py:29, in CoinGeckoAPI.__request(self, url)
-#      26     raise
-#      28 try:
-# ---> 29     response.raise_for_status()
-#      30     content = json.loads(response.content.decode('utf-8'))
-#      31     return content
-
-# File C:\code\tessa\.venv\lib\site-packages\requests\models.py:960, in Response.raise_for_status(self)
-#     957     http_error_msg = u'%s Server Error: %s for url: %s' % (self.status_code, reason, self.url)
-#     959 if http_error_msg:
-# --> 960     raise HTTPError(http_error_msg, response=self)
-
-# HTTPError: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=chf&days=max&interval=daily
