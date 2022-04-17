@@ -1,8 +1,9 @@
-"""Makes sure we don't hit the APIs too often. Also checks for corresponding errors.
+"""Rate Limiter -- makes sure we don't hit the APIs too often by waiting by default and
+waiting exponentially if a 429 error is encountered.
 
-The goal is to never run into errors in the first place, bc at least investing takes
-substantial time until it allow-lists a blocked IP address again. That is also why we
-can't use a library such das Tenacity here.
+The goal is to never run into errors in the first place, b/c at least investing.com
+takes substantial time until it allow-lists a blocked IP address again. That is also why
+we can't use a library such das Tenacity here.
 """
 
 # pylint: disable=eval-used,exec-used,unused-import
