@@ -4,6 +4,7 @@
 
 import pandas as pd
 from pandas.core.dtypes.dtypes import DatetimeTZDtype
+import pytest
 from tessa import __version__, price_history
 
 
@@ -59,3 +60,36 @@ def test_price_history_crypto():
     assert df.shape[1] == 1
     assert isinstance(df.index.dtype, DatetimeTZDtype)
     assert df.dtypes.to_string() == "close    float64"
+
+
+# ---------- Error conditions ----------
+
+
+def test_error_crypto_non_existent_currency_preference():
+    with pytest.raises(ValueError) as excinfo:
+        price_history("ethereum", "crypto", currency_preference="non-existent")
+        assert "invalid vs_currency" in excinfo
+
+
+def test_error_crypto_non_existent_name():
+    with pytest.raises(ValueError) as excinfo:
+        price_history("non-existent", "crypto")
+        assert "Could not find coin with the given id" in excinfo
+
+
+def test_error_unsupported_asset_type():
+    with pytest.raises(ValueError) as excinfo:
+        price_history("AAPL", "xxx")
+        assert "Unsupported asset type" in excinfo
+
+
+def test_error_missing_country():
+    with pytest.raises(ValueError) as excinfo:
+        price_history("AAPL", "stock")
+        assert "country can not be None" in excinfo
+
+
+def test_error_stock_not_found():
+    with pytest.raises(RuntimeError) as excinfo:
+        price_history("non-existent", "stock", country="united states")
+        assert "stock non-existent not found" in excinfo
