@@ -30,7 +30,8 @@ def freezeargs(func):
                 for k, v in kwargs.items()
             },
         )
-
+    wrapped.cache_info = func.cache_info
+    wrapped.cache_clear = func.cache_clear
     return wrapped
 
 
