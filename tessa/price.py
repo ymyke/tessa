@@ -1,10 +1,10 @@
 """Generic module that provides central access to the underlying individual APIs."""
 
-from datetime import datetime
 import functools
 from typing import Tuple
 from frozendict import frozendict
 import pandas as pd
+import pendulum
 import investpy
 from investpy.utils.search_obj import SearchObj
 from pycoingecko import CoinGeckoAPI
@@ -121,7 +121,7 @@ def price_history(
     investing_types = ["stock", "etf", "fund", "crypto", "bond", "index", "certificate"]
     commonargs = {
         "from_date": "01/01/1900",
-        "to_date": datetime.now().strftime("%d/%m/%Y"),
+        "to_date": pendulum.now().strftime("%d/%m/%Y"),
     }
 
     if type_ in investing_types:
