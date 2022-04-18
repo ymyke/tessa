@@ -10,9 +10,6 @@ from investpy.utils.search_obj import SearchObj
 from pycoingecko import CoinGeckoAPI
 from . import rate_limiter  # pylint: disable=unused-import
 
-# import api.investing
-# import api.yahooscraper
-
 
 def freezeargs(func):
     """Transform mutable dictionary into immutable useful to be compatible with cache.
