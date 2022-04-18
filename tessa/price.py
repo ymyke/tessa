@@ -2,12 +2,14 @@
 
 import functools
 from typing import Tuple
-from frozendict import frozendict
+
+import investpy
 import pandas as pd
 import pendulum
-import investpy
+from frozendict import frozendict
 from investpy.utils.search_obj import SearchObj
 from pycoingecko import CoinGeckoAPI
+
 from . import rate_limiter  # pylint: disable=unused-import
 
 
