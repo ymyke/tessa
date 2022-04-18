@@ -72,7 +72,7 @@ def setup_guards() -> None:
 def reset_guards() -> None:
     """Reset to the originals."""
     for guard in guards.values():
-        exec(f"{guard['func_name']} = {guard['orig_func']}")
+        exec(f"{guard['func_name']} = {guard['func_orig']}")
 
 
 # FIXME Better remove this here and call these from __init__?
