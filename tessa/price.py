@@ -142,4 +142,4 @@ def price_history(
             searchobj.retrieve_currency(),
         )
 
-    raise ValueError(f"Unsupported equity type {type_}.")
+    raise ValueError(f"Unsupported asset type {type_}.")
