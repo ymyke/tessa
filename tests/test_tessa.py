@@ -3,8 +3,7 @@
 # pylint: disable=missing-docstring
 
 import pandas as pd
-from tessa import __version__
-from tessa import price_history
+from tessa import __version__, price_history
 
 
 def test_version():
