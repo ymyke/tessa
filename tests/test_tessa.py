@@ -3,6 +3,7 @@
 # pylint: disable=missing-docstring
 
 import pandas as pd
+from pandas.core.dtypes.dtypes import DatetimeTZDtype
 from tessa import __version__, price_history
 
 
@@ -16,6 +17,8 @@ def test_price_history_investpy_stock_including_caching():
     assert df.index[0] == pd.Timestamp("1980-12-12", tz="UTC")
     assert df.shape[0] > 10000
     assert df.shape[1] == 1
+    assert isinstance(df.index.dtype, DatetimeTZDtype)
+    assert df.dtypes.to_string() == "close    float64"
     assert price_history.cache_info().misses == 1
     assert price_history.cache_info().hits == 0
 
@@ -44,6 +47,8 @@ def test_price_history_investpy_searchobj():
     assert df.index[0] == pd.Timestamp("2010-11-18", tz="UTC")
     assert df.shape[0] > 1000
     assert df.shape[1] == 1
+    assert isinstance(df.index.dtype, DatetimeTZDtype)
+    assert df.dtypes.to_string() == "close    float64"
 
 
 def test_price_history_crypto():
@@ -52,3 +57,5 @@ def test_price_history_crypto():
     assert df.index[0] == pd.Timestamp("2015-08-07", tz="UTC")
     assert df.shape[0] > 1000
     assert df.shape[1] == 1
+    assert isinstance(df.index.dtype, DatetimeTZDtype)
+    assert df.dtypes.to_string() == "close    float64"
