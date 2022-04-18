@@ -7,7 +7,7 @@ import pandas as pd
 import investpy
 from investpy.utils.search_obj import SearchObj
 from pycoingecko import CoinGeckoAPI
-from . import rate_limiter # pylint: disable=unused-import
+from . import rate_limiter  # pylint: disable=unused-import
 
 # import api.investing
 # import api.yahooscraper
