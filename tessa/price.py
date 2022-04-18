@@ -34,19 +34,22 @@ def freezeargs(func):
     return wrapped
 
 
-def turn_price_history_into_prices(df: pd.DataFrame) -> Tuple[pd.DataFrame, str]:
-    """Turn what investpy returns into a pricing dataframe in the form that we use it.
-    Returns also the currency.
-    """
-    df = df.copy()  # To prevent the SettingWithCopyWarning
+def get_currency_from_dataframe(df: pd.DataFrame) -> str:
+    """Get currency from investpy dataframe."""
     currencies = list(df["Currency"].unique())
     if len(currencies) > 1:
-        raise ValueError(f"Expected only one currency, got {currencies}")
+        raise ValueError(f"Expected only one currency, got {currencies}.")
+    return currencies[0]
+
+
+def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
+    """Turn investpy dataframe into a pricing dataframe in the form that we use it."""
+    df = df.copy()  # To prevent the SettingWithCopyWarning
     df = df[["Close"]]
     df.index = pd.to_datetime(df.index, utc=True)
     df.index.name = "date"
     df.rename(columns={"Close": "close"}, inplace=True)
-    return df, currencies[0]
+    return df
 
 
 def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
@@ -125,13 +128,19 @@ def price_history(
     if type_ in investing_types:
         commonargs["country"] = country
         commonargs[type_] = query
-        return turn_price_history_into_prices(
-            getattr(investpy, "get_" + type_ + "_historical_data")(**commonargs)
+        prices = getattr(investpy, "get_" + type_ + "_historical_data")(**commonargs)
+        return (
+            turn_price_history_into_prices(prices),
+            get_currency_from_dataframe(prices),
         )
 
     if type_ == "searchobj":
-        return turn_price_history_into_prices(
-            SearchObj(**query).retrieve_historical_data(**commonargs)
+        searchobj = SearchObj(**query)
+        return (
+            turn_price_history_into_prices(
+                searchobj.retrieve_historical_data(**commonargs),
+            ),
+            searchobj.retrieve_currency(),
         )
 
     raise ValueError(f"Unsupported equity type {type_}.")
