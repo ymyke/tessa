@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import functools
+from typing import Tuple
 from frozendict import frozendict
 import pandas as pd
 import investpy
@@ -33,14 +34,19 @@ def freezeargs(func):
     return wrapped
 
 
-def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
-    """Turn what investpy returns into a pricing dataframe in the form that we use it."""
+def turn_price_history_into_prices(df: pd.DataFrame) -> Tuple[pd.DataFrame, str]:
+    """Turn what investpy returns into a pricing dataframe in the form that we use it.
+    Returns also the currency.
+    """
     df = df.copy()  # To prevent the SettingWithCopyWarning
+    currencies = list(df["Currency"].unique())
+    if len(currencies) > 1:
+        raise ValueError(f"Expected only one currency, got {currencies}")
     df = df[["Close"]]
     df.index = pd.to_datetime(df.index, utc=True)
     df.index.name = "date"
     df.rename(columns={"Close": "close"}, inplace=True)
-    return df
+    return df, currencies[0]
 
 
 def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
@@ -67,8 +73,10 @@ def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
 
 @freezeargs
 @functools.cache
-def price_history(query: str, type_: str, country: str = None) -> pd.DataFrame:
-    """Get price history and return dataframe.
+def price_history(
+    query: str, type_: str, country: str = None, currency_preference: str = "usd"
+) -> Tuple[pd.DataFrame, str]:
+    """Get price history and return tuple of dataframe and currency.
 
     Args:
 
@@ -77,6 +85,8 @@ def price_history(query: str, type_: str, country: str = None) -> pd.DataFrame:
 
     Optional/situational args:
 
+    - currency_preference: The currency to the prices should be returned in. The
+      effective currency might differ and will be returned in the second return value.
     - country: Used w types "stock" and similar.
 
     FIXME Make this function as simple and straightforward as possible and then add
@@ -89,14 +99,17 @@ def price_history(query: str, type_: str, country: str = None) -> pd.DataFrame:
 
     if type_ == "crypto":
         try:
-            return turn_prices_list_into_df(
-                CoinGeckoAPI().get_coin_market_chart_by_id(
-                    # id=symbol_to_id(query), # FIXME Something for the lenient version?
-                    id=query,
-                    vs_currency="chf",  # FIXME What to do here?
-                    days="max",
-                    interval="daily",
-                )["prices"]
+            return (
+                turn_prices_list_into_df(
+                    CoinGeckoAPI().get_coin_market_chart_by_id(
+                        # id=symbol_to_id(query), # FIXME For the lenient version?
+                        id=query,
+                        vs_currency=currency_preference,
+                        days="max",
+                        interval="daily",
+                    )["prices"]
+                ),
+                currency_preference,
             )
         except ValueError as exc:
             raise RuntimeError(f"Failed to look up crypto ticker {query}") from exc
