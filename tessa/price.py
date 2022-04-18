@@ -30,6 +30,7 @@ def freezeargs(func):
                 for k, v in kwargs.items()
             },
         )
+
     wrapped.cache_info = func.cache_info
     wrapped.cache_clear = func.cache_clear
     return wrapped
@@ -102,21 +103,18 @@ def price_history(
     # original does not get modified by the caller.
 
     if type_ == "crypto":
-        try:
-            return (
-                turn_prices_list_into_df(
-                    CoinGeckoAPI().get_coin_market_chart_by_id(
-                        # id=symbol_to_id(query), # FIXME For the lenient version?
-                        id=query,
-                        vs_currency=currency_preference,
-                        days="max",
-                        interval="daily",
-                    )["prices"]
-                ),
-                currency_preference,
-            )
-        except ValueError as exc:
-            raise RuntimeError(f"Failed to look up crypto ticker {query}") from exc
+        return (
+            turn_prices_list_into_df(
+                CoinGeckoAPI().get_coin_market_chart_by_id(
+                    # id=symbol_to_id(query), # FIXME For the lenient version?
+                    id=query,
+                    vs_currency=currency_preference,
+                    days="max",
+                    interval="daily",
+                )["prices"]
+            ),
+            currency_preference,
+        )
 
     # Investing / investpy:
 
