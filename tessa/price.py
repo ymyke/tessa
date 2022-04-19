@@ -10,7 +10,7 @@ from frozendict import frozendict
 from investpy.utils.search_obj import SearchObj
 from pycoingecko import CoinGeckoAPI
 
-from . import rate_limiter  # pylint: disable=unused-import
+from .rate_limiter import rate_limit
 
 
 def freezeargs(func):
@@ -100,6 +100,8 @@ def price_history(
     """
     # FIXME Make sure we always return a copy of the resulting dataframe so the cached
     # original does not get modified by the caller.
+
+    rate_limit(type_)
 
     if type_ == "crypto":
         return (
