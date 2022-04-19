@@ -3,9 +3,9 @@
 # pylint: disable=missing-docstring
 
 import pandas as pd
-from pandas.core.dtypes.dtypes import DatetimeTZDtype
-import pytest
 import pendulum
+import pytest
+from pandas.core.dtypes.dtypes import DatetimeTZDtype
 from tessa import __version__, price_history, rate_limiter
 
 
