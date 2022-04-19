@@ -1,3 +1,17 @@
+# Next up
+
+- Add tests
+- Make it work with fignal
+- Make it work for the needs of the users on investpy
+- Add the lenient version // add tickerconfig
+- Add helper functions to get the searchobj
+
+
+# QQ:
+
+- Should rate limiting rather be simply implemented in the upper level functions?
+- Rename helper functions to "dataframify_investpy" etc.?
+
 
 # Asset factory
 
@@ -83,7 +97,7 @@ TickerConfigItem:
 - alerts.py uses the models to access the right `price_history` function depending on
   the asset type. -> Need some abstraction layer there? Something better than
   `api.ticker` today?
-- Tickerconfig: I used in both finalerts and fignal. 
+- Tickerconfig: Is used in both finalerts and fignal. 
   - What should this be in the future? Something central somewhere?
   - Also add crypto to it? (Including the coingecko symbols?)
   - Or would this be some kind of generic price access layer that contains everything in
