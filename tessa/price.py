@@ -64,17 +64,6 @@ def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
     return df
 
 
-# @cache
-# def price_history(ticker: str) -> pd.DataFrame:
-#     """Get price history for ticker and return dataframe.
-
-#     Caches the result in memory therefore returns a copy of the resulting dataframe so
-#     the cached original doesn't change when the dataframe is modified.
-#     """
-#     # FIXME: Look up ticker in tickerconfig.py and use the correct API.
-#     return api.investing.get_pricehistory(ticker).copy()
-
-
 @freezeargs
 @functools.cache
 def price_history(
