@@ -6,6 +6,9 @@ takes substantial time until it allow-lists a blocked IP address again. That is 
 we can't use a library such das Tenacity here.
 """
 
+# FIXME Keep it as a tool that people can import when they use the coingecko or investpy
+# libraries in other ways than through this package?
+
 # pylint: disable=eval-used,exec-used,unused-import
 
 import atexit
@@ -78,5 +81,6 @@ def reset_guards() -> None:
 
 
 # FIXME Better remove this here and call these from __init__?
+# FIXME Also, remove the code and have consumers call `setup_guards` explicitly.
 setup_guards()
 atexit.register(reset_guards)
