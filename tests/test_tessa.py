@@ -5,14 +5,19 @@
 import pandas as pd
 from pandas.core.dtypes.dtypes import DatetimeTZDtype
 import pytest
-from tessa import __version__, price_history
+import pendulum
+from tessa import __version__, price_history, rate_limiter
 
 
 def test_version():
     assert __version__ == "0.1.0"
 
 
-def test_price_history_investpy_stock_including_caching():
+def test_price_history_investpy_stock_including_caching_and_ratelimiting():
+    # Make sure rate limiter is set up correctly:
+    assert rate_limiter.guards["investing"]["last_call"] == pendulum.parse("1900")
+
+    # Retrieve stock and make sure the result is correct:
     df, crncy = price_history("AAPL", "stock", country="united states")
     assert crncy == "USD"
     assert df.index[0] == pd.Timestamp("1980-12-12", tz="UTC")
@@ -22,6 +27,11 @@ def test_price_history_investpy_stock_including_caching():
     assert df.dtypes.to_string() == "close    float64"
     assert price_history.cache_info().misses == 1
     assert price_history.cache_info().hits == 0
+
+    # Make sure the rate limiter was updated:
+    assert (
+        pendulum.now() - rate_limiter.guards["investing"]["last_call"]
+    ).total_seconds() < 30
 
     # Retrieve again and check that the cache is used:
     df2, crncy2 = price_history("AAPL", "stock", country="united states")
