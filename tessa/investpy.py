@@ -9,16 +9,22 @@ import investpy
 
 # ---------- Everything search-related ----------
 
-
+# FIXME consolidate docstrings
 def search_asset(
-    query: str, country: str = None, products: str = None, silent: bool = False
+    query: str,
+    countries: Optional[Union[list, str]] = None,
+    products: Optional[Union[list, str]] = None,
+    silent: bool = False,
 ) -> dict:
     """Find asset on investpy. This is the most generic function that simply combines
     the results of the 2 specific functions below.
+
+    Note that the result is a dictionary with different categories of results. And
+    results are either a dataframe or a list of search objects (as strings).
     """
-    return search_name_or_symbol(query, silent) | search_for_searchobjs(
-        query, country, products, silent
-    )
+    return search_name_or_symbol(
+        query, countries, products, silent
+    ) | search_for_searchobjs(query, countries, products, silent)
 
 
 def search_name_or_symbol(
