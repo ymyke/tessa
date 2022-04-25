@@ -31,8 +31,7 @@ def search_name_or_symbol(query: str, silent: bool = False) -> dict:
     """
     # FIXME Add country and products here too for consistency reasons and filter
     # accordingly?
-    # FIXME Rename types to products?
-    types = [
+    valid_products = [
         "certificates",
         "commodities",
         "bonds",
@@ -42,13 +41,13 @@ def search_name_or_symbol(query: str, silent: bool = False) -> dict:
         "stocks",
         "funds",
     ]
-    bys = ["full_name", "name", "symbol"]
+    valid_bys = ["full_name", "name", "symbol"]
     res = {}
-    for type_ in types:
-        for by_ in bys:
-            key = f"{type_}_by_{by_}"
+    for product in valid_products:
+        for by in valid_bys:  # pylint: disable=invalid-name
+            key = f"{product}_by_{by}"
             try:
-                res[key] = getattr(investpy, "search_" + type_)(by=by_, value=query)
+                res[key] = getattr(investpy, "search_" + product)(by=by, value=query)
             except (RuntimeError, ValueError):
                 continue
             if not silent:
