@@ -97,11 +97,16 @@ def search_for_searchobjs(
         "fxfutures",
     ]
 
-    # Search:
+    # Prepare input parameters:
     query = query.lower()
-    products = [products] if isinstance(products, str) else products
-    products = list(set(products) & set(possible_products))  # Only allow valid products
     countries = [countries] if isinstance(countries, str) else countries
+    if products is not None:
+        if isinstance(products, str):
+            products = [products]
+        products = list(set(products) & set(possible_products))  # Only valid products
+        products = products or None  # If empty, set to None
+
+    # Search:
     try:
         search_res = investpy.search_quotes(
             text=query,
