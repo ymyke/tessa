@@ -1,0 +1,76 @@
+"""Test everything related to `investpy` module."""
+
+# pylint: disable=use-implicit-booleaness-not-comparison,invalid-name
+
+import pandas as pd
+from tessa.investpy import search_asset, search_name_or_symbol, search_for_searchobjs
+
+# ----- search_asset related -----
+
+
+def test_search_asset():
+    """It returns the correct combined result."""
+    res = search_asset("AAPL", countries="united states", products="stocks")
+    assert res["stocks_by_symbol"].shape[0] == 1
+    assert len(res["perfect_searchobj_matches"]) == 1
+
+
+# ----- search_name_or_symbol related -----
+
+
+def test_searchnamesymbol_non_existent_name():
+    """It returns an empty list if the name doesn't exist."""
+    assert search_name_or_symbol("non_existent_name") == {}
+
+
+def test_searchnamesymbol():
+    """It returns a dictionary with dataframes and the filtering works correctly."""
+    fullres = search_name_or_symbol("carbon")
+    assert fullres != {}
+    assert isinstance(fullres["stocks_by_full_name"], pd.DataFrame)
+    r1 = search_name_or_symbol("carbon", countries=["united states", "switzerland"])
+    assert r1 != {}
+    assert fullres["stocks_by_full_name"].shape[0] > r1["stocks_by_full_name"].shape[0]
+    r2 = search_name_or_symbol(
+        "carbon", countries=["united states", "switzerland"], products=["etfs"]
+    )
+    assert r2 != {}
+    assert len(fullres) > len(r2)
+
+
+# ----- search_for_searchobjs related -----
+
+
+def test_searchobjs_non_existent_name():
+    """It returns an empty list if the name doesn't exist."""
+    assert search_for_searchobjs("non_existent_name") == {}
+
+
+def test_searchobjs_non_existent_country():
+    """It returns an empty list if the country doesn't exist."""
+    assert search_for_searchobjs("one", "non_existent_country") == {}
+
+
+def test_searchobjs():
+    """It returns a category with a list of search objects."""
+    assert search_for_searchobjs("one", "switzerland") == {
+        "perfect_searchobj_matches": [
+            '{"id_": 949673, "name": "ONE swiss bank SA", "symbol": "ONE", '
+            '"country": "switzerland", "tag": "/equities/banque-profil-de-gestion-sa", '
+            '"pair_type": "stocks", "exchange": "Switzerland"}'
+        ]
+    }
+
+
+def test_searchobjs_filter_products():
+    """It works with different kinds of products filters."""
+    assert search_for_searchobjs("one", "switzerland", products="etfs") == {}
+    assert (
+        search_for_searchobjs("one", "switzerland", products=["etfs", "stocks"]) != {}
+    )
+    assert (
+        search_for_searchobjs(
+            "one", "switzerland", products=["etfs", "stocks", "non_existent_product"]
+        )
+        != {}
+    )
