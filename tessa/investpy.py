@@ -84,7 +84,7 @@ def search_for_searchobjs(
     r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
     ```
     """
-    possible_products = [
+    valid_products = [
         "indices",
         "stocks",
         "etfs",
@@ -103,7 +103,7 @@ def search_for_searchobjs(
     if products is not None:
         if isinstance(products, str):
             products = [products]
-        products = list(set(products) & set(possible_products))  # Only valid products
+        products = list(set(products) & set(valid_products))  # Only valid products
         products = products or None  # If empty, set to None
 
     # Search:
