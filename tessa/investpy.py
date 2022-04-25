@@ -79,6 +79,7 @@ def search_for_searchobjs(
 
     Example calls:
     ```
+    from tessa.investpy import search_for_searchobjs
     r1 = search_for_searchobjs("soft")
     r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
     ```
