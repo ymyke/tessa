@@ -71,7 +71,7 @@ def search_for_searchobjs(
 
     - query: The query to search for.
     - countries: A list of countries to search in.
-    - products: Any of `possibe_products`.
+    - products: Any of `possible_products`.
     - silent: No print output if True.
 
     Both `countries` and `products` can be a list or a string. They can also be `None`,
