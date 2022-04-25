@@ -6,11 +6,15 @@ import investpy
 # FIXME Needs rate limiting as well.
 # FIXME Add tests.
 
+# ---------- Everything search-related ----------
+
 
 def search_asset(
     query: str, country: str = None, products: str = None, silent: bool = False
 ) -> dict:
-    """Find asset on investpy."""
+    """Find asset on investpy. This is the most generic function that simply combines
+    the results of the 2 specific functions below.
+    """
     return search_name_or_symbol(query, silent) | search_for_searchobjs(
         query, country, products, silent
     )
