@@ -24,7 +24,9 @@ def search_asset(
     Also check the docstrings of the specific functions `search_name_or_symbol` and
     `search_for_searchobjs` below for more info.
 
-    Example calls: ``` from tessa.investpy import search_asset r1 = search_asset("AAPL")
+    Example calls:
+    ```
+    from tessa.investpy import search_asset r1 = search_asset("AAPL")
     r2 = search_asset("AAPL", countries=["united states", "canada"], products="stocks")
     ```
     """
