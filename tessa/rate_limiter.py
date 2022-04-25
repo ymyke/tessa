@@ -29,6 +29,12 @@ def setup_guards() -> None:
         # the exponential back-off at some point.
 
 
+# FIXME Turn rate_limit into a decorator that takes the type as an argument? cf
+# https://realpython.com/primer-on-python-decorators/#decorators-with-arguments (Only
+# possible if we split the price_history function up into multiple functions at some
+# point.)
+
+
 def rate_limit(type_: str) -> None:
     """Do the actual rate limiting."""
     which_guard = "crypto" if type_ == "crypto" else "investing"
