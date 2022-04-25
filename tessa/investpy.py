@@ -72,8 +72,7 @@ def search_for_searchobjs(
 
     - query: The query to search for.
     - countries: A list of countries to search in.
-    - products: Any of `indices`, `stocks`, `etfs`, `funds`, `commodities`,
-      `currencies`, `crypto`, `bonds`, `certificates` and `fxfutures`.
+    - products: Any of `possibe_products`.
     - silent: No print output if True.
 
     Both `countries` and `products` can be a list or a string. They can also be `None`,
@@ -85,9 +84,23 @@ def search_for_searchobjs(
     r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
     ```
     """
+    possible_products = [
+        "indices",
+        "stocks",
+        "etfs",
+        "funds",
+        "commodities",
+        "currencies",
+        "cryptos",
+        "bonds",
+        "certificates",
+        "fxfutures",
+    ]
+
     # Search:
     query = query.lower()
     products = [products] if isinstance(products, str) else products
+    products = list(set(products) & set(possible_products))  # Only allow valid products
     countries = [countries] if isinstance(countries, str) else countries
     try:
         search_res = investpy.search_quotes(
