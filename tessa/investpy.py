@@ -5,7 +5,6 @@ import investpy
 
 
 # FIXME Needs rate limiting as well.
-# FIXME Add tests.
 
 # ---------- Everything search-related ----------
 
