@@ -21,16 +21,35 @@ def search_asset(
     )
 
 
-def search_name_or_symbol(query: str, silent: bool = False) -> dict:
+def search_name_or_symbol(
+    query: str,
+    countries: Optional[Union[list, str]] = None,
+    products: Optional[Union[list, str]] = None,
+    silent: bool = False,
+) -> dict:
     """Run query through all of the search functions and all the search_by options of
-    investpy and return the results as a dict of type x search_by combinations. Also
+    `investpy` and return the results as a dict of product-search_by combinations. Also
     print out how many results were found per key.
 
-    >>> from tessa.investpy import search_name_or_symbol
-    >>> r = search_name_or_symbol("swiss")
+    Args:
+
+    - query: The query to search for.
+    - countries: A list of countries to search in.
+    - products: Any of `valid_products`.
+    - silent: No print output if True.
+
+    Both `countries` and `products` can be a list or a string. They can also be `None`,
+    in which case all products or countries are searched.
+
+    Example calls:
+    ```
+    from tessa.investpy import search_name_or_symbol
+    r1 = search_name_or_symbol("carbon")
+    r2 = search_name_or_symbol(
+        "carbon", countries=["united states", "switzerland"], products="etfs"
+    )
+    ```
     """
-    # FIXME Add country and products here too for consistency reasons and filter
-    # accordingly?
     valid_products = [
         "certificates",
         "commodities",
@@ -42,16 +61,31 @@ def search_name_or_symbol(query: str, silent: bool = False) -> dict:
         "funds",
     ]
     valid_bys = ["full_name", "name", "symbol"]
+
+    # Prepare input parameters (make sure countries and products are (empty) lists):
+    query = query.lower()
+    countries = [countries] if isinstance(countries, str) else countries
+    if products is not None:
+        products = [products] if isinstance(products, str) else products
+        products = set(products) & set(valid_products)  # Only valid products
+    else:
+        products = valid_products
+
+    # Search:
     res = {}
-    for product in valid_products:
+    for product in products:
         for by in valid_bys:  # pylint: disable=invalid-name
-            key = f"{product}_by_{by}"
             try:
-                res[key] = getattr(investpy, "search_" + product)(by=by, value=query)
+                df = getattr(investpy, "search_" + product)(by=by, value=query)
             except (RuntimeError, ValueError):
                 continue
-            if not silent:
-                print(f"{key}: Found {res[key].shape[0]}")
+            if countries is not None:
+                df = df[df.country.isin(countries)]
+            if df.shape[0] > 0:
+                key = f"{product}_by_{by}"
+                res[key] = df
+                if not silent:
+                    print(f"{key}: Found {df.shape[0]}")
     return res
 
 
