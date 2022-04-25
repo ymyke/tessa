@@ -1,5 +1,6 @@
 """`investpy`-related functions."""
 
+from typing import Optional, Union
 import investpy
 
 
@@ -56,7 +57,10 @@ def search_name_or_symbol(query: str, silent: bool = False) -> dict:
 
 
 def search_for_searchobjs(
-    query: str, country: str = None, products: str = None, silent: bool = False
+    query: str,
+    countries: Optional[Union[list, str]] = None,
+    products: Optional[Union[list, str]] = None,
+    silent: bool = False,
 ) -> dict:
     """Run query through `investpy.search_quotes`, which returns `SearchObj` objects and
     return the objects found as lists triaged into perfect and other matches. Also print
@@ -64,22 +68,32 @@ def search_for_searchobjs(
 
     cf https://github.com/alvarobartt/investpy/issues/129#issuecomment-604048750
 
-    - searches all countries if country == None
-    - products: `indices`, `stocks`, `etfs`, `funds`, `commodities`, `currencies`,
-      `crypto`, `bonds`, `certificates` and `fxfutures`, by default this parameter is
-      set to `None` which means that no filter will be applied, and all product type
-      quotes will be retrieved.
+    Args:
 
-    >>> from tessa.investpy import search_for_searchobjs
-    >>> r = search_for_searchobjs("soft")
+    - query: The query to search for.
+    - countries: A list of countries to search in.
+    - products: Any of `indices`, `stocks`, `etfs`, `funds`, `commodities`,
+      `currencies`, `crypto`, `bonds`, `certificates` and `fxfutures`.
+    - silent: No print output if True.
+
+    Both `countries` and `products` can be a list or a string. They can also be `None`,
+    in which case all products or countries are searched.
+
+    Example calls:
+    ```
+    r1 = search_for_searchobjs("soft")
+    r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
+    ```
     """
     # Search:
     query = query.lower()
+    products = [products] if isinstance(products, str) else products
+    countries = [countries] if isinstance(countries, str) else countries
     try:
         search_res = investpy.search_quotes(
             text=query,
-            products=[products] if products else None,
-            countries=[country] if country else None,
+            products=products,
+            countries=countries,
         )
     except (ValueError, RuntimeError):
         return {}
