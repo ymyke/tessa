@@ -9,7 +9,7 @@ import investpy
 
 # ---------- Everything search-related ----------
 
-# FIXME consolidate docstrings
+
 def search_asset(
     query: str,
     countries: Optional[Union[list, str]] = None,
@@ -21,6 +21,13 @@ def search_asset(
 
     Note that the result is a dictionary with different categories of results. And
     results are either a dataframe or a list of search objects (as strings).
+
+    Also check the docstrings of the specific functions `search_name_or_symbol` and
+    `search_for_searchobjs` below for more info.
+
+    Example calls: ``` from tessa.investpy import search_asset r1 = search_asset("AAPL")
+    r2 = search_asset("AAPL", countries=["united states", "canada"], products="stocks")
+    ```
     """
     return search_name_or_symbol(
         query, countries, products, silent
