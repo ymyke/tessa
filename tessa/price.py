@@ -84,11 +84,6 @@ def price_history(
     - currency_preference: The currency to the prices should be returned in. The
       effective currency might differ and will be returned in the second return value.
     - country: Used w types "stock" and similar.
-
-    FIXME Make this function as simple and straightforward as possible and then add
-    another function that is as lenient and forgiving as possible and tries to assume
-    reasonable defaults wherever possible. I.e., set country to us if undefined or cycle
-    through types if none given.
     """
     # FIXME Make sure we always return a copy of the resulting dataframe so the cached
     # original does not get modified by the caller.
