@@ -13,7 +13,7 @@ from pycoingecko import CoinGeckoAPI
 from .rate_limiter import rate_limit
 
 
-def freezeargs(func):
+def freezeargs(func: callable) -> callable:
     """Transform mutable dictionary into immutable useful to be compatible with cache.
 
     Based on:
