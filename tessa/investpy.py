@@ -2,9 +2,8 @@
 
 from typing import Optional, Union
 import investpy
+from .rate_limiter import rate_limit
 
-
-# FIXME Needs rate limiting as well.
 
 # ---------- Everything search-related ----------
 
@@ -64,6 +63,7 @@ def search_name_or_symbol(
     )
     ```
     """
+    rate_limit("investing")
     valid_products = [
         "certificates",
         "commodities",
@@ -132,6 +132,7 @@ def search_for_searchobjs(
     r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
     ```
     """
+    rate_limit("investing")
     valid_products = [
         "indices",
         "stocks",
