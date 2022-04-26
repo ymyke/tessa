@@ -95,12 +95,17 @@ def price_history(
     - `type_="searchobj", query="{'id_': 995876, ...}"`: Use `.investpy.search_asset` to
       find the SearchObj.
 
+    Returns:
+
+    - A tuple of a dataframe with the price history and the effective currency.
+    - Note that a copy of the dataframe is returned so the cached original is preserved
+      even if it gets modified by the caller.
+    - Note also that the effective currency returend might differ from the
+      currency_preference.
+
     Philosophy: This function tries to make no assumptions whatsoever. It doesn't try to
     be smart but simply takes what it gets and works with that.
     """
-    # FIXME Make sure we always return a copy of the resulting dataframe so the cached
-    # original does not get modified by the caller.
-
     rate_limit(type_)
 
     if type_ == "crypto":
@@ -112,7 +117,7 @@ def price_history(
                     days="max",
                     interval="daily",
                 )["prices"]
-            ),
+            ).copy(),
             currency_preference,
         )
 
@@ -129,7 +134,7 @@ def price_history(
         commonargs[type_] = query
         prices = getattr(investpy, "get_" + type_ + "_historical_data")(**commonargs)
         return (
-            turn_price_history_into_prices(prices),
+            turn_price_history_into_prices(prices).copy(),
             get_currency_from_dataframe(prices),
         )
 
@@ -138,7 +143,7 @@ def price_history(
         return (
             turn_price_history_into_prices(
                 searchobj.retrieve_historical_data(**commonargs),
-            ),
+            ).copy(),
             searchobj.retrieve_currency(),
         )
 
