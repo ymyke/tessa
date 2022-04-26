@@ -107,7 +107,6 @@ def price_history(
         return (
             turn_prices_list_into_df(
                 CoinGeckoAPI().get_coin_market_chart_by_id(
-                    # id=symbol_to_id(query), # FIXME For the lenient version?
                     id=query,
                     vs_currency=currency_preference,
                     days="max",
