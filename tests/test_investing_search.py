@@ -3,7 +3,11 @@
 # pylint: disable=use-implicit-booleaness-not-comparison,invalid-name
 
 import pandas as pd
-from tessa.investpy import search_asset, search_name_or_symbol, search_for_searchobjs
+from tessa.investing_search import (
+    search_asset,
+    search_name_or_symbol,
+    search_for_searchobjs,
+)
 
 # ----- search_asset related -----
 
