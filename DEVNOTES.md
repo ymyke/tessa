@@ -4,13 +4,27 @@
 - Make it work with fignal
 - Make it work for the needs of the users on investpy
 - Add the lenient version // add tickerconfig
+  - price_history_magic
+    - SearchObj? -> Use that
+    - Look up in config
+    - No country given?
+      - Try stock / "united states"
+      - Try crypto
+    - Country given?
+      - Try stock, etfs, funds, bonds, ...
 - Add helper functions to get the searchobj
+- What about fx?
+- Fix the fixmes
 
 
 # QQ:
 
-- Should rate limiting rather be simply implemented in the upper level functions?
 - Rename helper functions to "dataframify_investpy" etc.?
+- Related: Put everything coingecko/investing into separate modules?
+- Add a more lenient `price_history` function? (Make this function as simple and
+straightforward as possible and then add another function that is as lenient and
+forgiving as possible and tries to assume reasonable defaults wherever possible. I.e.,
+set country to us if undefined or cycle through types if none given.) (E.g., would try to resolve an unknown crypto ticker using something like symbol_to_id or so...)
 
 
 # Asset factory
