@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-docstring
 
+from importlib import reload
 import pandas as pd
 import pendulum
 import pytest
@@ -15,6 +16,7 @@ def test_version():
 
 def test_price_history_investpy_stock_including_caching_and_ratelimiting():
     # Make sure rate limiter is set up correctly:
+    reload(rate_limiter)
     assert rate_limiter.guards["investing"]["last_call"] == pendulum.parse("1900")
 
     # Retrieve stock and make sure the result is correct:
