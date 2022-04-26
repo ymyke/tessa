@@ -75,7 +75,7 @@ def price_history(
 
     - query: A query string that makes sense in combination with the type. E.g.,
       "bitcoin" for "crypto", "AAPL" for a "stock", or a `investpy.utils.search_obj`
-      object's string representation for "searchobj". 
+      object's string representation for "searchobj".
     - type_: Any of ["crypto", "stock", "etf", "fund", "crypto", "bond", "index",
       "certificate", "searchobj"].
 
