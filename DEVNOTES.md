@@ -12,13 +12,15 @@
       - Try crypto
     - Country given?
       - Try stock, etfs, funds, bonds, ...
-- Add helper functions to get the searchobj
 - What about fx?
 - Fix the fixmes
 
 
 # QQ:
 
+- Terminology:
+  - Is it `investing` and `coingecko`
+  - or `investpy` and `pycoingecko` for the modules?
 - Rename helper functions to "dataframify_investpy" etc.?
 - Related: Put everything coingecko/investing into separate modules?
 - Add a more lenient `price_history` function? (Make this function as simple and
