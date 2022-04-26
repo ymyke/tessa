@@ -74,8 +74,8 @@ def price_history(
     Args:
 
     - query: A query string that makes sense in combination with the type. E.g.,
-      "bitcoin" for "crypto", "AAPL" for a "stock", or a SearchObj object's string
-      representation for "searchobj".
+      "bitcoin" for "crypto", "AAPL" for a "stock", or a `investpy.utils.search_obj`
+      object's string representation for "searchobj". 
     - type_: Any of ["crypto", "stock", "etf", "fund", "crypto", "bond", "index",
       "certificate", "searchobj"].
 
@@ -84,6 +84,19 @@ def price_history(
     - currency_preference: The currency to the prices should be returned in. The
       effective currency might differ and will be returned in the second return value.
     - country: Used w types "stock" and similar.
+
+    Examples combinations:
+
+    - `type_="crypto", query="bitcoin"`: Use the ids the coingecko API uses ("btc" wont'
+      work). Use FIXME to find the id.
+    - `type_="stock", query="AAPL", country="united states"`: Use the investpy tickers.
+      Use `.investpy.search_asset` to find the right symbol.
+    - `type_="stock", query="SREN.SW"`: Won't work, country parameter missing.
+    - `type_="searchobj", query="{'id_': 995876, ...}"`: Use `.investpy.search_asset` to
+      find the SearchObj.
+
+    Philosophy: This function tries to make no assumptions whatsoever. It doesn't try to
+    be smart but simply takes what it gets and works with that.
     """
     # FIXME Make sure we always return a copy of the resulting dataframe so the cached
     # original does not get modified by the caller.
