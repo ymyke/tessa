@@ -1,4 +1,4 @@
-"""Everything coingecko-related."""
+"""Everything coingecko-related (other than search)."""
 
 from typing import Tuple
 import pandas as pd
