@@ -10,11 +10,7 @@ import pandas as pd
 import pendulum
 import pytest
 from pandas.core.dtypes.dtypes import DatetimeTZDtype
-from tessa import __version__, price_history, rate_limiter
-
-
-def test_version():
-    assert __version__ == "0.1.0"
+from tessa import price_history, rate_limiter
 
 
 def test_price_history_investpy_stock_including_caching_and_ratelimiting():
