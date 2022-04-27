@@ -2,36 +2,13 @@
 
 import functools
 from typing import Tuple
-
 import investpy
 import pandas as pd
 import pendulum
-from frozendict import frozendict
 from investpy.utils.search_obj import SearchObj
 from . import coingecko
+from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
-
-
-def freezeargs(func: callable) -> callable:
-    """Transform mutable dictionary into immutable useful to be compatible with cache.
-
-    Based on:
-    https://stackoverflow.com/questions/6358481/using-functools-lru-cache-with-dictionary-arguments
-    """
-
-    @functools.wraps(func)
-    def wrapped(*args, **kwargs):
-        return func(
-            *[frozendict(x) if isinstance(x, dict) else x for x in args],
-            **{
-                k: frozendict(v) if isinstance(v, dict) else v
-                for k, v in kwargs.items()
-            },
-        )
-
-    wrapped.cache_info = func.cache_info
-    wrapped.cache_clear = func.cache_clear
-    return wrapped
 
 
 def get_currency_from_dataframe(df: pd.DataFrame) -> str:
