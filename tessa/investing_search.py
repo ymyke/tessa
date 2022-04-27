@@ -22,7 +22,7 @@ def search_asset(
 
     Example calls:
     ```
-    from tessa.investpy import search_asset r1 = search_asset("AAPL")
+    from tessa.investpy_search import search_asset r1 = search_asset("AAPL")
     r2 = search_asset("AAPL", countries=["united states", "canada"], products="stocks")
     ```
     """
@@ -53,7 +53,7 @@ def search_name_or_symbol(
 
     Example calls:
     ```
-    from tessa.investpy import search_name_or_symbol
+    from tessa.investpy_search import search_name_or_symbol
     r1 = search_name_or_symbol("carbon")
     r2 = search_name_or_symbol(
         "carbon", countries=["united states", "switzerland"], products="etfs"
@@ -124,7 +124,7 @@ def search_for_searchobjs(
 
     Example calls:
     ```
-    from tessa.investpy import search_for_searchobjs
+    from tessa.investpy_search import search_for_searchobjs
     r1 = search_for_searchobjs("soft")
     r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
     ```
