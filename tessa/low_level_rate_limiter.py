@@ -14,7 +14,7 @@ we can't use a library such das Tenacity here.
 import atexit
 import time
 import requests
-import pendulum as pdl
+import pendulum
 
 guards = {
     # Additional attributes that will be added dynamically are: last_call, wait_seconds
@@ -43,10 +43,10 @@ def create_guard(func: callable, guard: dict) -> callable:
             for x in args + tuple(kwargs.values())
             if isinstance(x, str)
         ):
-            diff = (pdl.now() - guard["last_call"]).total_seconds()
+            diff = (pendulum.now() - guard["last_call"]).total_seconds()
             if diff < guard["wait_seconds"]:
                 time.sleep(guard["wait_seconds"] - diff)
-            guard["last_call"] = pdl.now()
+            guard["last_call"] = pendulum.now()
 
         # Call the original function and return, increase wait_seconds exponentially if
         # a 429 error is encountered:
@@ -66,7 +66,7 @@ def create_guard(func: callable, guard: dict) -> callable:
 def setup_guards() -> None:
     """Set up guards."""
     for guard in guards.values():
-        guard["last_call"] = pdl.parse("1900")
+        guard["last_call"] = pendulum.parse("1900")
         guard["wait_seconds"] = guard["initial_wait_seconds"]
         guard["func_orig"] = eval(guard["func_name"])
         exec(f"{guard['func_name']} = create_guard({guard['func_name']}, guard)")
