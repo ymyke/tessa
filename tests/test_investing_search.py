@@ -1,4 +1,7 @@
-"""Test everything related to `investpy` module."""
+"""Test everything related to `investing_search` module.
+
+Note that tests will hit the network and therefore will take a while to run.
+"""
 
 # pylint: disable=use-implicit-booleaness-not-comparison,invalid-name
 

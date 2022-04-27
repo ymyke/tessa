@@ -1,14 +1,8 @@
-"""`investpy`-related functions.
-
-Note that tests will hit the network and therefore will take a while to run.
-"""
+"""Everything related to searching via `investpy`."""
 
 from typing import Optional, Union
 import investpy
 from .rate_limiter import rate_limit
-
-
-# ---------- Everything search-related ----------
 
 
 def search_asset(
