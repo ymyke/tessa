@@ -36,6 +36,6 @@ def search_for_id(query: str, silent: bool = False) -> dict:
             matches = [x for x in get_symbol_map() if find_in(x[category])]
             if matches:
                 res[categoryname] = matches
-            if not silent:
-                print(f"'{categoryname}' matches: {len(res[categoryname])}")
+                if not silent:
+                    print(f"'{categoryname}' matches: {len(matches)}")
     return res
