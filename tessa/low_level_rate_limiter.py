@@ -4,10 +4,13 @@ waiting exponentially if a 429 error is encountered.
 The goal is to never run into errors in the first place, b/c at least investing.com
 takes substantial time until it allow-lists a blocked IP address again. That is also why
 we can't use a library such das Tenacity here.
-"""
 
-# FIXME Keep it as a tool that people can import when they use the coingecko or investpy
-# libraries in other ways than through this package?
+Note that this module is no longer used by the package. But I left it in here anyway,
+because it might come in handy for people who use the pycoingecko and investpy libraries
+in other ways than through this package. 
+
+Usage: Import the module and call `setup_guards()`.
+"""
 
 # pylint: disable=eval-used,exec-used,unused-import
 
@@ -72,15 +75,9 @@ def setup_guards() -> None:
         exec(f"{guard['func_name']} = create_guard({guard['func_name']}, guard)")
 
 
-def reset_guards() -> None:
-    """Reset to the originals."""
-    for guard in guards.values():
-        exec(f"{guard['func_name']} = {guard['func_orig']}")
-        # FIXME This doesn't work bc `func_orig` gets interpolated to a string
-        # representation, which in turn leads to a syntax error.
-
-
-# FIXME Better remove this here and call these from __init__?
-# FIXME Also, remove the code and have consumers call `setup_guards` explicitly.
-setup_guards()
-atexit.register(reset_guards)
+# def reset_guards() -> None:
+#     """Reset to the originals."""
+#     for guard in guards.values():
+#         exec(f"{guard['func_name']} = {guard['func_orig']}")
+#         # FIXME This doesn't work bc `func_orig` gets interpolated to a string
+#         # representation, which in turn leads to a syntax error.
