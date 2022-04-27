@@ -22,7 +22,7 @@ def search_asset(
 
     Example calls:
     ```
-    from tessa.investpy_search import search_asset 
+    from tessa.investpy_search import search_asset
     r1 = search_asset("AAPL")
     r2 = search_asset("AAPL", countries=["united states", "canada"], products="stocks")
     ```
