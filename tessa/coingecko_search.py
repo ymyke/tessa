@@ -12,7 +12,7 @@ def get_symbol_map() -> dict:
     return CoinGeckoAPI().get_coins_list()
 
 
-def search_for_id(query: str, silent: bool = False) -> dict:
+def coingecko_search(query: str, silent: bool = False) -> dict:
     """Help find coingecko ids.
 
     Args:
@@ -22,8 +22,9 @@ def search_for_id(query: str, silent: bool = False) -> dict:
 
     Example call:
     ```
-    from tessa.coingecko_search import search_for_id
-    r = search_for_id("jenny")
+    from tessa import coingecko_search
+    r = coingecko_search("jenny")
+    # Then use r["other_name][0]["id"] to get the coingecko id to get price information.
     ```
     """
     res = {}

@@ -5,7 +5,7 @@ import investpy
 from .rate_limiter import rate_limit
 
 
-def search_asset(
+def investing_search(
     query: str,
     countries: Optional[Union[list, str]] = None,
     products: Optional[Union[list, str]] = None,
@@ -22,9 +22,9 @@ def search_asset(
 
     Example calls:
     ```
-    from tessa.investpy_search import search_asset
-    r1 = search_asset("AAPL")
-    r2 = search_asset("AAPL", countries=["united states", "canada"], products="stocks")
+    from tessa import investing_search
+    r1 = investing_search("AAPL")
+    r2 = investing_search("AAPL", countries=["united states", "canada"], products="stocks")
     ```
     """
     return search_name_or_symbol(
@@ -54,7 +54,7 @@ def search_name_or_symbol(
 
     Example calls:
     ```
-    from tessa.investpy_search import search_name_or_symbol
+    from tessa.investing_search import search_name_or_symbol
     r1 = search_name_or_symbol("carbon")
     r2 = search_name_or_symbol(
         "carbon", countries=["united states", "switzerland"], products="etfs"
@@ -125,7 +125,7 @@ def search_for_searchobjs(
 
     Example calls:
     ```
-    from tessa.investpy_search import search_for_searchobjs
+    from tessa.investing_search import search_for_searchobjs
     r1 = search_for_searchobjs("soft")
     r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
     ```

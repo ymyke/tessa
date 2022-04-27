@@ -7,17 +7,17 @@ Note that tests will hit the network and therefore will take a while to run.
 
 import pandas as pd
 from tessa.investing_search import (
-    search_asset,
+    investing_search,
     search_name_or_symbol,
     search_for_searchobjs,
 )
 
-# ----- search_asset related -----
+# ----- investing_search related -----
 
 
-def test_search_asset():
+def test_investing_search():
     """It returns the correct combined result."""
-    res = search_asset("AAPL", countries="united states", products="stocks")
+    res = investing_search("AAPL", countries="united states", products="stocks")
     assert res["stocks_by_symbol"].shape[0] == 1
     assert len(res["perfect_searchobj_matches"]) == 1
 
