@@ -1,4 +1,7 @@
-"""Note that tests will hit the network and therefore will take a while to run."""
+"""Test `price_history` function.
+
+Note that tests will hit the network and therefore will take a while to run.
+"""
 
 # pylint: disable=missing-docstring
 

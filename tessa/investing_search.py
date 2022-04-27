@@ -1,4 +1,7 @@
-"""`investpy`-related functions."""
+"""`investpy`-related functions.
+
+Note that tests will hit the network and therefore will take a while to run.
+"""
 
 from typing import Optional, Union
 import investpy
