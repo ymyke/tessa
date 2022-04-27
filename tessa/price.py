@@ -8,8 +8,7 @@ import pandas as pd
 import pendulum
 from frozendict import frozendict
 from investpy.utils.search_obj import SearchObj
-from pycoingecko import CoinGeckoAPI
-
+from . import coingecko
 from .rate_limiter import rate_limit
 
 
@@ -50,17 +49,6 @@ def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
     df.index = pd.to_datetime(df.index, utc=True)
     df.index.name = "date"
     df.rename(columns={"Close": "close"}, inplace=True)
-    return df
-
-
-def turn_prices_list_into_df(prices: list) -> pd.DataFrame:
-    """Turn price list returned by Coingecko API into a pricing dataframe in the form
-    that we use.
-    """
-    df = pd.DataFrame(prices)
-    df.columns = ["date", "close"]
-    df["date"] = pd.to_datetime(df["date"] / 1000, unit="s", utc=True)
-    df = df.set_index("date")
     return df
 
 
@@ -108,18 +96,11 @@ def price_history(
     """
     rate_limit(type_)
 
+    # Coingecko:
+
     if type_ == "crypto":
-        return (
-            turn_prices_list_into_df(
-                CoinGeckoAPI().get_coin_market_chart_by_id(
-                    id=query,
-                    vs_currency=currency_preference,
-                    days="max",
-                    interval="daily",
-                )["prices"]
-            ).copy(),
-            currency_preference,
-        )
+        df, effective_currency = coingecko.get_price_history(query, currency_preference)
+        return (df.copy(), effective_currency)
 
     # Investing / investpy:
 
