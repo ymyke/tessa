@@ -33,11 +33,11 @@ def price_history(
     Examples combinations:
 
     - `type_="crypto", query="bitcoin"`: Use the ids the coingecko API uses ("btc" wont'
-      work). Use FIXME to find the id.
+      work). Use `coingecko_search` to find the id.
     - `type_="stock", query="AAPL", country="united states"`: Use the investpy tickers.
-      Use `.investpy.search_asset` to find the right symbol.
+      Use `investing_search` to find the right symbol.
     - `type_="stock", query="SREN.SW"`: Won't work, country parameter missing.
-    - `type_="searchobj", query="{'id_': 995876, ...}"`: Use `.investpy.search_asset` to
+    - `type_="searchobj", query="{'id_': 995876, ...}"`: Use `investing_search` to
       find the SearchObj.
 
     Returns:
