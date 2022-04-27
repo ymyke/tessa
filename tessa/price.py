@@ -43,9 +43,7 @@ def price_history(
     Returns:
 
     - A tuple of a dataframe with the price history and the effective currency.
-    - Note that a copy of the dataframe is returned so the cached original is preserved
-      even if it gets modified by the caller.
-    - Note also that the effective currency returend might differ from the
+    - Note that the effective currency returned might differ from the
       currency_preference.
 
     Philosophy: This function tries to make no assumptions whatsoever. It doesn't try to
@@ -63,3 +61,5 @@ def price_history(
         raise ValueError(f"Unsupported asset type {type_}.")
 
     return (df.copy(), effective_currency)
+    # (Returning a copy of the dataframe so the cached original is preserved even if it
+    # gets modified by the caller.)
