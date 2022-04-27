@@ -53,20 +53,13 @@ def price_history(
     """
     rate_limit(type_)
 
-    # Coingecko:
-
     if type_ == "crypto":
         df, effective_currency = coingecko.get_price_history(query, currency_preference)
-        return (df.copy(), effective_currency)
-
-    # Investing:
-
-    if type_ in investing.VALID_TYPES:
+    elif type_ in investing.VALID_TYPES:
         df, effective_currency = investing.get_price_history(query, type_, country)
-        return (df.copy(), effective_currency)
-
-    if type_ == "searchobj":
+    elif type_ == "searchobj":
         df, effective_currency = investing.get_price_history_from_searchobj(query)
-        return (df.copy(), effective_currency)
+    else:
+        raise ValueError(f"Unsupported asset type {type_}.")
 
-    raise ValueError(f"Unsupported asset type {type_}.")
+    return (df.copy(), effective_currency)
