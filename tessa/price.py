@@ -2,31 +2,11 @@
 
 import functools
 from typing import Tuple
-import investpy
 import pandas as pd
-import pendulum
-from investpy.utils.search_obj import SearchObj
+from . import investing
 from . import coingecko
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
-
-
-def get_currency_from_dataframe(df: pd.DataFrame) -> str:
-    """Get currency from investpy dataframe."""
-    currencies = list(df["Currency"].unique())
-    if len(currencies) > 1:
-        raise ValueError(f"Expected only one currency, got {currencies}.")
-    return currencies[0]
-
-
-def turn_price_history_into_prices(df: pd.DataFrame) -> pd.DataFrame:
-    """Turn investpy dataframe into a pricing dataframe in the form that we use it."""
-    df = df.copy()  # To prevent the SettingWithCopyWarning
-    df = df[["Close"]]
-    df.index = pd.to_datetime(df.index, utc=True)
-    df.index.name = "date"
-    df.rename(columns={"Close": "close"}, inplace=True)
-    return df
 
 
 @freezeargs
@@ -79,30 +59,14 @@ def price_history(
         df, effective_currency = coingecko.get_price_history(query, currency_preference)
         return (df.copy(), effective_currency)
 
-    # Investing / investpy:
+    # Investing:
 
-    investing_types = ["stock", "etf", "fund", "crypto", "bond", "index", "certificate"]
-    commonargs = {
-        "from_date": "01/01/1900",
-        "to_date": pendulum.now().strftime("%d/%m/%Y"),
-    }
-
-    if type_ in investing_types:
-        commonargs["country"] = country
-        commonargs[type_] = query
-        prices = getattr(investpy, "get_" + type_ + "_historical_data")(**commonargs)
-        return (
-            turn_price_history_into_prices(prices).copy(),
-            get_currency_from_dataframe(prices),
-        )
+    if type_ in investing.VALID_TYPES:
+        df, effective_currency = investing.get_price_history(query, type_, country)
+        return (df.copy(), effective_currency)
 
     if type_ == "searchobj":
-        searchobj = SearchObj(**query)
-        return (
-            turn_price_history_into_prices(
-                searchobj.retrieve_historical_data(**commonargs),
-            ).copy(),
-            searchobj.retrieve_currency(),
-        )
+        df, effective_currency = investing.get_price_history_from_searchobj(query)
+        return (df.copy(), effective_currency)
 
     raise ValueError(f"Unsupported asset type {type_}.")
