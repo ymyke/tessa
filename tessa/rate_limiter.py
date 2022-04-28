@@ -9,8 +9,10 @@ we can't use a library such das Tenacity here.
 import time
 import pendulum
 
-guards = {
-    # `setup_guards` will add `last_call` to each guard.
+guards = {}
+
+original_guards = {
+    # `reset_guards` will add `last_call` to each guard.
     "investing": {
         "wait_seconds": 2,
     },
@@ -20,8 +22,10 @@ guards = {
 }
 
 
-def setup_guards() -> None:
-    """Set up guards."""
+def reset_guards() -> None:
+    """Reset the guards."""
+    global guards  # pylint: disable=invalid-name,global-statement
+    guards = original_guards.copy()
     for guard in guards.values():
         guard["last_call"] = pendulum.parse("1900")
 
@@ -42,4 +46,4 @@ def rate_limit(type_: str) -> None:
     guard["last_call"] = pendulum.now()
 
 
-setup_guards()
+reset_guards()

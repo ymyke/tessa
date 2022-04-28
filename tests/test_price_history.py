@@ -5,7 +5,6 @@ Note that tests will hit the network and therefore will take a while to run.
 
 # pylint: disable=missing-docstring
 
-from importlib import reload
 import pandas as pd
 import pendulum
 import pytest
@@ -14,8 +13,8 @@ from tessa import price_history, rate_limiter
 
 
 def test_price_history_investpy_stock_including_caching_and_ratelimiting():
-    # Make sure rate limiter is set up correctly:
-    reload(rate_limiter)
+    # Make sure rate limiter is in a pristine setup:
+    rate_limiter.reset_guards()
     assert rate_limiter.guards["investing"]["last_call"] == pendulum.parse("1900")
 
     # Retrieve stock and make sure the result is correct:
