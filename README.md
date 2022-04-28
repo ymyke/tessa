@@ -1,8 +1,7 @@
 
 # tessa
 
-**Find financial assets and get their price history without worrying about different
-APIs or rate limiting.**
+### Find financial assets and get their price history without worrying about different APIs or rate limiting.
 
 tessa is a small package to help you **easily search asset identifiers** (e.g., tickers) and
 **retrieve price information** for assets in different categories such as stocks,
