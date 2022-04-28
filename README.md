@@ -26,13 +26,13 @@ time if necessary.
 ```python
 >>> from tessa import price_history, investing_search, coingecko_search
 
-# Easy: Get price information for a well-known stock:
+# Ex 1, easy – Get price information for a well-known stock:
 >>> df, currency = price_history("AAPL", "stock", "united states")
 
-# Easy: Get price information for a well-known crypto asset:
+# Ex 2, easy – Get price information for a well-known crypto asset:
 >>> df, currency = price_history(type_="crypto", query="ethereum")
 
-# Medium: Find ticker and get price information for some 
+# Ex 3, medium – Find ticker and get price information for some 
 # lesser-known stock, e.g. the original Roche:
 >>> res = investing_search("roche", "switzerland")
 stocks_by_full_name: Found 2
@@ -43,7 +43,7 @@ other_searchobj_matches: Found 5
 # -> Ticker is ROG
 df, currency = price_history("ROG", "stock", country="switzerland")
 
-# Medium: Find Coingecko id and get price information for a
+# Ex 4, medium – Find Coingecko id and get price information for a
 # more obscure token:
 >>> res = coingecko_search("jenny")
 other_symbol: Found 1
@@ -52,18 +52,18 @@ other_name: Found 2
 # ...
 >>> df, currency = price_history("jenny-metaverse-dao-token", "crypto")
 
-# Medium: Find an ETF:
+# Ex 5, medium – Find an ETF:
 >>> res = investing_search("carbon")
 # ...
 >>> res["etfs_by_full_name"]
 # ...
 >>> df, currency = price_history("VanEck Vectors Low Carbon Energy", "etf", "united states")
 
-# Medium: Search in a selection of countries and products:
+# Ex 6, medium – Search in a selection of countries and products:
 >>> res = investing_search("renewable", countries=["united states", "canada", "mexico"], products=["etfs", "funds", "indices"])
 # ...
 
-# Advanced: Find a stock that is not (yet?) exposed on investpy:
+# Ex 7, advanced – Find a stock that is not (yet?) exposed on investpy:
 >>> price_history("PINS", "stock", "united states")
 # Produces an error
 >>> res = investing_search("pinterest")
