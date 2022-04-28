@@ -38,5 +38,5 @@ def coingecko_search(query: str, silent: bool = False) -> dict:
             if matches:
                 res[categoryname] = matches
                 if not silent:
-                    print(f"'{categoryname}' matches: {len(matches)}")
+                    print(f"{categoryname}: Found {len(matches)}")
     return res
