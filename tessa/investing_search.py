@@ -1,7 +1,9 @@
 """Everything related to searching via `investpy`."""
 
+import functools
 from typing import Optional, Union
 import investpy
+from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
 
 
@@ -32,6 +34,8 @@ def investing_search(
     ) | search_for_searchobjs(query, countries, products, silent)
 
 
+@freezeargs
+@functools.cache
 def search_name_or_symbol(
     query: str,
     countries: Optional[Union[list, str]] = None,
@@ -101,6 +105,8 @@ def search_name_or_symbol(
     return res
 
 
+@freezeargs
+@functools.cache
 def search_for_searchobjs(
     query: str,
     countries: Optional[Union[list, str]] = None,
