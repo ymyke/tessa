@@ -1,12 +1,15 @@
 
-# tessa – a package for asset identity & information access
+# tessa
 
-tessa is a small package to help you easily search asset identifiers (e.g., tickers) and
-retrieve (currently price) information for assets in different categories such stocks,
+**Find financial assets and get their price history without worrying about different
+APIs or rate limiting.**
+
+tessa is a small package to help you **easily search asset identifiers** (e.g., tickers) and
+**retrieve price information** for assets in different categories such as stocks,
 crypto, etfs, etc.
 
-tessa builds on investpy and pycoingecko and offers a simplified and somewhat unified
-interface. This applies especially to investpy, which for some reason has different ways
+tessa builds on investpy and pycoingecko and offers **a simplified and somewhat unified
+interface**. This applies especially to investpy, which for some reason has different ways
 of finding assets and accessing the respective data.
 
 Why these two packages? [investpy](https://github.com/alvarobartt/investpy) offers
@@ -15,8 +18,8 @@ However, investing.com lacks on the crypto side, so crypto data is retrieved usi
 [pycoingecko](https://github.com/man-c/pycoingecko) from
 [Coingecko](https://www.coingecko.com/)'s API.
 
-Furthermore, tessa makes sure to be nice to the sites being accessed and tries to
-prevent users from being blocked by 429 rate limiting errors by 1) caching results upon
+Importantly, tessa makes sure to be nice to the sites being accessed and tries to
+**prevent users from being blocked by 429 rate limiting errors** by 1) caching results upon
 retrieval and 2) keeping track of request timestamps and waiting appropriate amounts of
 time if necessary.
 
