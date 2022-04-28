@@ -44,15 +44,10 @@ def test_price_history_investpy_stock_including_caching_and_ratelimiting():
 
 def test_price_history_investpy_searchobj():
     df, crncy = price_history(
-        {
-            "id_": 995876,
-            "name": "UBS MSCI Emerging Markets UCITS",
-            "symbol": "EMMUSA",
-            "country": "switzerland",
-            "tag": "/etfs/ubs-etf-msci-emerging-markets-a?cid=995876",
-            "pair_type": "etfs",
-            "exchange": "Switzerland",
-        },
+        "{'id_': 995876, 'name': 'UBS MSCI Emerging Markets UCITS', "
+        "'symbol': 'EMMUSA', 'country': 'switzerland', "
+        "'tag': '/etfs/ubs-etf-msci-emerging-markets-a?cid=995876', "
+        "'pair_type': 'etfs', 'exchange': 'Switzerland'}",
         "searchobj",
     )
     assert crncy == "USD"

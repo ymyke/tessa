@@ -1,5 +1,6 @@
 """Everything investing-related (other than search)."""
 
+import ast
 from typing import Tuple
 import pandas as pd
 import investpy
@@ -47,7 +48,7 @@ def get_price_history(query: str, type_: str, country: str) -> Tuple[pd.DataFram
 
 def get_price_history_from_searchobj(objstring: str) -> Tuple[pd.DataFrame, str]:
     """Get price history for a given `SearchObj` (in string representation)."""
-    searchobj = SearchObj(**objstring)
+    searchobj = SearchObj(**ast.literal_eval(objstring))
     return (
         dataframify_investpy_df(
             searchobj.retrieve_historical_data(
