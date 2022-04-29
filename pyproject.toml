@@ -1,8 +1,13 @@
 [tool.poetry]
 name = "tessa"
 version = "0.1.0"
-description = ""
+description = "Find financial assets and get their price history without worrying about different APIs or rate limiting."
 authors = ["ymyke"]
+license = "MIT"
+repository = "https://github.com/ymyke/tessa"
+homepage = "https://github.com/ymyke/tessa"
+readme = "README.md"
+keywords = ["python", "finance", "investing", "financial-analysis", "investment-analysis", "financial-data", "coingecko", "investing-com", "investpy", "pycoingecko"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
