@@ -63,3 +63,53 @@ def price_history(
     return (df.copy(), effective_currency)
     # (Returning a copy of the dataframe so the cached original is preserved even if it
     # gets modified by the caller.)
+
+
+def price_point(
+    query: str,
+    type_: str,
+    when: str,
+    country: str = None,
+    currency_preference: str = "usd",
+) -> Tuple[float, pd.Timestamp, str]:
+    """Return the price at a given point in time given by `when`. Look for the closest
+    point in time if the exact point in time is not found.
+
+    Arguments other than `when` are the same as with `price_history`.
+
+    Returns a tuple of the price, the effective timestamp of the price, and the
+    currency.
+
+    Example call:
+    ```
+    price_point("AAPL", "stock", "2020-01-01", "united states")
+    ```
+    """
+    df, currency = price_history(query, type_, country, currency_preference)
+    price = df.iloc[df.index.get_indexer([when], method="nearest")[0]]
+    return (float(price), price.name, currency)
+
+
+def price_point_strict(
+    query: str,
+    type_: str,
+    when: str,
+    country: str = None,
+    currency_preference: str = "usd",
+) -> Tuple[float, str]:
+    """Same as `price_point` but will return either the price at the exact point in time
+    or raise a KeyError.
+    """
+    df, currency = price_history(query, type_, country, currency_preference)
+    return (df.loc[when]["close"], currency)
+
+
+def price_latest(
+    query: str,
+    type_: str,
+    country: str = None,
+    currency_preference: str = "usd",
+) -> Tuple[float, pd.Timestamp, str]:
+    """Same as `price_point` but will return the latest price."""
+    df, currency = price_history(query, type_, country, currency_preference)
+    return (float(df.iloc[-1]["close"]), df.iloc[-1].name, currency)
