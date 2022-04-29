@@ -91,7 +91,7 @@ df, currency = price_history("ROG", "stock", country="switzerland")
 
 # How to install
 
-FIXME
+pip install tessa
 
 
 # Prerequisites
