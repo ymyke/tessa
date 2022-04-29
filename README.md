@@ -35,7 +35,7 @@ time if necessary.
 # Usage examples
 
 ```python
->>> from tessa import price_history, search, price_point, price_nearest
+>>> from tessa import price_history, search, price_point, price_latest
 
 # Ex 1, easy – Get straightforward price information:
 >>> df, currency = price_history("AAPL", "stock", "united states")
