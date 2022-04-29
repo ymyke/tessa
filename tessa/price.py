@@ -1,4 +1,4 @@
-"""Generic module that provides central access to the underlying individual APIs."""
+"""Price information."""
 
 import functools
 from typing import Tuple
