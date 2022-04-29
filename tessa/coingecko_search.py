@@ -12,15 +12,15 @@ def get_symbol_map() -> dict:
     return CoinGeckoAPI().get_coins_list()
 
 
-def coingecko_search(query: str, silent: bool = False) -> dict:
+def coingecko_search(query: str) -> dict:
     """Help find coingecko ids.
 
     Args:
 
     - query: The query to search for.
-    - silent: No print output if True.
 
     Example call:
+    
     ```
     from tessa import coingecko_search
     r = coingecko_search("jenny")
@@ -30,13 +30,10 @@ def coingecko_search(query: str, silent: bool = False) -> dict:
     res = {}
     for category in ("symbol", "name"):
         for prefix, find_in in (
-            ("perfect", lambda x: query.lower() == x.lower()),
-            ("other", lambda x: query.lower() in x.lower()),
+            ("coingecko_perfect", lambda x: query.lower() == x.lower()),
+            ("coingecko_other", lambda x: query.lower() in x.lower()),
         ):
-            categoryname = f"{prefix}_{category}"
             matches = [x for x in get_symbol_map() if find_in(x[category])]
             if matches:
-                res[categoryname] = matches
-                if not silent:
-                    print(f"{categoryname}: Found {len(matches)}")
+                res[f"{prefix}_{category}"] = matches
     return res

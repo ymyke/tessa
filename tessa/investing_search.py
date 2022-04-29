@@ -11,7 +11,6 @@ def investing_search(
     query: str,
     countries: Optional[Union[list, str]] = None,
     products: Optional[Union[list, str]] = None,
-    silent: bool = False,
 ) -> dict:
     """Find asset on investpy. This is the most generic function that simply combines
     the results of the 2 specific functions below.
@@ -23,15 +22,16 @@ def investing_search(
     `search_for_searchobjs` below for more info.
 
     Example calls:
+
     ```
     from tessa import investing_search
     r1 = investing_search("AAPL")
     r2 = investing_search("AAPL", countries=["united states", "canada"], products="stocks")
     ```
     """
-    return search_name_or_symbol(
-        query, countries, products, silent
-    ) | search_for_searchobjs(query, countries, products, silent)
+    return search_name_or_symbol(query, countries, products) | search_for_searchobjs(
+        query, countries, products
+    )
 
 
 @freezeargs
@@ -40,7 +40,6 @@ def search_name_or_symbol(
     query: str,
     countries: Optional[Union[list, str]] = None,
     products: Optional[Union[list, str]] = None,
-    silent: bool = False,
 ) -> dict:
     """Run query through all of the search functions and all the search_by options of
     `investpy` and return the results as a dict of product-search_by combinations. Also
@@ -51,12 +50,12 @@ def search_name_or_symbol(
     - query: The query to search for.
     - countries: A list of countries to search in.
     - products: Any of `valid_products`.
-    - silent: No print output if True.
 
     Both `countries` and `products` can be a list or a string. They can also be `None`,
     in which case all products or countries are searched.
 
     Example calls:
+
     ```
     from tessa.investing_search import search_name_or_symbol
     r1 = search_name_or_symbol("carbon")
@@ -98,10 +97,7 @@ def search_name_or_symbol(
             if countries is not None:
                 df = df[df.country.isin(countries)]
             if df.shape[0] > 0:
-                key = f"{product}_by_{by}"
-                res[key] = df
-                if not silent:
-                    print(f"{key}: Found {df.shape[0]}")
+                res[f"investing_{product}_by_{by}"] = df
     return res
 
 
@@ -111,7 +107,6 @@ def search_for_searchobjs(
     query: str,
     countries: Optional[Union[list, str]] = None,
     products: Optional[Union[list, str]] = None,
-    silent: bool = False,
 ) -> dict:
     """Run query through `investpy.search_quotes`, which returns `SearchObj` objects and
     return the objects found as lists triaged into perfect and other matches. Also print
@@ -124,12 +119,12 @@ def search_for_searchobjs(
     - query: The query to search for.
     - countries: A list of countries to search in.
     - products: Any of `valid_products`.
-    - silent: No print output if True.
 
     Both `countries` and `products` can be a list or a string. They can also be `None`,
     in which case all products or countries are searched.
 
     Example calls:
+
     ```
     from tessa.investing_search import search_for_searchobjs
     r1 = search_for_searchobjs("soft")
@@ -181,12 +176,10 @@ def search_for_searchobjs(
     other_matches = set(search_res) - set(perfect_matches)
     res = {}
     for name, category in zip(
-        ["perfect_searchobj_matches", "other_searchobj_matches"],
+        ["investing_searchobj_perfect", "investing_searchobj_other"],
         [perfect_matches, other_matches],
     ):
         if category:
             res[name] = [x.__str__() for x in category]
-            if not silent:
-                print(f"{name}: Found {len(category)}")
 
     return res

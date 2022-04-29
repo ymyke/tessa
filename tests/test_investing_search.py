@@ -18,8 +18,8 @@ from tessa.investing_search import (
 def test_investing_search():
     """It returns the correct combined result."""
     res = investing_search("AAPL", countries="united states", products="stocks")
-    assert res["stocks_by_symbol"].shape[0] == 1
-    assert len(res["perfect_searchobj_matches"]) == 1
+    assert res["investing_stocks_by_symbol"].shape[0] == 1
+    assert len(res["investing_searchobj_perfect"]) == 1
 
 
 # ----- search_name_or_symbol related -----
@@ -34,10 +34,13 @@ def test_searchnamesymbol():
     """It returns a dictionary with dataframes and the filtering works correctly."""
     fullres = search_name_or_symbol("carbon")
     assert fullres != {}
-    assert isinstance(fullres["stocks_by_full_name"], pd.DataFrame)
+    assert isinstance(fullres["investing_stocks_by_full_name"], pd.DataFrame)
     r1 = search_name_or_symbol("carbon", countries=["united states", "switzerland"])
     assert r1 != {}
-    assert fullres["stocks_by_full_name"].shape[0] > r1["stocks_by_full_name"].shape[0]
+    assert (
+        fullres["investing_stocks_by_full_name"].shape[0]
+        > r1["investing_stocks_by_full_name"].shape[0]
+    )
     r2 = search_name_or_symbol(
         "carbon", countries=["united states", "switzerland"], products=["etfs"]
     )
@@ -61,7 +64,7 @@ def test_searchobjs_non_existent_country():
 def test_searchobjs():
     """It returns a category with a list of search objects."""
     assert search_for_searchobjs("one", "switzerland") == {
-        "perfect_searchobj_matches": [
+        "investing_searchobj_perfect": [
             '{"id_": 949673, "name": "ONE swiss bank SA", "symbol": "ONE", '
             '"country": "switzerland", "tag": "/equities/banque-profil-de-gestion-sa", '
             '"pair_type": "stocks", "exchange": "Switzerland"}'
