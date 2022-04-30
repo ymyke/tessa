@@ -14,7 +14,7 @@ guards = {}
 original_guards = {
     # `reset_guards` will add `last_call` to each guard.
     "investing": {
-        "wait_seconds": 2,
+        "wait_seconds": 2,  # Wait a bit longer b/c investing.com is a bit pickier.
     },
     "crypto": {
         "wait_seconds": 1,
