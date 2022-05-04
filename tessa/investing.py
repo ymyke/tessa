@@ -8,7 +8,10 @@ from investpy.utils.search_obj import SearchObj
 import pendulum
 
 VALID_TYPES = ["stock", "etf", "fund", "crypto", "bond", "index", "certificate"]
-MIN_FROM_DATE = "01/01/1900"
+MIN_FROM_DATE = "01/01/2010"
+# Adjust this date if you need to get historical data further in the past. Note that
+# extending this date will lead to increased numbers of requests on investing.com's
+# servers bc investpy splits requests into sub-requests covering 19 years.
 
 
 def get_currency_from_dataframe(df: pd.DataFrame) -> str:
