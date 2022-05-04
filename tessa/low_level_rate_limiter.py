@@ -14,7 +14,6 @@ Usage: Import the module and call `setup_guards()`.
 
 # pylint: disable=eval-used,exec-used,unused-import
 
-import atexit
 import time
 import requests
 import pendulum
