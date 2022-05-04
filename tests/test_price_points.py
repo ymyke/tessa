@@ -1,7 +1,4 @@
-"""All tests related to `price_point_*` and `price_latest`.
-
-These tests _do not_ hit the network.
-"""
+"""All tests related to `price_point_*` and `price_latest`."""
 
 import pytest
 import pandas as pd
@@ -9,6 +6,8 @@ from tessa import price_point, price_point_strict, price_latest
 
 
 # pylint: disable=unused-argument,missing-function-docstring,redefined-outer-name
+
+# ----- Tests that don't hit the net -----
 
 
 @pytest.fixture()
@@ -49,4 +48,23 @@ def test_price_latest(mock_price_history):
         3.0,
         pd.Timestamp("2018-01-12", tz="utc"),
         "usd",
+    )
+
+
+# ----- Tests that do hit the net -----
+
+
+def test_concrete_investing_price_point():
+    assert price_point("AAPL", "stock", "2018-01-11", "united states") == (
+        43.82,
+        pd.Timestamp("2018-01-11", tz="utc"),
+        "USD",
+    )
+
+
+def test_concrete_crypto_price_point():
+    assert price_point("bitcoin", "crypto", "2018-01-11") == (
+        14050.5696063543,
+        pd.Timestamp("2018-01-11", tz="utc"),
+        "USD",
     )
