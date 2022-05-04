@@ -60,7 +60,7 @@ def price_history(
     else:
         raise ValueError(f"Unsupported asset type {type_}.")
 
-    return (df.copy(), effective_currency)
+    return (df.copy(), effective_currency.upper())
     # (Returning a copy of the dataframe so the cached original is preserved even if it
     # gets modified by the caller.)
 

@@ -59,7 +59,7 @@ def test_price_history_investpy_searchobj():
 
 def test_price_history_crypto():
     df, crncy = price_history("ethereum", "crypto", currency_preference="chf")
-    assert crncy == "chf"
+    assert crncy == "CHF"
     assert df.index[0] == pd.Timestamp("2015-08-07", tz="UTC")
     assert df.shape[0] > 1000
     assert df.shape[1] == 1
