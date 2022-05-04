@@ -5,7 +5,7 @@ from pycoingecko import CoinGeckoAPI
 
 
 @functools.cache
-def get_symbol_map() -> dict:
+def get_symbol_map() -> list:
     """Get the symbol map. Separate function to use caching, so the API doesn't get
     hit too often.
     """
