@@ -20,8 +20,8 @@ def test_price_history_investpy_stock_including_caching_and_ratelimiting():
     # Retrieve stock and make sure the result is correct:
     df, crncy = price_history("AAPL", "stock", country="united states")
     assert crncy == "USD"
-    assert df.index[0] == pd.Timestamp("1980-12-12", tz="UTC")
-    assert df.shape[0] > 10000
+    assert df.index[0] == pd.Timestamp("2010-01-04", tz="UTC")
+    assert df.shape[0] > 3000
     assert df.shape[1] == 1
     assert isinstance(df.index.dtype, DatetimeTZDtype)
     assert df.dtypes.to_string() == "close    float64"
