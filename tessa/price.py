@@ -58,7 +58,10 @@ def price_history(
     elif type_ == "searchobj":
         df, effective_currency = investing.get_price_history_from_searchobj(query)
     else:
-        raise ValueError(f"Unsupported asset type {type_}.")
+        raise ValueError(
+            f"Unsupported asset type '{type_}'; these are the supported types: "
+            f"{', '.join(investing.VALID_TYPES)}."
+        )
 
     return (df.copy(), effective_currency.upper())
     # (Returning a copy of the dataframe so the cached original is preserved even if it
