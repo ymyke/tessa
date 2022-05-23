@@ -16,6 +16,7 @@ VALID_TYPES = [
     "index",
     "certificate",
     "commodity",
+    "currency_cross",
 ]
 MIN_FROM_DATE = "01/01/2010"
 # Adjust this date if you need to get historical data further in the past. Note that
@@ -51,6 +52,8 @@ def get_price_history(query: str, type_: str, country: str) -> Tuple[pd.DataFram
         "country": country,
         type_: query,
     }
+    if country is None:  # No country in case of bond and currency_cross
+        del args["country"]
     prices = getattr(investpy, "get_" + type_ + "_historical_data")(**args)
     return (
         dataframify_investpy_df(prices),

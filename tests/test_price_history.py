@@ -41,6 +41,17 @@ def test_price_history_investpy_stock_including_caching_and_ratelimiting():
     assert price_history.cache_info().hits == 1
 
 
+def test_price_history_investpy_currency_cross():
+    """Price retrieval works w/o a country for types such as currency_cross."""
+    # Should work:
+    assert isinstance(
+        price_history(query="usd/chf", type_="currency_cross")[0], pd.DataFrame
+    )
+    # Should fail:
+    with pytest.raises(TypeError):
+        price_history(query="usd/chf", type_="currency_cross", country="switzerland")
+
+
 def test_price_history_investpy_searchobj():
     df, crncy = price_history(
         "{'id_': 995876, 'name': 'UBS MSCI Emerging Markets UCITS', "

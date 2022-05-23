@@ -22,7 +22,7 @@ def price_history(
       "bitcoin" for "crypto", "AAPL" for a "stock", or a `investpy.utils.search_obj`
       object's string representation for "searchobj".
     - type_: Any of ["crypto", "stock", "etf", "fund", "crypto", "bond", "index",
-      "certificate", "searchobj"].
+      "certificate", "currency_cross", "searchobj"].
 
     Optional/situational args:
 
