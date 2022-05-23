@@ -26,7 +26,10 @@ MIN_FROM_DATE = "01/01/2010"
 
 def get_currency_from_dataframe(df: pd.DataFrame) -> str:
     """Get currency from investpy dataframe."""
-    currencies = list(df["Currency"].unique())
+    try:
+        currencies = list(df["Currency"].unique())
+    except KeyError:
+        return "UNKNOWN"
     if len(currencies) > 1:
         raise ValueError(f"Expected only one currency, got {currencies}.")
     return currencies[0]
