@@ -10,7 +10,7 @@ from .rate_limiter import rate_limit
 
 
 @freezeargs
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def price_history(
     query: str, type_: str, country: str = None, currency_preference: str = "usd"
 ) -> Tuple[pd.DataFrame, str]:

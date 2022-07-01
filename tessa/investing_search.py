@@ -29,13 +29,14 @@ def investing_search(
     r2 = investing_search("AAPL", countries=["united states", "canada"], products="stocks")
     ```
     """
-    return search_name_or_symbol(query, countries, products) | search_for_searchobjs(
-        query, countries, products
-    )
+    return {
+        **search_name_or_symbol(query, countries, products),
+        **search_for_searchobjs(query, countries, products),
+    }
 
 
 @freezeargs
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def search_name_or_symbol(
     query: str,
     countries: Optional[Union[list, str]] = None,
@@ -102,7 +103,7 @@ def search_name_or_symbol(
 
 
 @freezeargs
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def search_for_searchobjs(
     query: str,
     countries: Optional[Union[list, str]] = None,
