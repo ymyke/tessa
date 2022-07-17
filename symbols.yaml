@@ -1,0 +1,41 @@
+SPICHA:
+    type: etf
+    country: switzerland
+    query: UBS SPI CHF A-dis
+MSFT:
+PINS:
+    type: stock
+    country: united states
+    query:
+        {
+            "id_": 1127189,
+            "name": "Pinterest Inc",
+            "symbol": "PINS",
+            "country": "united states",
+            "tag": "/equities/pinterest-inc",
+            "pair_type": "stocks",
+            "exchange": "NYSE",
+        }
+CHINAFUND:
+    type: fund
+    aliases:
+        [
+            UECOPMD:LX,
+            Ubs-ChinaOppoPU,
+            CHINAOPPOPU,
+            Ubs-LuxEquiFuAU,
+            Ubs-LuxEquiFuAT,
+        ]
+    query:
+        {
+            "id_": 1160209,
+            "name": "Ubs (lux) Equity Fund - China Opportunity (usd) P-mdist",
+            "symbol": "0P000159H2",
+            "country": "luxembourg",
+            "tag": "/funds/lu1152091168",
+            "pair_type": "funds",
+            "exchange": "Luxembourg",
+        }
+ETH:
+    type: crypto
+    query: ethereum
