@@ -15,6 +15,7 @@ investpy = ">=1"
 frozendict = ">=2.3"
 pycoingecko = ">=2.2"
 pendulum = ">=2.1"
+# The following dependencies are symbols-specific:
 seaborn = ">=0.11"
 matplotlib = ">=3.5"
 PyYAML = ">=6"
