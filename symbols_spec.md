@@ -1,13 +1,5 @@
 # Symbols.yaml specification
 
-## QQ (FIXME)
-
-- Should these objects be able to retrieve their own price info? I.e., should parts of
-  the Asset hierarchy be included in the objects?
-- Where should the yaml file reside? Especially if it is used by other packages as well?
-- Should the `watch` attribute get some built-in functionality as well?
-
-
 ## Keys and attributes
 
 Explained with an example:
