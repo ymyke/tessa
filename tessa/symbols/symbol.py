@@ -44,11 +44,22 @@ class Symbol:
         if "query" not in data:
             self.query = name
 
-        # FIXME Not sure that I like that the initiator causes the price history to be
-        # loaded automatically. In fignal it's useful that the Tickerconfig can be
-        # loaded w/ hitting the net.
-        self.today, self.todayprice, self.currency = self.latest_price()
-        self.currency = self.currency and self.currency.upper()
+        # Note that the initializer does not hit the network -- it will only be hit when
+        # accessing the price functions or related functions such as currency or today.
+
+    def today(self) -> pd.Timestamp:
+        """Return the latest date for which there is price information for this
+        symbol."""
+        return self.latest_price()[0]
+
+    def today_price(self) -> float:
+        """Return the latest close price."""
+        return self.latest_price()[1]
+
+    def currency(self) -> str:
+        """Return currency for this symbol."""
+        currency = self.latest_price()[2]
+        return currency and currency.upper()
 
     def p(self):
         """Convenience method to print the symbol."""
