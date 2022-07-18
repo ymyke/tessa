@@ -16,6 +16,9 @@ pd.plotting.register_matplotlib_converters()
 class Symbol:
     """Symbol class. Encapsulates all the relevant information around a financial symbol
     and some functionality to get price information, display graphs, etc.
+
+    Note that the price-related functions rely on caching happening on lower levels to
+    be efficient; this is fulfilled thanks to the way tessa's caching works.
     """
 
     # pylint: disable=no-member
@@ -73,8 +76,7 @@ class Symbol:
 
     def latest_price(self) -> Tuple[pd.Timestamp, float, str]:
         """Return the latest close price. Returns a tuple of timestamp, price and
-        currency. Note that this relies on caching happening on lower levels to be
-        efficient.
+        currency. 
         """
         df, currency = self.price_history()
         return (df.iloc[-1].name, float(df.iloc[-1]["close"]), currency)
