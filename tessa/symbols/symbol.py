@@ -47,6 +47,16 @@ class Symbol:
         # Note that the initializer does not hit the network -- it will only be hit when
         # accessing the price functions or related functions such as currency or today.
 
+    def __str__(self) -> str:
+        txt = f"Symbol {self.name} of type {self.type}"
+        if getattr(self, "country", None):
+            txt += f" ({self.country})"
+        return txt
+
+    def p(self):
+        """Convenience method to print the symbol."""
+        print(str(self))
+
     def today(self) -> pd.Timestamp:
         """Return the latest date for which there is price information for this
         symbol."""
@@ -60,10 +70,6 @@ class Symbol:
         """Return currency for this symbol."""
         currency = self.latest_price()[2]
         return currency and currency.upper()
-
-    def p(self):
-        """Convenience method to print the symbol."""
-        print(str(self))
 
     def latest_price(self) -> Tuple[pd.Timestamp, float, str]:
         """Return the latest close price. Returns a tuple of timestamp, price and
