@@ -77,11 +77,6 @@ class Symbol:
             args["country"] = self.country
         return price_history(**args)
 
-    def get_strategy(self) -> str:
-        """Return strategy for this symbol. To be overridden in derived classes."""
-        # FIXME Fix. // Make this generic or leave to subclass?
-        return "NoStrategy"
-
     def lookup_price(self, date: Union[str, pd.Timestamp]):
         """Look up price at given date."""
         return self.price_history()[0].loc[date]
@@ -112,6 +107,11 @@ class Symbol:
         print(f"Drop since max: {(self.todayprice - maxprice) / maxprice:2.0%}")
 
         return from_date, fig, ax
+
+    def get_strategy(self) -> str:
+        """Return strategy for this symbol. To be overridden in derived classes."""
+        # FIXME Fix. // Make this generic or leave to subclass?
+        return "NoStrategy"
 
     # FIXME Should the class methods rather be implemented as a separate class such as
     # SymbolCollection?
