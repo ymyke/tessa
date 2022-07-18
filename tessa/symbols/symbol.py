@@ -76,7 +76,7 @@ class Symbol:
 
     def latest_price(self) -> Tuple[pd.Timestamp, float, str]:
         """Return the latest close price. Returns a tuple of timestamp, price and
-        currency. 
+        currency.
         """
         df, currency = self.price_history()
         return (df.iloc[-1].name, float(df.iloc[-1]["close"]), currency)
