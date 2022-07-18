@@ -18,10 +18,16 @@ class Symbol:
     and some functionality to get price information, display graphs, etc.
     """
 
+    # pylint: disable=no-member
+
     # This attributes will be set if the attribute is not set at all:
     defaults = {
         "type": "stock",  # FIXME Introduce DEFAULT_TYPE
         "country": "united states",  # FIXME Introduce DEFAULT_COUNTRY
+        # FIXME Code ends up adding country to types where it doesn't make sense. This
+        # isn't a problem from from a code perspective, because the country attribute is
+        # not used in those cases. But it's not very nice when a user looks at a
+        # Symbol's attributes.
         "watch": False,
         "delisted": False,
         "strategy": "NoStrategy",
@@ -60,16 +66,16 @@ class Symbol:
         """Return a tuple of the full price history as a DataFrame of dates and close
         prices and the currency.
         """
-        qq = {}
+        args = {}
         if isinstance(self.query, dict):  # searchobj case
-            qq["query"] = str(self.query)
-            qq["type_"] = "searchobj"
+            args["query"] = str(self.query)
+            args["type_"] = "searchobj"
         else:
-            qq["query"] = self.query
-            qq["type_"] = self.type
+            args["query"] = self.query
+            args["type_"] = self.type
         if "country" in self.__dict__:
-            qq["country"] = self.country
-        return price_history(**qq)
+            args["country"] = self.country
+        return price_history(**args)
 
     def get_strategy(self) -> str:
         """Return strategy for this symbol. To be overridden in derived classes."""
