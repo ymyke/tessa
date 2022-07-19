@@ -9,8 +9,6 @@ from .. import price_history
 
 pd.plotting.register_matplotlib_converters()
 
-# FIXME Add more relevant things from tickerconfig.
-
 
 class Symbol:
     """Symbol class. Encapsulates all the relevant information around a financial symbol
@@ -151,4 +149,3 @@ class Symbol:
     #     if getattr(self, "strategy_comments", False):
     #         res += f" · {self.strategy_comments}"
     #     return res
-
