@@ -3,7 +3,6 @@
 import datetime
 from typing import Tuple, Union
 import pandas as pd
-import yaml
 import matplotlib.pyplot as plt
 import seaborn as sns
 from .. import price_history
