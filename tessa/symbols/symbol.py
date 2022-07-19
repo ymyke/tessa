@@ -98,7 +98,7 @@ class Symbol:
 
     def lookup_price(self, date: Union[str, pd.Timestamp]):
         """Look up price at given date."""
-        return self.price_history()[0].loc[date]
+        return float(self.price_history()[0].loc[date])
 
     def pricegraph(self, monthsback=6):
         """Display this symbol's price graph over the last monthsback months.
