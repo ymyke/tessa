@@ -136,7 +136,19 @@ class Symbol:
             or what in [x.split(".")[0] for x in getattr(self, "aliases", [])]
         )
 
-    def get_strategy(self) -> str:
-        """Return strategy for this symbol. To be overridden in derived classes."""
-        # FIXME Fix. // Make this generic or leave to subclass?
-        return "NoStrategy"
+    # FIXME Fix. / Make this generic or leave to subclass? / Either of the following:
+    #
+    # def get_strategy(self) -> str:
+    #     """Return strategy for this symbol. To be overridden in derived classes."""
+    #     return "NoStrategy"
+    #
+    # def get_strategy_string(self) -> str:
+    #     """Return a nice string with the strategy including comments."""
+    #     if isinstance(self.strategy, list):
+    #         res = ", ".join(self.strategy)
+    #     else:
+    #         res = self.strategy
+    #     if getattr(self, "strategy_comments", False):
+    #         res += f" · {self.strategy_comments}"
+    #     return res
+
