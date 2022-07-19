@@ -21,13 +21,13 @@ C:
     )
     sc = SymbolCollection(file)
     assert sc.find_one("A")
-    assert sc.find_one("B")
-    assert sc.find_one("BB")
-    assert sc.find_one("BBB")
     b = sc.find_one("B")
+    assert b
     assert b.type == "etf"
     assert b.country == "switzerland"
     assert b.query == "p"
+    assert sc.find_one("BB")
+    assert sc.find_one("BBB")
     assert sc.find_one("C")
     assert sc.find_one("D") is None
     assert len(sc.symbols) == 3
