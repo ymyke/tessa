@@ -127,17 +127,17 @@ class Symbol:
 
         return from_date, fig, ax
 
+    def matches(self, what: str) -> bool:
+        """Check if `what` matches this symbol's name or aliases. Also tries to match
+        SPICHA if SPICHA.SW is in the aliases.
+        """
+        return (
+            what in self.name
+            or what in getattr(self, "aliases", [])
+            or what in [x.split(".")[0] for x in getattr(self, "aliases", [])]
+        )
+
     def get_strategy(self) -> str:
         """Return strategy for this symbol. To be overridden in derived classes."""
         # FIXME Fix. // Make this generic or leave to subclass?
         return "NoStrategy"
-
-    # FIXME Should the class methods rather be implemented as a separate class such as
-    # SymbolCollection?
-
-    @classmethod
-    def load_yaml(cls, yaml_file: str):
-        """Load symbols from a YAML file."""
-        with open(yaml_file, "r", encoding="utf-8") as stream:
-            ymldict = yaml.safe_load(stream)
-        return [Symbol(k, v or {}) for k, v in ymldict.items()]
