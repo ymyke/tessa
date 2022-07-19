@@ -8,8 +8,6 @@ from tessa.symbols import Symbol
 
 # FIXME Also check the tests in fignal around tickerconfig and Asset
 
-# FIXME Add more tests
-
 
 def test_initiator():
     s = Symbol("AAPL", {"type": "stock", "country": "united states", "query": "qq"})
