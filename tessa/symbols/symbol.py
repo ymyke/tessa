@@ -56,7 +56,7 @@ class Symbol:
             txt += f" ({self.country})"
         return txt
 
-    def p(self):
+    def p(self) -> None:
         """Convenience method to print the symbol."""
         print(str(self))
 
@@ -96,11 +96,11 @@ class Symbol:
             args["country"] = self.country
         return price_history(**args)
 
-    def lookup_price(self, date: Union[str, pd.Timestamp]):
+    def lookup_price(self, date: Union[str, pd.Timestamp]) -> float:
         """Look up price at given date."""
         return float(self.price_history()[0].loc[date])
 
-    def pricegraph(self, monthsback=6):
+    def pricegraph(self, monthsback: int = 6) -> None:
         """Display this symbol's price graph over the last monthsback months.
 
         Returns from_date, fig, and ax in order for subclass functions to add to the
