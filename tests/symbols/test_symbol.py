@@ -1,6 +1,6 @@
 """Symbol-related tests."""
 
-from tessa.symbols.symbol import Symbol  # FIXME Better import?
+from tessa.symbols import Symbol
 
 # pylint: disable=no-member,missing-function-docstring
 
