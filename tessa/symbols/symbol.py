@@ -1,7 +1,7 @@
 """Symbol class."""
 
-import datetime
 from typing import Tuple, Union
+import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
