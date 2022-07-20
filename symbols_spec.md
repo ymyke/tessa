@@ -14,13 +14,14 @@ SPICHA: # The entry's key; your name for this symbol
 
 - Note that price information is retrieved using the tessa package. So the attributes
   `query`, `type`, and `country` are used to build queries for tessa.
-- The `aliases` attribute is optional, if it is there, the `lookup` function will also
-  try and find matches in that list.
+- The `aliases` attribute is optional; the `lookup` function will also try and find
+  matches in that list.
 - If an entry has no `query` attribute, it will be set to the entry's key.
-- If an entry has no `type` attribute, it will be set to `DEFAULT_TYPE` (usually
+- If an entry has no `type` attribute, it will be set to the default type (usually
   "stock").
-- If an entry's type is in `TYPES_WITH_COUNTRIES` and has no `country` attribute, it
-  will be set to `DEFAULT_COUNTRY` (usually "united states").
+- An entry's country will be set to the default country (usually "united states") if no
+  country is given (and unless a country doesn't make sense for the type of symbol or
+  query).
 
 This implies that a minimal entry can look like this:
 
