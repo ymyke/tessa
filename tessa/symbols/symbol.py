@@ -24,6 +24,7 @@ class Symbol:
     # pylint: disable=no-member
 
     # This attributes will be set if the attribute is not set at all:
+    # FIXME Should be class variable?
     defaults = {
         "type": "stock",  # FIXME Introduce DEFAULT_TYPE
         "country": "united states",  # FIXME Introduce DEFAULT_COUNTRY
