@@ -10,7 +10,6 @@ class SymbolCollection:
 
     def __init__(self, yaml_file: str):
         """Initialize with symbols loaded from `yaml_file`."""
-        self.yaml_file = yaml_file
         self.symbols = self.load_yaml(yaml_file)
 
     def __iter__(self) -> object:
