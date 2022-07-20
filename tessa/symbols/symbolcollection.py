@@ -2,7 +2,7 @@
 
 from typing import Optional
 import yaml
-from .symbol import Symbol
+from . import Symbol
 
 
 class SymbolCollection:
