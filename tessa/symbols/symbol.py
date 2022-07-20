@@ -10,6 +10,9 @@ from .. import price_history
 pd.plotting.register_matplotlib_converters()
 
 
+# FIXME Check public equity and crypto mixins
+# FIXME Check symbols_spec
+
 class Symbol:
     """Symbol class. Encapsulates all the relevant information around a financial symbol
     and some functionality to get price information, display graphs, etc.
@@ -126,13 +129,11 @@ class Symbol:
 
     def matches(self, what: str) -> bool:
         """Check if `what` matches this symbol's name or aliases. Also tries to match
-        SPICHA if SPICHA.SW is in the aliases.
+        things like SPICHA if SPICHA.SW is in the aliases.
         """
-        return (
-            what in self.name
-            or what in getattr(self, "aliases", [])
-            or what in [x.split(".")[0] for x in getattr(self, "aliases", [])]
-        )
+        candidates = [c.lower() for c in [self.name] + getattr(self, "aliases", [])]
+        candidates += [c.split(".")[0] for c in candidates]
+        return what.lower() in candidates
 
     # FIXME Fix. / Make this generic or leave to subclass? / Either of the following:
     #
