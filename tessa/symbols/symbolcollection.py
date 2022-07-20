@@ -4,8 +4,6 @@ from typing import Optional
 import yaml
 from .symbol import Symbol
 
-# FIXME Check Qortfolio and maybe add things here.
-
 
 class SymbolCollection:
     """A collection of `Symbol`s."""
