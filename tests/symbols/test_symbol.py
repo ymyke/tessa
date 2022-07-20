@@ -24,6 +24,14 @@ def test_initializer_with_defaults():
     assert s.query == "AAPL"
 
 
+def test_querytype():
+    # pylint: disable=protected-access
+    s = Symbol(name="X", type_="fund")
+    assert s._querytype == "fund"
+    s = Symbol(name="X", query={})
+    assert s._querytype == "searchobj"
+
+
 def test_initalizer_without_country():
     s = Symbol(name="X", type_="crypto")
     assert s.country is None

@@ -30,6 +30,8 @@ class Symbol:
     country: str = None
     aliases: list[str] = field(default_factory=list)
 
+    _querytype: str = field(init=False)
+
     # This attributes will be set if the attribute is not set at all:
     # FIXME Should be class variable?
     defaults = {
@@ -56,15 +58,12 @@ class Symbol:
         if self.query is None:
             self.query = self.name
         # Set defaults:
-        defaults_to_be_set = set(dir(self)) & set(self.defaults.keys())
-        if self.type_ == "crypto" or isinstance(self.query, dict):
-            # Set country only where country is needed at all:
-            # FIXME Add something like a is_searchobj check method? (Could be used in
-            # price_history too)
-            defaults_to_be_set.remove("country")
-        for attr in defaults_to_be_set:
+        for attr in set(dir(self)) & set(self.defaults.keys()):
             if getattr(self, attr, None) is None:
                 setattr(self, attr, self.defaults[attr])
+        self._querytype = "searchobj" if isinstance(self.query, dict) else self.type_
+        if self._querytype in ["crypto", "searchobj"]:  # Reset country default
+            self.country = None
 
     def __str__(self) -> str:
         txt = f"Symbol {self.name} of type {self.type_}"
@@ -101,13 +100,10 @@ class Symbol:
         """Return a tuple of the full price history as a DataFrame of dates and close
         prices and the currency.
         """
-        args = {}
-        if isinstance(self.query, dict):  # searchobj case
-            args["query"] = str(self.query)
-            args["type_"] = "searchobj"
-        else:
-            args["query"] = self.query
-            args["type_"] = self.type_
+        args = {
+            "query": str(self.query),
+            "type_": self._querytype,
+        }
         if self.country is not None:
             args["country"] = self.country
         return price_history(**args)

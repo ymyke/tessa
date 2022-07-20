@@ -33,9 +33,8 @@ MSFT:
   # country: united states
 ```
 
-- SearchObjs will be identified automatically by determining the type (dict vs str) of
-  the `query` attribute.
-- (Note that `type` will need to be changed to `type_` for tessa.)
+- Internal attribute `_querytype` is the actual type sent to tessa's price retrieval
+  functions and will be derived from `query` and `type_`.
 
 
 ## More examples
