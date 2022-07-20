@@ -12,7 +12,6 @@ pd.plotting.register_matplotlib_converters()
 
 
 # FIXME Check public equity and crypto mixins
-# FIXME Check symbols_spec
 
 
 @dataclass
