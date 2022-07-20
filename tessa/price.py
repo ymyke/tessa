@@ -8,6 +8,7 @@ from . import coingecko
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
 
+# FIXME Use type instead of type_ (note that this will break the interface!!)
 
 @freezeargs
 @functools.lru_cache(maxsize=None)
