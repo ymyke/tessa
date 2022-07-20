@@ -11,9 +11,6 @@ from .. import price_history
 pd.plotting.register_matplotlib_converters()
 
 
-# FIXME Check public equity and crypto mixins
-
-
 @dataclass
 class Symbol:
     """Symbol class. Encapsulates all the relevant information around a financial symbol
