@@ -13,6 +13,10 @@ class SymbolCollection:
         self.yaml_file = yaml_file
         self.symbols = self.load_yaml(yaml_file)
 
+    def __iter__(self) -> object:
+        """Make class iterable directly."""
+        return self.symbols.__iter__()
+
     def find_one(self, what: str) -> Optional[Symbol]:
         """Find Symbol that matches query. Raises `ValueError` if there's more than 1
         match. Returns `None` if there's no match.
