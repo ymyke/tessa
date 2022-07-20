@@ -13,7 +13,7 @@ def test_initializer(tmp_path):
 A:
 B:
     aliases: [BB, BBB]
-    type: etf
+    type_: etf
     country: switzerland
     query: p
 C:
@@ -23,7 +23,7 @@ C:
     assert sc.find_one("A")
     b = sc.find_one("B")
     assert b
-    assert b.type == "etf"
+    assert b.type_ == "etf"
     assert b.country == "switzerland"
     assert b.query == "p"
     assert sc.find_one("BB")

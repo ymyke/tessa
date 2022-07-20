@@ -4,28 +4,33 @@ import pytest
 import pandas as pd
 from tessa.symbols import Symbol
 
-# pylint: disable=no-member,missing-function-docstring
+# pylint: disable=missing-function-docstring
 
 # FIXME Also check the tests in fignal around tickerconfig and Asset
 
 
-def test_initiator():
-    s = Symbol("AAPL", {"type": "stock", "country": "united states", "query": "qq"})
-    assert s.name == "AAPL"
-    assert s.type == "stock"
-    assert s.country == "united states"
+def test_initializer():
+    s = Symbol(name="x", type_="y", country="z", query="qq")
+    assert s.name == "x"
+    assert s.type_ == "y"
+    assert s.country == "z"
     assert s.query == "qq"
 
 
-def test_initiator_with_defaults():
-    s = Symbol("AAPL", {})
-    assert s.type == "stock"
+def test_initializer_with_defaults():
+    s = Symbol(name="AAPL")
+    assert s.type_ == "stock"
     assert s.country == "united states"
     assert s.query == "AAPL"
 
 
+def test_initalizer_without_country():
+    s = Symbol(name="X", type_="crypto")
+    assert s.country is None
+
+
 def test_matches():
-    s = Symbol("X", {"aliases": ["X", "Y", "Z.DE"]})
+    s = Symbol(name="X", aliases=["X", "Y", "Z.DE"])
     assert s.matches("X")
     assert s.matches("Y")
     assert s.matches("Z.DE")
@@ -35,7 +40,7 @@ def test_matches():
 
 @pytest.mark.net
 def test_price_functions():
-    s = Symbol("MSFT", {})
+    s = Symbol(name="MSFT")
     df, crncy = s.price_history()
     assert isinstance(df, pd.DataFrame)
     assert crncy == "USD"
