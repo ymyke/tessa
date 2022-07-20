@@ -1,6 +1,7 @@
 """Symbol class."""
 
 from typing import Tuple, Union
+from dataclasses import dataclass, field
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +14,8 @@ pd.plotting.register_matplotlib_converters()
 # FIXME Check public equity and crypto mixins
 # FIXME Check symbols_spec
 
+
+@dataclass
 class Symbol:
     """Symbol class. Encapsulates all the relevant information around a financial symbol
     and some functionality to get price information, display graphs, etc.
@@ -21,12 +24,16 @@ class Symbol:
     be efficient; this is fulfilled thanks to the way tessa's caching works.
     """
 
-    # pylint: disable=no-member
+    name: str
+    type_: str = None
+    query: str = None
+    country: str = None
+    aliases: list[str] = field(default_factory=list)
 
     # This attributes will be set if the attribute is not set at all:
     # FIXME Should be class variable?
     defaults = {
-        "type": "stock",  # FIXME Introduce DEFAULT_TYPE
+        "type_": "stock",  # FIXME Introduce DEFAULT_TYPE
         "country": "united states",  # FIXME Introduce DEFAULT_COUNTRY
         # FIXME Code ends up adding country to types where it doesn't make sense. This
         # isn't a problem from from a code perspective, because the country attribute is
@@ -38,21 +45,29 @@ class Symbol:
         "jurisdiction": "US",
     }  # FIXME Remove some of these?
 
-    def __init__(self, name: str, data: dict) -> None:
-        # Set attributes to whatever we get:
-        self.__dict__.update(data)
-        # Set default values:
-        for k, v in self.defaults.items():
-            self.__dict__.setdefault(k, v)
-        self.__dict__.setdefault("name", name)
-        if "query" not in data:
-            self.query = name
+    def __post_init__(self) -> None:
+        """Set defaults for attributes that are not set.
 
-        # Note that the initializer does not hit the network -- it will only be hit when
-        # accessing the price functions or related functions such as currency or today.
+        Note that the initializer does not hit the network -- it will only be hit when
+        accessing the price functions or related functions such as `currency` or
+        `today`.
+        """
+        # Set name as the query if there is no query:
+        if self.query is None:
+            self.query = self.name
+        # Set defaults:
+        defaults_to_be_set = set(dir(self)) & set(self.defaults.keys())
+        if self.type_ == "crypto" or isinstance(self.query, dict):
+            # Set country only where country is needed at all:
+            # FIXME Add something like a is_searchobj check method? (Could be used in
+            # price_history too)
+            defaults_to_be_set.remove("country")
+        for attr in defaults_to_be_set:
+            if getattr(self, attr, None) is None:
+                setattr(self, attr, self.defaults[attr])
 
     def __str__(self) -> str:
-        txt = f"Symbol {self.name} of type {self.type}"
+        txt = f"Symbol {self.name} of type {self.type_}"
         if getattr(self, "country", None):
             txt += f" ({self.country})"
         return txt
@@ -92,8 +107,8 @@ class Symbol:
             args["type_"] = "searchobj"
         else:
             args["query"] = self.query
-            args["type_"] = self.type
-        if "country" in self.__dict__:
+            args["type_"] = self.type_
+        if self.country is not None:
             args["country"] = self.country
         return price_history(**args)
 
@@ -132,7 +147,7 @@ class Symbol:
         """Check if `what` matches this symbol's name or aliases. Also tries to match
         things like SPICHA if SPICHA.SW is in the aliases.
         """
-        candidates = [c.lower() for c in [self.name] + getattr(self, "aliases", [])]
+        candidates = [c.lower() for c in [self.name] + self.aliases]
         candidates += [c.split(".")[0] for c in candidates]
         return what.lower() in candidates
 

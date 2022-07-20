@@ -30,7 +30,7 @@ class SymbolCollection:
         """Load symbols from a YAML file."""
         with open(yaml_file, "r", encoding="utf-8") as stream:
             ymldict = yaml.safe_load(stream)
-        return [Symbol(k, v or {}) for k, v in ymldict.items()]
+        return [Symbol(k, **(v or {})) for k, v in ymldict.items()]
 
 
 # FIXME Add jurisdiction code here? (Or in some helper class or mixin?)
