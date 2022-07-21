@@ -1,10 +1,10 @@
 SPICHA:
-    type: etf
+    type_: etf
     country: switzerland
     query: UBS SPI CHF A-dis
 MSFT:
 PINS:
-    type: stock
+    type_: stock
     country: united states
     query:
         {
@@ -17,7 +17,7 @@ PINS:
             "exchange": "NYSE",
         }
 CHINAFUND:
-    type: fund
+    type_: fund
     aliases:
         [
             UECOPMD:LX,
@@ -37,5 +37,5 @@ CHINAFUND:
             "exchange": "Luxembourg",
         }
 ETH:
-    type: crypto
+    type_: crypto
     query: ethereum
