@@ -6,6 +6,7 @@ takes substantial time until it allow-lists a blocked IP address again. That is 
 we can't use a library such das Tenacity here.
 """
 
+import copy
 import time
 import pendulum
 
@@ -25,7 +26,7 @@ original_guards = {
 def reset_guards() -> None:
     """Reset the guards."""
     global guards  # pylint: disable=invalid-name,global-statement
-    guards = original_guards.copy()
+    guards = copy.deepcopy(original_guards)
     for guard in guards.values():
         guard["last_call"] = pendulum.parse("1900")
 
