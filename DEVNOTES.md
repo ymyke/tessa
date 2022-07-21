@@ -11,6 +11,7 @@ These are internal notes that won't make much sense to anybody other than me...
 
 - What about fx?
 - Put the existing code and tests into subdirectories, e.g., price and search.
+- Mark all tests that hit the net w/ @pytest.mark.net
 
 # QQ:
 
@@ -95,6 +96,11 @@ B) tessa (everything else in tessa) ⭐
   - symbols.yaml
   - state file(s) for strela
 
+B1) Installing subpackages an option?
+https://stackoverflow.com/questions/45324189/python-install-sub-package-from-package
+https://stackoverflow.com/questions/1675734/how-do-i-create-a-namespace-package-in-python
+https://dev.to/bastantoine/discovering-python-namespace-packages-4gi3
+
 C) tessa + strela ⭐⭐
 - Let's go with this for the time being in separate `add-symbols` branch.
 
@@ -113,6 +119,7 @@ Note:
 
 # Low prio stuff
 
+- Make sure we use pd.Dataframe vs Dataframe consistently.
 - Would still need a wrapper/monkeypatching function in fignal to patch in the LNKD
   pricepoint.
 - Use tessa in pypme for the investpy variants?
