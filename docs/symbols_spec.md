@@ -89,13 +89,6 @@ AAPL:
   # (not of the title representing the asset); default US, other examples: CN, several, 
   # irrelevant, EU
 
-Questions around this: FIXME
-- Keep jurisdiction; does this really make sense?
-- What about the attributes that get some default value (e.g., watch, delisted,
-  strategy)? Should there be some support here for that or is this left for possible
-  extensions? -- Some of these then also need functionality, so they need extension code
-  anyway.
-
 
 ## Misc notes
 

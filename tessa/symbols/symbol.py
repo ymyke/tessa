@@ -16,47 +16,25 @@ class Symbol:
     """Symbol class. Encapsulates all the relevant information around a financial symbol
     and some functionality to get price information, display graphs, etc.
 
-    Note that the price-related functions rely on caching happening on lower levels to
-    be efficient; this is fulfilled thanks to the way tessa's caching works.
+    Notes:
+    - Price-related functions rely on caching happening on lower levels to be efficient;
+      this is fulfilled thanks to the way tessa's caching works.
+    - The initializers don't hit the network -- it will only be hit when accessing the
+      price functions or related functions such as `currency` or `today`.
     """
 
     name: str
-    type_: str = None
+    type_: str = "stock"
     query: str = None
-    country: str = None
+    country: str = "united states"
     aliases: list[str] = field(default_factory=list)
 
     _querytype: str = field(init=False)
 
-    # This attributes will be set if the attribute is not set at all:
-    # FIXME Should be class variable?
-    defaults = {
-        "type_": "stock",  # FIXME Introduce DEFAULT_TYPE
-        "country": "united states",  # FIXME Introduce DEFAULT_COUNTRY
-        # FIXME Code ends up adding country to types where it doesn't make sense. This
-        # isn't a problem from from a code perspective, because the country attribute is
-        # not used in those cases. But it's not very nice when a user looks at a
-        # Symbol's attributes.
-        "watch": False,
-        "delisted": False,
-        "strategy": "NoStrategy",
-        "jurisdiction": "US",
-    }  # FIXME Remove some of these?
-
     def __post_init__(self) -> None:
-        """Set defaults for attributes that are not set.
-
-        Note that the initializer does not hit the network -- it will only be hit when
-        accessing the price functions or related functions such as `currency` or
-        `today`.
-        """
-        # Set name as the query if there is no query:
+        """Re(set) some attributes."""
         if self.query is None:
             self.query = self.name
-        # Set defaults:
-        for attr in set(dir(self)) & set(self.defaults.keys()):
-            if getattr(self, attr, None) is None:
-                setattr(self, attr, self.defaults[attr])
         self._querytype = "searchobj" if isinstance(self.query, dict) else self.type_
         if self._querytype in ["crypto", "searchobj"]:  # Reset country default
             self.country = None
@@ -142,19 +120,3 @@ class Symbol:
         candidates = [c.lower() for c in [self.name] + self.aliases]
         candidates += [c.split(".")[0] for c in candidates]
         return what.lower() in candidates
-
-    # FIXME Fix. / Make this generic or leave to subclass? / Either of the following:
-    #
-    # def get_strategy(self) -> str:
-    #     """Return strategy for this symbol. To be overridden in derived classes."""
-    #     return "NoStrategy"
-    #
-    # def get_strategy_string(self) -> str:
-    #     """Return a nice string with the strategy including comments."""
-    #     if isinstance(self.strategy, list):
-    #         res = ", ".join(self.strategy)
-    #     else:
-    #         res = self.strategy
-    #     if getattr(self, "strategy_comments", False):
-    #         res += f" · {self.strategy_comments}"
-    #     return res
