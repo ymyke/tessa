@@ -6,7 +6,7 @@ import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .. import price_history
+from .. import price_history, price_latest, price_point
 
 pd.plotting.register_matplotlib_converters()
 
@@ -52,39 +52,45 @@ class Symbol:
     def today(self) -> pd.Timestamp:
         """Return the latest date for which there is price information for this
         symbol."""
-        return self.latest_price()[0]
+        return self.price_latest()[1]
 
     def today_price(self) -> float:
         """Return the latest close price."""
-        return self.latest_price()[1]
+        return self.price_latest()[0]
 
     def currency(self) -> str:
         """Return currency for this symbol."""
-        currency = self.latest_price()[2]
+        currency = self.price_latest()[2]
         return currency and currency.upper()
 
-    def latest_price(self) -> Tuple[pd.Timestamp, float, str]:
-        """Return the latest close price. Returns a tuple of timestamp, price and
-        currency.
-        """
-        df, currency = self.price_history()
-        return (df.iloc[-1].name, float(df.iloc[-1]["close"]), currency)
-
-    def price_history(self) -> Tuple[pd.DataFrame, str]:
-        """Return a tuple of the full price history as a DataFrame of dates and close
-        prices and the currency.
-        """
+    def _create_price_args(self) -> dict:
+        """Create a dictionary of arguments that work with tessa's price functions."""
         args = {
             "query": str(self.query),
             "type_": self._querytype,
         }
         if self.country is not None:
             args["country"] = self.country
-        return price_history(**args)
+        return args
 
-    def lookup_price(self, date: Union[str, pd.Timestamp]) -> float:
-        """Look up price at given date."""
-        return float(self.price_history()[0].loc[date])
+    def price_latest(self) -> Tuple[float, pd.Timestamp, str]:
+        """Return the latest close price. Returns a tuple of timestamp, price and
+        currency.
+        """
+        return price_latest(**self._create_price_args())
+
+    def price_history(self) -> Tuple[pd.DataFrame, str]:
+        """Return a tuple of the full price history as a DataFrame of dates and close
+        prices and the currency.
+        """
+        return price_history(**self._create_price_args())
+
+    def price_point(
+        self, when: Union[str, pd.Timestamp]
+    ) -> Tuple[float, pd.Timestamp, str]:
+        """Look up price at given date `when`. Look for the closest point in time if the
+        exact point in time is not found."""
+        return price_point(**self._create_price_args(), when=when)
 
     def pricegraph(self, monthsback: int = 6) -> tuple:
         """Display this symbol's price graph over the last monthsback months.

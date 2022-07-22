@@ -50,9 +50,10 @@ def test_price_functions():
     df, crncy = s.price_history()
     assert isinstance(df, pd.DataFrame)
     assert crncy == "USD"
-    assert s.latest_price() == (df.iloc[-1].name, float(df.iloc[-1]["close"]), crncy)
+    assert s.price_latest() == (float(df.iloc[-1]["close"]), df.iloc[-1].name, crncy)
     assert s.today_price() == float(df.iloc[-1]["close"])
     assert s.today() == df.iloc[-1].name
     assert s.currency() == crncy
-    assert s.lookup_price("2020-01-10") == float(df.loc["2020-01-10"]["close"])
-    # FIXME What should happen in case there is no date, e.g., 2020-01-01?
+    assert s.price_point("2020-01-10")[0] == float(df.loc["2020-01-10"]["close"])
+    # Check that the method returns the nearest price if necessary:
+    assert s.price_point("2020-01-01")[1] == pd.Timestamp("2020-01-02", tz="UTC")
