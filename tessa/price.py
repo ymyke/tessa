@@ -1,7 +1,7 @@
 """Price information."""
 
 import functools
-from typing import Tuple
+from typing import Tuple, Union
 import pandas as pd
 from . import investing
 from . import coingecko
@@ -72,7 +72,7 @@ def price_history(
 def price_point(
     query: str,
     type_: str,
-    when: str,
+    when: Union[str, pd.Timestamp],
     country: str = None,
     currency_preference: str = "usd",
 ) -> Tuple[float, pd.Timestamp, str]:
