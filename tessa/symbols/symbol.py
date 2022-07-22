@@ -86,7 +86,7 @@ class Symbol:
         """Look up price at given date."""
         return float(self.price_history()[0].loc[date])
 
-    def pricegraph(self, monthsback: int = 6) -> None:
+    def pricegraph(self, monthsback: int = 6) -> tuple:
         """Display this symbol's price graph over the last monthsback months.
 
         Returns from_date, fig, and ax in order for subclass functions to add to the
@@ -103,13 +103,6 @@ class Symbol:
         sns.lineplot(ax=ax, data=hist.loc[from_date:, "close"], marker="o").set(
             title=self.name
         )
-
-        # Print some stats:
-        # FIXME Leave this to an outside subclass?
-        print(f"{self.name}")
-        print(f"Latest price: {self.today_price():.2f}")
-        maxprice = hist[hist.index > from_date].max().close
-        print(f"Drop since max: {(self.today_price() - maxprice) / maxprice:2.0%}")
 
         return from_date, fig, ax
 
