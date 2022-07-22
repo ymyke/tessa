@@ -6,8 +6,6 @@ from tessa.symbols import Symbol
 
 # pylint: disable=missing-function-docstring
 
-# FIXME Also check the tests in fignal around tickerconfig and Asset
-
 
 def test_initializer():
     s = Symbol(name="x", type_="y", country="z", query="qq")
