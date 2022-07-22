@@ -5,8 +5,6 @@ from typing import Optional, List, Union
 from dataclasses import dataclass, field
 from . import Symbol
 
-# FIXME Add tests
-
 
 @dataclass
 class ExtendedSymbol(Symbol):
