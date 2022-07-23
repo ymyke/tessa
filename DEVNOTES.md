@@ -9,6 +9,10 @@ These are internal notes that won't make much sense to anybody other than me...
 
 # Next up
 
+- Add new folders and subpackages:
+  - tessa.price
+  - tessa.search
+  - tessa.utils? <- rate limiters? also freezeargs?
 - What about fx?
 - Put the existing code and tests into subdirectories, e.g., price and search.
 - Mark all tests that hit the net w/ @pytest.mark.net
