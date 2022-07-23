@@ -4,6 +4,26 @@
 from typing import Optional, List, Union
 from dataclasses import dataclass, field
 from . import Symbol
+from . import jurisdiction2region as j2r
+
+# Customizations to jurisdiction2region (remove or adapt according to your needs):
+j2r.jurisdiction2region.update(
+    {
+        "CH": "CH",
+        "CN": "CN",
+        "EU": "EU",
+        "irrelevant": "OT",
+        "several": "OT",
+        "unknown": "OT",
+    }
+)
+j2r.region2name.update(
+    {
+        "CH": "Switzerland",
+        "CN": "China",
+        "AS": "Asia sans China",
+    }
+)
 
 
 @dataclass
@@ -19,9 +39,14 @@ class ExtendedSymbol(Symbol):
     isin: Optional[str] = None
     strategy: Union[str, List[str]] = field(default_factory=list)
     strategy_comments: Optional[str] = None
+    region: str = field(init=False)
 
     # You can also overwrite defaults from Symbol here, like so:
     # country: str = "switzerland"
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.region = j2r.map_jurisdiction_to_region(self.jurisdiction)
 
     def get_strategy_string(self) -> str:
         """Return a nice string with the strategy including comments."""
