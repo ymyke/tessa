@@ -2,6 +2,7 @@
 
 import functools
 from pycoingecko import CoinGeckoAPI
+from tessa.symbols import Symbol
 
 
 @functools.lru_cache(maxsize=None)
@@ -10,6 +11,19 @@ def get_symbol_map() -> list:
     hit too often.
     """
     return CoinGeckoAPI().get_coins_list()
+
+
+def _matches_to_symbols(matches: list) -> list:
+    """Convert a list of Coingecko matches to a list of `Symbol`s."""
+    return [
+        Symbol(
+            name=x["symbol"],
+            type_="crypto",
+            query=x["id"],
+            aliases=[x["id"], x["name"]],
+        )
+        for x in matches
+    ]
 
 
 def coingecko_search(query: str) -> dict:
@@ -22,9 +36,9 @@ def coingecko_search(query: str) -> dict:
     Example call:
     
     ```
-    from tessa import coingecko_search
+    from tessa.coingecko_search import coingecko_search
     r = coingecko_search("jenny")
-    # Then use r["other_name][0]["id"] to get the coingecko id to get price information.
+    r["coingecko_other_name"][0].price_latest()
     ```
     """
     res = {}
@@ -35,5 +49,5 @@ def coingecko_search(query: str) -> dict:
         ):
             matches = [x for x in get_symbol_map() if find_in(x[category])]
             if matches:
-                res[f"{prefix}_{category}"] = matches
+                res[f"{prefix}_{category}"] = _matches_to_symbols(matches)
     return res
