@@ -40,7 +40,7 @@ def investing_search(
     Example calls:
 
     ```
-    from tessa import investing_search
+    from tessa.investing_search import investing_search
     r1 = investing_search("AAPL")
     r2 = investing_search("AAPL", countries=["united states", "canada"], products="stocks")
     ```
