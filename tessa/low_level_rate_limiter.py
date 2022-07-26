@@ -27,7 +27,7 @@ guards = {
     },
     "coingecko": {
         "func_name": "requests.Session.get",
-        "initial_wait_seconds": 1,
+        "initial_wait_seconds": 1.5,
         "pattern": "coingecko.com",
     },
 }
