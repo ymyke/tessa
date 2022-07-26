@@ -66,6 +66,7 @@ class Symbol:
 
     def today_price(self) -> float:
         """Return the latest close price."""
+        # FIXME Obsolete?
         return self.price_latest()[0]
 
     def currency(self) -> str:
