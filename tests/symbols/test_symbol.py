@@ -2,6 +2,7 @@
 
 import pytest
 import pandas as pd
+import yaml
 from tessa.symbols import Symbol
 
 # pylint: disable=missing-function-docstring
@@ -42,6 +43,12 @@ def test_matches():
     assert s.matches("Z.DE")
     assert s.matches("Z")
     assert not s.matches("A")
+
+
+def test_to_yaml():
+    s = Symbol(name="X", aliases=["X", "Y", "Z"], country="C")
+    k, v = list(yaml.safe_load(s.to_yaml()).items())[0]
+    assert Symbol(k, **v) == s
 
 
 @pytest.mark.net

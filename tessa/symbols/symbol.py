@@ -49,6 +49,16 @@ class Symbol:
         """Convenience method to print the symbol."""
         print(str(self))
 
+    def to_yaml(self) -> str:
+        """Return a YAML representation of this symbol."""
+        return f"""
+{self.name}:
+    query: {self.query}
+    aliases: [{", ".join(self.aliases)}]
+    type_: {self.type_}
+    country: {self.country}
+"""
+
     def today(self) -> pd.Timestamp:
         """Return the latest date for which there is price information for this
         symbol."""
