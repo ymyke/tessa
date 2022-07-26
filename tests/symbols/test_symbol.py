@@ -57,6 +57,8 @@ def test_price_functions():
     df, crncy = s.price_history()
     assert isinstance(df, pd.DataFrame)
     assert crncy == "USD"
+    # FIXME The following assert breaks under certain conditions / at certain times of
+    # the day(?) -- not yet sure why.
     assert s.price_latest() == (float(df.iloc[-1]["close"]), df.iloc[-1].name, crncy)
     assert s.today_price() == float(df.iloc[-1]["close"])
     assert s.today() == df.iloc[-1].name
