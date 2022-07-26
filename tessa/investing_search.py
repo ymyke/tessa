@@ -77,8 +77,9 @@ def _dataframe_to_symbols(df: pd.DataFrame, product: str) -> list:
             args["query"] = d["name"]
         args["aliases"].extend(
             set([d.get("name", None), d.get("full_name", None)])  # Make unique!
+            | {d.get("isin", None)}
             - {args["name"]}  # Remove whatever was chosen as the name above
-            - {None}  # Remove None if it was added above
+            - {None, ""}  # Remove None and empty string if it was added above
         )
         symbols.append(Symbol(**args))
     return symbols
