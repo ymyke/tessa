@@ -76,7 +76,7 @@ def _dataframe_to_symbols(df: pd.DataFrame, product: str) -> list:
         if type_ in ["etf", "fund", "certificate", "index"]:
             args["query"] = d["name"]
         args["aliases"].extend(
-            set([d.get("name", None), d.get("full_name", None)])  # Make unique!
+            {d.get("name", None), d.get("full_name", None)}  # Make unique!
             | {d.get("isin", None)}
             - {args["name"]}  # Remove whatever was chosen as the name above
             - {None, ""}  # Remove None and empty string if it was added above
