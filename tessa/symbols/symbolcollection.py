@@ -38,3 +38,12 @@ class SymbolCollection:
         with open(yaml_file, "r", encoding="utf-8") as stream:
             ymldict = yaml.safe_load(stream)
         self.symbols = [self.symbol_class(k, **(v or {})) for k, v in ymldict.items()]
+
+    def to_yaml(self) -> str:
+        """Return a YAML representation of all symbols."""
+        return "".join([s.to_yaml() for s in self.symbols])
+
+    def save_yaml(self, yaml_file: str) -> None:
+        """Save symbols to a YAML file."""
+        with open(yaml_file, "w", encoding="utf-8") as stream:
+            stream.write(self.to_yaml())

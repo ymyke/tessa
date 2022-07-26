@@ -66,3 +66,16 @@ C:
     assert sc.find_one("BB")
     with pytest.raises(ValueError):
         sc.find_one("X")
+
+
+def test_to_and_save_yaml(tmp_path):
+    # Test to_yaml:
+    sc1 = SymbolCollection()
+    sc1.add([Symbol("A"), Symbol("B")])
+    assert sc1.to_yaml() == Symbol("A").to_yaml() + Symbol("B").to_yaml()
+    # Test save_yaml:
+    file = tmp_path / "symbols.yaml"
+    sc1.save_yaml(file)
+    sc2 = SymbolCollection()
+    sc2.load_yaml(file)
+    assert sc2.symbols == sc1.symbols
