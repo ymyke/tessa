@@ -3,7 +3,7 @@
 import pytest
 import pandas as pd
 import yaml
-from tessa.symbols import Symbol
+from tessa.symbol import Symbol
 
 # pylint: disable=missing-function-docstring
 

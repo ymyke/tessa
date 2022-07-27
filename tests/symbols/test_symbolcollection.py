@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring
 
 import pytest
-from tessa.symbols import SymbolCollection, Symbol
+from tessa.symbol import SymbolCollection, Symbol
 
 
 def test_initializer():

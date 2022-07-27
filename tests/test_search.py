@@ -6,7 +6,7 @@ coingecko_search).
 
 import pytest
 from tessa import search
-from tessa.symbols import Symbol
+from tessa.symbol import Symbol
 
 
 @pytest.mark.parametrize(

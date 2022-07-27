@@ -1,6 +1,6 @@
 """ExtendedSymbol-related tests."""
 
-from tessa.symbols import ExtendedSymbol
+from tessa.symbol import ExtendedSymbol
 
 # pylint: disable=missing-function-docstring
 

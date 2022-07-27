@@ -7,7 +7,7 @@ import pandas as pd
 import investpy
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
-from .symbols import Symbol
+from .symbol import Symbol
 
 PRODUCT2TYPE = {
     # FIXME Combine w/ the other valid_products lists here as well as VALID_TYPES in
