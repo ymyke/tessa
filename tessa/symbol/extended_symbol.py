@@ -33,6 +33,9 @@ class ExtendedSymbol(Symbol):
     """
 
     description: Optional[str] = None
+    # FIXME A design alternative could be to move the `description` attribute to
+    # `Symbol` itself, rename it to `info` so it can be used for arbitrary additional
+    # informaton around a symbol such as a description or similar.
     watch: bool = False
     delisted: bool = False
     jurisdiction: str = "US"
