@@ -3,6 +3,7 @@
 import pytest
 import pandas as pd
 from tessa import price_point, price_point_strict, price_latest
+from tessa.price import PriceHistory, PricePoint
 
 
 # pylint: disable=unused-argument,missing-function-docstring,redefined-outer-name
@@ -22,12 +23,12 @@ def mock_price_history(mocker):
     }
     mocker.patch(
         "tessa.price.price_history",
-        return_value=(pd.DataFrame(df_as_json).set_index("date"), "usd"),
+        return_value=PriceHistory(pd.DataFrame(df_as_json).set_index("date"), "usd"),
     )
 
 
 def test_price_point_strict(mock_price_history):
-    assert price_point_strict("xx", "xx", "2018-01-11")[0] == 2.0
+    assert price_point_strict("xx", "xx", "2018-01-11").price == 2.0
 
 
 def test_price_point_strict_non_existent(mock_price_history):
@@ -49,6 +50,12 @@ def test_price_latest(mock_price_history):
         pd.Timestamp("2018-01-12", tz="utc"),
         "usd",
     )
+
+
+def test_verify_pricepoint_types_are_used(mock_price_history):
+    assert isinstance(price_point("xx", "xx", "2018-01-11"), PricePoint)
+    assert isinstance(price_point_strict("xx", "xx", "2018-01-11"), PricePoint)
+    assert isinstance(price_latest("xx", "xx"), PricePoint)
 
 
 # ----- Tests that do hit the net -----

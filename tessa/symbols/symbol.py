@@ -1,12 +1,13 @@
 """Symbol class."""
 
-from typing import Tuple, Union
+from typing import Union
 from dataclasses import dataclass, field
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from .. import price_history, price_latest, price_point
+from ..price import PricePoint, PriceHistory
 
 pd.plotting.register_matplotlib_converters()
 
@@ -65,15 +66,15 @@ class Symbol:
         # FIXME Get rid of both today and today_price and only use price_latest? Or keep
         # them for convenience (there is also currency, after all)? On the other hand,
         # "today" is misleading...
-        return self.price_latest()[1]
+        return self.price_latest().when
 
     def today_price(self) -> float:
         """Return the latest close price."""
-        return self.price_latest()[0]
+        return self.price_latest().price
 
     def currency(self) -> str:
         """Return currency for this symbol."""
-        currency = self.price_latest()[2]
+        currency = self.price_latest().currency
         return currency and currency.upper()
 
     def _create_price_args(self) -> dict:
@@ -86,23 +87,18 @@ class Symbol:
             args["country"] = self.country
         return args
 
-    def price_latest(self) -> Tuple[float, pd.Timestamp, str]:
-        """Return the latest close price. Returns a tuple of timestamp, price and
-        currency.
-        """
+    def price_latest(self) -> PricePoint:
+        """Return the latest close price."""
         return price_latest(**self._create_price_args())
 
-    def price_history(self) -> Tuple[pd.DataFrame, str]:
-        """Return a tuple of the full price history as a DataFrame of dates and close
-        prices and the currency.
-        """
+    def price_history(self) -> PriceHistory:
+        """Return a tuple of the full price history."""
         return price_history(**self._create_price_args())
 
-    def price_point(
-        self, when: Union[str, pd.Timestamp]
-    ) -> Tuple[float, pd.Timestamp, str]:
+    def price_point(self, when: Union[str, pd.Timestamp]) -> PricePoint:
         """Look up price at given date `when`. Look for the closest point in time if the
-        exact point in time is not found."""
+        exact point in time is not found.
+        """
         return price_point(**self._create_price_args(), when=when)
 
     def pricegraph(self, monthsback: int = 6) -> tuple:
@@ -112,7 +108,7 @@ class Symbol:
         information and even the graph displayed here.
         """
         fig, ax = plt.subplots(figsize=(16, 8))
-        hist = self.price_history()[0]
+        hist = self.price_history().df
 
         # Calc start date:
         from_date = datetime.date.today() - pd.offsets.DateOffset(months=monthsback)

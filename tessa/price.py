@@ -1,7 +1,7 @@
 """Price information."""
 
 import functools
-from typing import Tuple, Union
+from typing import Union, NamedTuple
 import pandas as pd
 from . import investing
 from . import coingecko
@@ -10,11 +10,17 @@ from .rate_limiter import rate_limit
 
 # FIXME Use type instead of type_ (note that this will break the interface!!)
 
+PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])
+PricePoint = NamedTuple(
+    "PricePoint", [("price", float), ("when", pd.Timestamp), ("currency", str)]
+)
+
+
 @freezeargs
 @functools.lru_cache(maxsize=None)
 def price_history(
     query: str, type_: str, country: str = None, currency_preference: str = "usd"
-) -> Tuple[pd.DataFrame, str]:
+) -> PriceHistory:
     """Get price history and return tuple of dataframe and currency.
 
     Args:
@@ -64,7 +70,7 @@ def price_history(
             f"{', '.join(investing.VALID_TYPES)}."
         )
 
-    return (df.copy(), effective_currency.upper())
+    return PriceHistory(df.copy(), effective_currency.upper())
     # (Returning a copy of the dataframe so the cached original is preserved even if it
     # gets modified by the caller.)
 
@@ -75,14 +81,14 @@ def price_point(
     when: Union[str, pd.Timestamp],
     country: str = None,
     currency_preference: str = "usd",
-) -> Tuple[float, pd.Timestamp, str]:
+) -> PricePoint:
     """Return the price at a given point in time given by `when`. Look for the closest
     point in time if the exact point in time is not found.
 
     Arguments other than `when` are the same as with `price_history`.
 
-    Returns a tuple of the price, the effective timestamp of the price, and the
-    currency.
+    Returns a PricePoint, i.e., a tuple of the price, the effective timestamp of the
+    price, and the currency.
 
     Example call:
     ```
@@ -91,7 +97,7 @@ def price_point(
     """
     df, currency = price_history(query, type_, country, currency_preference)
     price = df.iloc[df.index.get_indexer([when], method="nearest")[0]]
-    return (float(price), price.name, currency)
+    return PricePoint(float(price), price.name, currency)
 
 
 def price_point_strict(
@@ -100,12 +106,12 @@ def price_point_strict(
     when: str,
     country: str = None,
     currency_preference: str = "usd",
-) -> Tuple[float, str]:
+) -> PricePoint:
     """Same as `price_point` but will return either the price at the exact point in time
     or raise a KeyError.
     """
     df, currency = price_history(query, type_, country, currency_preference)
-    return (df.loc[when]["close"], currency)
+    return PricePoint(float(df.loc[when]["close"]), df.loc[when].name, currency)
 
 
 def price_latest(
@@ -113,7 +119,7 @@ def price_latest(
     type_: str,
     country: str = None,
     currency_preference: str = "usd",
-) -> Tuple[float, pd.Timestamp, str]:
+) -> PricePoint:
     """Same as `price_point` but will return the latest price."""
     df, currency = price_history(query, type_, country, currency_preference)
-    return (float(df.iloc[-1]["close"]), df.iloc[-1].name, currency)
+    return PricePoint(float(df.iloc[-1]["close"]), df.iloc[-1].name, currency)
