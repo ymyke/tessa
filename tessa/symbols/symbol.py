@@ -62,11 +62,13 @@ class Symbol:
     def today(self) -> pd.Timestamp:
         """Return the latest date for which there is price information for this
         symbol."""
+        # FIXME Get rid of both today and today_price and only use price_latest? Or keep
+        # them for convenience (there is also currency, after all)? On the other hand,
+        # "today" is misleading...
         return self.price_latest()[1]
 
     def today_price(self) -> float:
         """Return the latest close price."""
-        # FIXME Obsolete?
         return self.price_latest()[0]
 
     def currency(self) -> str:
