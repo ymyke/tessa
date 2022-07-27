@@ -31,6 +31,5 @@ from tessa.symbols import Symbol
 def test_working_symbols_are_returned_by_search(type_: str, symbol: str):
     """For each possible type of symbol, will we get a working `Symbol` object?"""
     s = search(symbol)[type_][0]
-    # FIXME Need silent mode for search?
     assert isinstance(s, Symbol)
     assert isinstance(s.price_latest(), tuple)
