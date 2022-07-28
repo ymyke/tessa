@@ -7,17 +7,6 @@ import investpy
 from investpy.utils.search_obj import SearchObj
 import pendulum
 
-VALID_TYPES = [
-    "stock",
-    "etf",
-    "fund",
-    "crypto",
-    "bond",
-    "index",
-    "certificate",
-    "commodity",
-    "currency_cross",
-]
 MIN_FROM_DATE = "01/01/2010"
 # Adjust this date if you need to get historical data further in the past. Note that
 # extending this date will lead to increased numbers of requests on investing.com's

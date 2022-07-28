@@ -8,19 +8,9 @@ import investpy
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
 from .symbol import Symbol
+from . import investing_types
 
-PRODUCT2TYPE = {
-    # FIXME Combine w/ the other valid_products lists here as well as VALID_TYPES in
-    # tessa.investing; build a bidirectional map?
-    "certificates": "certificate",
-    "commodities": "commodity",
-    "bonds": "bond",
-    "currency_crosses": "currency_cross",
-    "indices": "index",
-    "etfs": "etf",
-    "stocks": "stock",
-    "funds": "fund",
-}
+# FIXME Review all docstrings for correctness.
 
 
 def investing_search(
@@ -62,7 +52,7 @@ def _dataframe_to_symbols(df: pd.DataFrame, product: str) -> list:
     symbols = []
     for _, row in df.iterrows():
         d = row.to_dict()
-        type_ = PRODUCT2TYPE[product]
+        type_ = investing_types.ensure_singular(product)
         args = {
             "type_": type_,
             "aliases": [],
@@ -116,16 +106,7 @@ def search_name_or_symbol(
     ```
     """
     rate_limit("investing")
-    valid_products = [
-        "certificates",
-        "commodities",
-        "bonds",
-        "currency_crosses",
-        "indices",
-        "etfs",
-        "stocks",
-        "funds",
-    ]
+    valid_products = investing_types.get_plurals()
     valid_bys = ["full_name", "name", "symbol"]
 
     # Prepare input parameters (make sure countries and products are (empty) lists):
@@ -156,20 +137,22 @@ def _searchobj_to_symbols(objs: list) -> list:
     """Convert a list of investpy search objects to a list of `Symbol`s."""
     symbols = []
     for obj in objs:
-        try:
-            symbols.append(
-                Symbol(
-                    name=obj.symbol,
-                    type_=PRODUCT2TYPE[obj.pair_type],
-                    query=ast.literal_eval(str(obj).replace("null", "None")),
-                    aliases=[obj.name],
-                    country=obj.country,
-                )
+        symbols.append(
+            Symbol(
+                name=obj.symbol,
+                type_=(
+                    investing_types.ensure_singular(obj.pair_type)
+                    if investing_types.is_valid(obj.pair_type)
+                    else obj.pair_type
+                    # Search objects can have certain types (e.g., currencies) that we
+                    # don't "officially" support in symbols. We simply pass these
+                    # through since they are nevertheless accessible.
+                ),
+                query=ast.literal_eval(str(obj).replace("null", "None")),
+                aliases=[obj.name],
+                country=obj.country,
             )
-        except KeyError:
-            # PRODUCT2TYPE mapping above can fail with certain SearchObj types (e.g.,
-            # cryptos, currencies); we'll simply ignore these.
-            continue
+        )
     return symbols
 
 
@@ -204,18 +187,7 @@ def search_for_searchobjs(
     ```
     """
     rate_limit("investing")
-    valid_products = [
-        "indices",
-        "stocks",
-        "etfs",
-        "funds",
-        "commodities",
-        "currencies",
-        "cryptos",
-        "bonds",
-        "certificates",
-        "fxfutures",
-    ]
+    valid_products = investing_types.get_plurals()
 
     # Prepare input parameters:
     query = query.lower()
@@ -256,7 +228,6 @@ def search_for_searchobjs(
     }
 
 
-# FIXME Have some separate module for all those mappings?
 # FIXME Keep in mind that we can now access everything from the returned objects. So we
 # can adjust some or all of the examples in the readme. Maybe keep the old ones around
 # somewhere bc they show how everything works under the hood?

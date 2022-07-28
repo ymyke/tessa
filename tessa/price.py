@@ -3,8 +3,7 @@
 import functools
 from typing import Union, NamedTuple
 import pandas as pd
-from . import investing
-from . import coingecko
+from . import investing, investing_types, coingecko
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
 
@@ -60,14 +59,14 @@ def price_history(
 
     if type_ == "crypto":
         df, effective_currency = coingecko.get_price_history(query, currency_preference)
-    elif type_ in investing.VALID_TYPES:
+    elif investing_types.is_valid(type_):
         df, effective_currency = investing.get_price_history(query, type_, country)
     elif type_ == "searchobj":
         df, effective_currency = investing.get_price_history_from_searchobj(query)
     else:
         raise ValueError(
             f"Unsupported asset type '{type_}'; these are the supported types: "
-            f"{', '.join(investing.VALID_TYPES)}."
+            f"{', '.join(investing_types.get_singulars())}."
         )
 
     return PriceHistory(df.copy(), effective_currency.upper())
