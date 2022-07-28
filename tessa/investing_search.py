@@ -226,11 +226,6 @@ def search_for_searchobjs(
     }
 
 
-# FIXME Keep in mind that we can now access everything from the returned objects. So we
-# can adjust some or all of the examples in the readme. Maybe keep the old ones around
-# somewhere bc they show how everything works under the hood?
-
-
 # -----·-----
 
 # Specification of how to map the dataframe columns investpy returns to the Symbol
