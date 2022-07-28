@@ -10,8 +10,6 @@ from .rate_limiter import rate_limit
 from .symbol import Symbol
 from . import investing_types
 
-# FIXME Review all docstrings for correctness.
-
 
 def investing_search(
     query: str,
@@ -21,8 +19,8 @@ def investing_search(
     """Find asset on investpy. This is the most generic function that simply combines
     the results of the 2 specific functions below.
 
-    Note that the result is a dictionary with different categories of results. And
-    results are either a dataframe or a list of search objects (as strings).
+    Note that the result is a dictionary with different categories, each category with a
+    list of `Symbol`s.
 
     Also check the docstrings of the specific functions `search_name_or_symbol` and
     `search_for_searchobjs` below for more info.
@@ -90,7 +88,7 @@ def search_name_or_symbol(
 
     - query: The query to search for.
     - countries: A list of countries to search in.
-    - products: Any of `valid_products`.
+    - products: A valid product type, see `investing_types` module.
 
     Both `countries` and `products` can be a list or a string. They can also be `None`,
     in which case all products or countries are searched.
@@ -163,9 +161,9 @@ def search_for_searchobjs(
     countries: Optional[Union[list, str]] = None,
     products: Optional[Union[list, str]] = None,
 ) -> dict:
-    """Run query through `investpy.search_quotes`, which returns `SearchObj` objects and
-    return the objects found as lists triaged into perfect and other matches. Also print
-    out how many results were found per category.
+    """Run query through `investpy.search_quotes`, convert the `SearchObj` objects found
+    into `Symbol`s and return those as lists triaged into perfect and other matches.
+    Also print out how many results were found per category.
 
     cf https://github.com/alvarobartt/investpy/issues/129#issuecomment-604048750
 
@@ -173,7 +171,7 @@ def search_for_searchobjs(
 
     - query: The query to search for.
     - countries: A list of countries to search in.
-    - products: Any of `valid_products`.
+    - products: A valid product type, see `investing_types` module.
 
     Both `countries` and `products` can be a list or a string. They can also be `None`,
     in which case all products or countries are searched.
