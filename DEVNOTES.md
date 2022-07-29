@@ -13,9 +13,24 @@ These are internal notes that won't make much sense to anybody other than me...
   - tessa.price (same in tests)
   - tessa.search (same in tests)
   - tessa.utils? <- rate limiters? also freezeargs?
+    - also investing_types in here?
 - What about fx?
 - Put the existing code and tests into subdirectories, e.g., price and search.
 - Mark all tests that hit the net w/ @pytest.mark.net
+
+- Add global configuration file for things like defaults, cf
+  https://stackoverflow.com/questions/5055042/whats-the-best-practice-using-a-settings-file-in-python
+  (If this is part of the git repo, doesn't this provoke problems (i.e., merge
+  conflicts) when the repo updates? What is the best practice here?)
+  Some things to put in there:
+      - timeouts in rate_limiter
+      - investing's MIN_FROM_DATE
+      - extended_symbol:
+      	+ j2r.jurisdiction2region.update
+      	+ j2r.region2name.update
+      	+ some defaults for the new attributes?
+      - symbol:
+      	+ some defaults for the attributes?
 
 # QQ:
 
