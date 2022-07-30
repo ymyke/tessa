@@ -23,6 +23,7 @@ class SymbolCollection:
             self.symbols.extend(what)
         else:
             self.symbols.append(what)
+        # FIXME Should this return self to make it chainable?
 
     def find_one(self, what: str) -> Optional[Symbol]:
         """Find Symbol that matches query. Raises `ValueError` if there's more than 1
