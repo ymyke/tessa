@@ -33,7 +33,7 @@ class SymbolCollection:
             raise ValueError(f"Found several matching symbols for '{what}'")
         return matches[0] if matches else None
 
-    def load_yaml(self, yaml_file: str):
+    def load_yaml(self, yaml_file: str) -> None:
         """Load symbols from a YAML file."""
         with open(yaml_file, "r", encoding="utf-8") as stream:
             ymldict = yaml.safe_load(stream)
