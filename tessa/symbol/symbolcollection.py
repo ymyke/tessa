@@ -11,6 +11,8 @@ class SymbolCollection:
     def __init__(self, symbol_class: Type[Symbol] = Symbol) -> None:
         """Use `symbol_class` to create extensions of `Symbol`."""
         self.symbol_class = symbol_class
+        # FIXME ^ I think this should be an argument to the load_yaml method rather than
+        # an init parameter and instance attribute
         self.symbols = []
 
     def __iter__(self) -> object:
