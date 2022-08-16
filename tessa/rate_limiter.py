@@ -18,7 +18,7 @@ original_guards = {
         "wait_seconds": 2,
     },
     "crypto": {
-        "wait_seconds": 1.5,
+        "wait_seconds": 2.5,
     },
 }
 
