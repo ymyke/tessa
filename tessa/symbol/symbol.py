@@ -22,6 +22,10 @@ class Symbol:
       this is fulfilled thanks to the way tessa's caching works.
     - The initializers don't hit the network -- it will only be hit when accessing the
       price functions or related functions such as `currency` or `today`.
+    - The `tessa.price` functions are used to get the actual price information, and they
+      have a  `currency_preference` argument. This argument is not exposed explicitly by
+      `Symbol` but if you need, you can set a preference by setting the
+      `_currency_preference` attribute.
     """
 
     name: str
@@ -31,6 +35,7 @@ class Symbol:
     aliases: list[str] = field(default_factory=list)
 
     _querytype: str = field(init=False)
+    _currency_preference: str = "usd"
 
     def __post_init__(self) -> None:
         """Re(set) some attributes."""
@@ -82,6 +87,7 @@ class Symbol:
         args = {
             "query": str(self.query),
             "type_": self._querytype,
+            "currency_preference": self._currency_preference,
         }
         if self.country is not None:
             args["country"] = self.country
