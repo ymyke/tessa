@@ -1,6 +1,6 @@
 """Symbol class."""
 
-from typing import Union
+from typing import Union, Optional
 from dataclasses import dataclass, field
 import datetime
 import pandas as pd
@@ -30,8 +30,8 @@ class Symbol:
 
     name: str
     type_: str = "stock"
-    query: str = None
-    country: str = "united states"
+    query: Optional[str] = None
+    country: Optional[str] = "united states"
     aliases: list[str] = field(default_factory=list)
 
     _querytype: str = field(init=False)
