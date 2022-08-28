@@ -129,7 +129,7 @@ class Symbol:
 
     def matches(self, what: str) -> bool:
         """Check if `what` matches this symbol's name or aliases. Also tries to match
-        things like SPICHA if SPICHA.SW is in the aliases.
+        things like SPICHA if SPICHA.SW is in the aliases. Ignores case.
         """
         candidates = [c.lower() for c in [self.name] + self.aliases]
         candidates += [c.split(".")[0] for c in candidates]
