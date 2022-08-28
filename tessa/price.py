@@ -11,7 +11,7 @@ from .rate_limiter import rate_limit
 
 PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])
 PricePoint = NamedTuple(
-    "PricePoint", [("price", float), ("when", pd.Timestamp), ("currency", str)]
+    "PricePoint", [("when", pd.Timestamp), ("price", float), ("currency", str)]
 )
 
 
@@ -96,7 +96,7 @@ def price_point(
     """
     df, currency = price_history(query, type_, country, currency_preference)
     price = df.iloc[df.index.get_indexer([when], method="nearest")[0]]
-    return PricePoint(float(price), price.name, currency)
+    return PricePoint(when=price.name, price=float(price), currency=currency)
 
 
 def price_point_strict(
@@ -110,7 +110,9 @@ def price_point_strict(
     or raise a KeyError.
     """
     df, currency = price_history(query, type_, country, currency_preference)
-    return PricePoint(float(df.loc[when]["close"]), df.loc[when].name, currency)
+    return PricePoint(
+        when=df.loc[when].name, price=float(df.loc[when]["close"]), currency=currency
+    )
 
 
 def price_latest(
@@ -121,4 +123,6 @@ def price_latest(
 ) -> PricePoint:
     """Same as `price_point` but will return the latest price."""
     df, currency = price_history(query, type_, country, currency_preference)
-    return PricePoint(float(df.iloc[-1]["close"]), df.iloc[-1].name, currency)
+    return PricePoint(
+        when=df.iloc[-1].name, price=float(df.iloc[-1]["close"]), currency=currency
+    )

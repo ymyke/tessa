@@ -3,6 +3,7 @@
 import pytest
 import pandas as pd
 import yaml
+from tessa.price import PricePoint
 from tessa.symbol import Symbol
 
 # pylint: disable=missing-function-docstring
@@ -57,7 +58,9 @@ def test_price_functions():
     df, crncy = s.price_history()
     assert isinstance(df, pd.DataFrame)
     assert crncy == "USD"
-    assert s.price_latest() == (float(df.iloc[-1]["close"]), df.iloc[-1].name, crncy)
+    assert s.price_latest() == PricePoint(
+        when=df.iloc[-1].name, price=float(df.iloc[-1]["close"]), currency=crncy
+    )
     assert s.today_price() == float(df.iloc[-1]["close"])
     assert s.today() == df.iloc[-1].name
     assert s.currency() == crncy

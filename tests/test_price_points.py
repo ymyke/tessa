@@ -37,18 +37,14 @@ def test_price_point_strict_non_existent(mock_price_history):
 
 
 def test_price_point_non_existent(mock_price_history):
-    assert price_point("xx", "xx", "2018-01-13") == (
-        3.0,
-        pd.Timestamp("2018-01-12", tz="utc"),
-        "usd",
+    assert price_point("xx", "xx", "2018-01-13") == PricePoint(
+        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="usd"
     )
 
 
 def test_price_latest(mock_price_history):
-    assert price_latest("xx", "xx") == (
-        3.0,
-        pd.Timestamp("2018-01-12", tz="utc"),
-        "usd",
+    assert price_latest("xx", "xx") == PricePoint(
+        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="usd"
     )
 
 
@@ -62,16 +58,14 @@ def test_verify_pricepoint_types_are_used(mock_price_history):
 
 
 def test_concrete_investing_price_point():
-    assert price_point("AAPL", "stock", "2018-01-11", "united states") == (
-        43.82,
-        pd.Timestamp("2018-01-11", tz="utc"),
-        "USD",
+    assert price_point("AAPL", "stock", "2018-01-11", "united states") == PricePoint(
+        when=pd.Timestamp("2018-01-11", tz="utc"), price=43.82, currency="USD"
     )
 
 
 def test_concrete_crypto_price_point():
-    assert price_point("bitcoin", "crypto", "2018-01-11") == (
-        14050.5696063543,
-        pd.Timestamp("2018-01-11", tz="utc"),
-        "USD",
+    assert price_point("bitcoin", "crypto", "2018-01-11") == PricePoint(
+        when=pd.Timestamp("2018-01-11", tz="utc"),
+        price=14050.5696063543,
+        currency="USD",
     )
