@@ -10,14 +10,21 @@ These are internal notes that won't make much sense to anybody other than me...
 
 # Todo
 
+- QQ: Should Symbol.names be unique over a collection? Whould the collection enforce
+  this? Should the SymbolCollection.symbols be a set rather than a list?
 - Bug: symbols created from search objects from a search() call do not have the country
   set.
-- Use Symbol and SymbolCollection 
-  - in alerts and see how this goes.
-  - in fignal.
-- Add documentation (see below)
-- Find diffs to master (see below)
+- Check all changes to be committed currently.
+- Check all FIXMEs
+- Add documentation (see below) / pdoc
+- Compare to master and identify all changes to the price.* and search interface:
+  - Adjust README accordingly.
+  - Mention in release notes.
+- Fix the FIXMEs.
+- Try pydantic for the Symbols/YAML reader?
+- Add links to pdoc documentation to README and maybe toml file.
 - Release
+
 
 # To be documented
 
@@ -46,35 +53,8 @@ How to:
 - PriceHistory, PricePoint.
 - ((Check git log and/or compare branch to master))
 
-# Misc notes & later todos
 
-- Compare to master and identify all changes to the price.* and search interface:
-  - Adjust README accordingly.
-  - Mention in release notes.
-- Fix the FIXMEs.
-
-# Changes to fignal
-
-- Some logic has changed in how Symbols are matched.
-- Use the new symbols file. (Make sure there are no new symbols in tickerconfig that are
-  not yet in symbols.yaml)
-- Got rid of todayprice in Symbol. Use latest_price instead. -- A number of changes
-  needed in fignal bc todayprice is used often.
-- What about PublicEquityAssetMixin and CryptoAssetMixin -- which parts are still
-  needed? -- Most of it seems not necessary bc the new, generalized symbols can do it
-  all.
-
-# Things to consider in fignal
-
-- Will Portfolio class be a subclass of SymbolCollection?
-- Will (Portfolio)Assets be a subclass of Symbol or will they just have a symbol
-  (composition)? -> Maybe preference for composition (which should according to
-  literature be the preference in general).
-- Should more things in fignal be value objects? E.g. dates, currencies, prices, ...?
-
-
-
-# Misc
+# Terminology
 
 - The right term is symbol, not ticker. Change this everywhere sometime.
 - Symbol, not Asset, because an asset is one that is really owned. As long as it's not
