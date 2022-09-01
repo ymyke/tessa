@@ -107,7 +107,7 @@ class Symbol:
         """
         return price_point(**self._create_price_args(), when=when)
 
-    def pricegraph(self, monthsback: int = 6) -> tuple:
+    def price_graph(self, monthsback: int = 6) -> tuple:
         """Display this symbol's price graph over the last monthsback months.
 
         Returns from_date, fig, and ax in order for subclass functions to add to the

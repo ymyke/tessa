@@ -61,9 +61,9 @@ class ExtendedSymbol(Symbol):
             res += f" · {self.strategy_comments}"
         return res
 
-    def pricegraph(self, monthsback: int = 6) -> tuple:
-        """Add some extra information to the pricegraph."""
-        (from_date, fig, ax) = super().pricegraph(monthsback)
+    def price_graph(self, monthsback: int = 6) -> tuple:
+        """Add some extra information to the price graph."""
+        (from_date, fig, ax) = super().price_graph(monthsback)
         print(f"{self.name}")
         print(f"Latest price: {self.today_price():.2f}")
         hist = self.price_history()[0]
