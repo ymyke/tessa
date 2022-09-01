@@ -36,6 +36,8 @@ class Symbol:
 
     _querytype: str = field(init=False)
     _currency_preference: str = "usd"
+    # FIXME Should this be a proper attribute? (If so, will need to adjust the crypto
+    # module in fignal.)
 
     def __post_init__(self) -> None:
         """Re(set) some attributes."""
