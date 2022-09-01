@@ -7,7 +7,6 @@ from . import investing, investing_types, coingecko
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
 
-# FIXME Use type instead of type_ (note that this will break the interface!!)
 
 PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])
 PricePoint = NamedTuple(
