@@ -19,8 +19,8 @@ def investing_search(
     """Find asset on investpy. This is the most generic function that simply combines
     the results of the 2 specific functions below.
 
-    Note that the result is a dictionary with different categories, each category with a
-    list of `Symbol`s.
+    The result is a dictionary with different categories, each category with a list of
+    `Symbol`s.
 
     Also check the docstrings of the specific functions `search_name_or_symbol` and
     `search_for_searchobjs` below for more info.
