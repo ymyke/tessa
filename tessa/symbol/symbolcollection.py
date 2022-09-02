@@ -9,7 +9,11 @@ class SymbolCollection:
     """A collection of `Symbol`s.
 
     Note that `SymbolCollection` does not enforce any uniqueness or similar of symbols
-    or symbol attributes (especially names) in the collection.
+    or symbol attributes (especially names) in the collection. The YAML syntax, however,
+    prescribes that keys need to be unique. Therefore, `yaml.safe_load` silently
+    overwrites duplicate keys (case sensitive). The `matches` method in `Symbol` on the
+    other hand ignores case. Thus, while you can't have two "ETH" keys/names, you can
+    have two symbols with names "BTC" and "btc" respectively.
     """
 
     symbols: List[Symbol]
@@ -35,13 +39,17 @@ class SymbolCollection:
         # FIXME Should this return self to make it chainable?
 
     def find_one(self, what: str) -> Optional[Symbol]:
-        """Find Symbol that matches query. Raises `ValueError` if there's more than 1
-        match. Returns `None` if there's no match.
+        """Find exactly one `Symbol` that matches the query. Raises `ValueError` if
+        there's more than 1 match. Returns `None` if there's no match.
         """
-        matches = [s for s in self.symbols if s.matches(what)]
+        matches = self.find(what)
         if len(matches) > 1:
             raise ValueError(f"Found several matching symbols for '{what}'")
         return matches[0] if matches else None
+
+    def find(self, what: str) -> List[Symbol]:
+        """Find all `Symbol`s that match the query."""
+        return [s for s in self.symbols if s.matches(what)]
 
     def load_yaml(self, yaml_file: str) -> None:
         """Load symbols from a YAML file."""

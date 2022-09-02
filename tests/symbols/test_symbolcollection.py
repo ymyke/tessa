@@ -46,7 +46,7 @@ def test_add():
     assert sc.symbols == [Symbol("A"), Symbol("B"), Symbol("C")]
 
 
-def test_find_one(tmp_path):
+def test_find_and_find_one(tmp_path):
     file = tmp_path / "symbols.yaml"
     file.write_text(
         """
@@ -54,15 +54,29 @@ A:
 B:
     aliases: [X]
 BB:
+C:  # Will be overwritten by the second C
+b:  # This, however, will be separate from the earlier B, because it's lower-case
 C:
     aliases: [X]
 """
     )
     sc = SymbolCollection()
     sc.load_yaml(file)
+
+    # find:
+    assert sc.find("Z") == []
+    assert len(sc.find("X")) == 2
+    # There will only be 1 C name bc yaml expects unique keys and pyyaml silently
+    # overwrites the first entry when it encounters the second by the same name:
+    assert len(sc.find("C")) == 1
+    # There will, however, be two B/b symbols because B and b qualify as different keys
+    # in the load_yaml method but the `matches` method in `Symbol` ignores case:
+    assert len(sc.find("B")) == 2
+    assert len(sc.find("b")) == 2
+
+    # find_one:
     assert sc.find_one("A")
-    assert sc.find_one("B")
-    assert sc.find_one("C")
+    assert sc.find_one("A") == sc.find_one("a")  # find ignores case
     assert sc.find_one("BB")
     with pytest.raises(ValueError):
         sc.find_one("X")
