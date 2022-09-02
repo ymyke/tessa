@@ -49,7 +49,7 @@ class Symbol:
     __querytype: str = field(init=False)
 
     def __post_init__(self) -> None:
-        """Re(set) some attributes."""
+        """Re/set some attributes."""
         if self.query is None:
             self.query = self.name
         self.__querytype = "searchobj" if isinstance(self.query, dict) else self.type_
