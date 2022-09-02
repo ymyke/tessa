@@ -1,6 +1,6 @@
 """Symbol class."""
 
-from typing import Union, Optional
+from typing import Union, Optional, ClassVar
 from dataclasses import dataclass, field
 import datetime
 import pandas as pd
@@ -34,7 +34,7 @@ class Symbol:
     country: Optional[str] = "united states"
     aliases: list[str] = field(default_factory=list)
 
-    _querytype: str = field(init=False)
+    # Class variables:
     _currency_preference: ClassVar[str] = "USD"
     """Use this to set the preferred currency to get price information in. 
     
@@ -45,12 +45,15 @@ class Symbol:
     Since this is a class variable, you can set your preference once for all objects.
     """
 
+    # Private variables:
+    __querytype: str = field(init=False)
+
     def __post_init__(self) -> None:
         """Re(set) some attributes."""
         if self.query is None:
             self.query = self.name
-        self._querytype = "searchobj" if isinstance(self.query, dict) else self.type_
-        if self._querytype in ["crypto", "searchobj"]:  # Reset country default
+        self.__querytype = "searchobj" if isinstance(self.query, dict) else self.type_
+        if self.__querytype in ["crypto", "searchobj"]:  # Reset country default
             self.country = None
 
     def __str__(self) -> str:
@@ -94,7 +97,7 @@ class Symbol:
         """Create a dictionary of arguments that work with tessa's price functions."""
         args = {
             "query": str(self.query),
-            "type_": self._querytype,
+            "type_": self.__querytype,
             "currency_preference": self._currency_preference,
         }
         if self.country is not None:

@@ -27,9 +27,9 @@ def test_initializer_with_defaults():
 def test_querytype():
     # pylint: disable=protected-access
     s = Symbol(name="X", type_="fund")
-    assert s._querytype == "fund"
+    assert s._Symbol__querytype == "fund"  # type: ignore
     s = Symbol(name="X", query={})
-    assert s._querytype == "searchobj"
+    assert s._Symbol__querytype == "searchobj"  # type: ignore
 
 
 def test_initalizer_without_country():
