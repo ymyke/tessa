@@ -36,8 +36,8 @@ class Symbol:
 
     # Class variables:
     _currency_preference: ClassVar[str] = "USD"
-    """Use this to set the preferred currency to get price information in. 
-    
+    """Use this to set the preferred currency to get price information in.
+
     This is no guarantee and you should always double-check the currency that gets
     returned by any of the `price_*` methods in actuality. This is also the reason why
     this feature is slightly hidden behind an underscore. 
