@@ -35,9 +35,15 @@ class Symbol:
     aliases: list[str] = field(default_factory=list)
 
     _querytype: str = field(init=False)
-    _currency_preference: str = "usd"
-    # FIXME Should this be a proper attribute? (If so, will need to adjust the crypto
-    # module in fignal.)
+    _currency_preference: ClassVar[str] = "USD"
+    """Use this to set the preferred currency to get price information in. 
+    
+    This is no guarantee and you should always double-check the currency that gets
+    returned by any of the `price_*` methods in actuality. This is also the reason why
+    this feature is slightly hidden behind an underscore. 
+
+    Since this is a class variable, you can set your preference once for all objects.
+    """
 
     def __post_init__(self) -> None:
         """Re(set) some attributes."""
