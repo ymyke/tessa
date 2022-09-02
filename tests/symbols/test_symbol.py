@@ -61,8 +61,8 @@ def test_price_functions():
     assert s.price_latest() == PricePoint(
         when=df.iloc[-1].name, price=float(df.iloc[-1]["close"]), currency=crncy
     )
-    assert s.today_price() == float(df.iloc[-1]["close"])
-    assert s.today() == df.iloc[-1].name
+    assert s.price_latest().price == float(df.iloc[-1]["close"])
+    assert s.price_latest().when == df.iloc[-1].name
     assert s.currency() == crncy
     assert s.price_point("2020-01-10").price == float(df.loc["2020-01-10"]["close"])
     # Check that the method returns the nearest price if necessary:

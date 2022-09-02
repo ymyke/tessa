@@ -21,7 +21,7 @@ class Symbol:
     - Price-related functions rely on caching happening on lower levels to be efficient;
       this is fulfilled thanks to the way tessa's caching works.
     - The initializers don't hit the network -- it will only be hit when accessing the
-      price functions or related functions such as `currency` or `today`.
+      price methods or related methods such as `currency`.
     - The `tessa.price` functions are used to get the actual price information, and they
       have a  `currency_preference` argument. This argument is not exposed explicitly by
       `Symbol` but if you need, you can set a preference by setting the
@@ -75,18 +75,6 @@ class Symbol:
     type_: {self.type_}
     country: {self.country}
 """
-
-    def today(self) -> pd.Timestamp:
-        """Return the latest date for which there is price information for this
-        symbol."""
-        # FIXME Get rid of both today and today_price and only use price_latest? Or keep
-        # them for convenience (there is also currency, after all)? On the other hand,
-        # "today" is misleading...
-        return self.price_latest().when
-
-    def today_price(self) -> float:
-        """Return the latest close price."""
-        return self.price_latest().price
 
     def currency(self) -> str:
         """Return currency for this symbol."""

@@ -65,8 +65,9 @@ class ExtendedSymbol(Symbol):
         """Add some extra information to the price graph."""
         (from_date, fig, ax) = super().price_graph(monthsback)
         print(f"{self.name}")
-        print(f"Latest price: {self.today_price():.2f}")
+        latestprice = self.price_latest().price
+        print(f"Latest price: {latestprice:.2f}")
         hist = self.price_history()[0]
         maxprice = hist[hist.index > from_date].max().close
-        print(f"Drop since max: {(self.today_price() - maxprice) / maxprice:2.0%}")
+        print(f"Drop since max: {(latestprice - maxprice) / maxprice:2.0%}")
         return from_date, fig, ax
