@@ -6,7 +6,14 @@ from . import Symbol
 
 
 class SymbolCollection:
-    """A collection of `Symbol`s."""
+    """A collection of `Symbol`s.
+
+    Note that `SymbolCollection` does not enforce any uniqueness or similar of symbols
+    or symbol attributes (especially names) in the collection.
+    """
+
+    symbols: List[Symbol]
+    """The `Symbol`s in the collection."""
 
     def __init__(self, symbol_class: Type[Symbol] = Symbol) -> None:
         """Use `symbol_class` to create extensions of `Symbol`."""
