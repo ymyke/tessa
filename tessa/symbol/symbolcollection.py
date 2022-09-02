@@ -19,11 +19,8 @@ class SymbolCollection:
     symbols: List[Symbol]
     """The `Symbol`s in the collection."""
 
-    def __init__(self, symbol_class: Type[Symbol] = Symbol) -> None:
-        """Use `symbol_class` to create extensions of `Symbol`."""
-        self.symbol_class = symbol_class
-        # FIXME ^ I think this should be an argument to the load_yaml method rather than
-        # an init parameter and instance attribute
+    def __init__(self) -> None:
+        """Initializer"""
         self.symbols = []
 
     def __iter__(self) -> object:
@@ -51,11 +48,16 @@ class SymbolCollection:
         """Find all `Symbol`s that match the query."""
         return [s for s in self.symbols if s.matches(what)]
 
-    def load_yaml(self, yaml_file: str) -> None:
-        """Load symbols from a YAML file."""
+    def load_yaml(self, yaml_file: str, which_class: Type[Symbol] = Symbol) -> None:
+        """Load symbols from a YAML file.
+
+        - `yaml_file`: Name/path of file to load.
+        - `which_class`: The class to be instantiated, can be used to instatiate
+          subclasses of `Symbol`.
+        """
         with open(yaml_file, "r", encoding="utf-8") as stream:
             ymldict = yaml.safe_load(stream)
-        self.symbols = [self.symbol_class(k, **(v or {})) for k, v in ymldict.items()]
+        self.symbols = [which_class(k, **(v or {})) for k, v in ymldict.items()]
 
     def to_yaml(self) -> str:
         """Return a YAML representation of all symbols."""
