@@ -67,3 +67,10 @@ def test_price_functions():
     assert s.price_point("2020-01-10").price == float(df.loc["2020-01-10"]["close"])
     # Check that the method returns the nearest price if necessary:
     assert s.price_point("2020-01-01").when == pd.Timestamp("2020-01-02", tz="UTC")
+
+
+@pytest.mark.net
+def test_currency_preference():
+    for check_currency in ["USD", "CHF"]:
+        Symbol._currency_preference = check_currency  # pylint: disable=protected-access
+        assert Symbol("bitcoin", type_="crypto").currency() == check_currency
