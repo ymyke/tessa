@@ -18,7 +18,7 @@ from tessa.symbol import Symbol
 
 def test_investing_search():
     """It returns the correct combined result."""
-    res = investing_search("AAPL", countries="united states", products="stocks")
+    res = investing_search("AAPL", countries="united states", types="stock")
     assert len(res["investing_stocks_by_symbol"]) == 1
     assert len(res["investing_searchobj_perfect"]) == 1
 
@@ -42,7 +42,7 @@ def test_searchnamesymbol():
         r1["investing_stocks_by_full_name"]
     )
     r2 = search_name_or_symbol(
-        "carbon", countries=["united states", "switzerland"], products=["etfs"]
+        "carbon", countries=["united states", "switzerland"], types=["etf"]
     )
     assert r2 != {}
     assert len(fullres) > len(r2)
@@ -58,12 +58,14 @@ def test_searchobjs_non_existent_name():
 
 def test_searchobjs_non_existent_country():
     """It returns an empty list if the country doesn't exist."""
-    assert search_for_searchobjs("one", "non_existent_country") == {}
+    assert search_for_searchobjs("one", countries="non_existent_country") == {}
 
 
 def test_searchobjs():
     """It returns a category with a list of `Symbol` objects."""
-    res = search_for_searchobjs("one", "switzerland")["investing_searchobj_perfect"]
+    res = search_for_searchobjs("one", countries="switzerland")[
+        "investing_searchobj_perfect"
+    ]
     assert len(res) == 1
     assert res[0].query == {
         "id_": 949673,
@@ -76,15 +78,16 @@ def test_searchobjs():
     }
 
 
-def test_searchobjs_filter_products():
-    """It works with different kinds of products filters."""
-    assert search_for_searchobjs("one", "switzerland", products="etfs") == {}
+def test_searchobjs_filter_types():
+    """It works with different kinds of types filters."""
+    assert search_for_searchobjs("one", countries="switzerland", types="etf") == {}
     assert (
-        search_for_searchobjs("one", "switzerland", products=["etfs", "stocks"]) != {}
+        search_for_searchobjs("one", countries="switzerland", types=["etf", "stock"])
+        != {}
     )
     assert (
         search_for_searchobjs(
-            "one", "switzerland", products=["etfs", "stocks", "non_existent_product"]
+            "one", countries="switzerland", types=["etf", "stock", "non_existent_type"]
         )
         != {}
     )

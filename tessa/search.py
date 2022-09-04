@@ -1,49 +1,50 @@
 """Unified search."""
 
-from typing import Optional, Union
 from .investing_search import investing_search
 from .coingecko_search import coingecko_search
+from .investing_types import InvestingType, ListOrItemOptional
 
 
 def search(
     query: str,
-    countries: Optional[Union[list, str]] = None,
-    products: Optional[Union[list, str]] = None,
+    types: ListOrItemOptional[InvestingType] = None,
+    countries: ListOrItemOptional[str] = None,
     silent: bool = False,
 ) -> dict:
     """Unified search function.
 
-    Args:
+    Standard args:
 
-    - query: The string to search for.
-    - silent: No print output if True.
+    - `query`: The string to search for.
+    - `silent`: No print output if True.
 
-    Optional/situational args:
+    Situational, optional args:
 
-    - countries: One or a list of countries to search in.
-    - products: One or a list of products to search for. Options are ["bonds",
-      "certificates", "commodities", "cryptos", "currencies", "currency_crosses",
-      "etfs", "funds", "fxfutures", "indices", "stocks"].
+    - `countries`: One or a list of countries to search in.
+    - `types`: One or a list of types such as "stock" or "etf" to search for.
+      See `investing_types.InvestingType` for a complete list.
 
-    Both `countries` and `products` will only be used for the searches on investing.
-    They can be a list or a string. They can also be `None`, in which case all products
-    or countries are searched.
+    Both `countries` and `types` will only be used for the searches
+    on investing. They can be a list or a string. They can also be `None`, in which case
+    all types (called products in investpy) or countries are searched. `types`
+    "type-hints" possible strings via `investing_types.InvestingType`.
 
     Returns:
 
-    - dict of finds in different categories.
+    - dict of category names (str), each containing the `Symbol`s found in this
+      category. Empty categories are omitted.
 
     Example calls:
 
     ```
     from tessa import search
     r1 = search("soft")
-    r2 = search("carbon", products=["etfs", "funds"])
+    r2 = search("carbon", types=["etf", "fund"])
     r3 = search("btc")
     ```
     """
     res = investing_search(
-        query, products=products, countries=countries
+        query, countries=countries, types=types
     ) | coingecko_search(query)
     if not silent:
         for k, v in res.items():

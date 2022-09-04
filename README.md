@@ -47,7 +47,7 @@ time if necessary.
 
 # Ex 2, medium – Find ticker and get price information for some 
 # lesser-known stock, e.g. the original Roche:
->>> res = search("roche", "switzerland")
+>>> res = search("roche", countries="switzerland")
     2 of investing_stocks_by_full_name
     2 of investing_stocks_by_name
     1 of investing_funds_by_name

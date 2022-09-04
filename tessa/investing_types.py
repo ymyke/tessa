@@ -1,8 +1,35 @@
 """Helper functions to work with investpy's types.
 
+Defines type `InvestingType` that lists all possible types that can be used.
+
 investpy sometimes uses plurals and sometimes singulars for its types. Hence the
 functions in this module help to simplify working with those types.
+
+Notes:
+
+- "crypto" is also a valid type but tessa uses pycoingecko for crypto. So crypto gets
+  ignored here.
+- investpy's `search_quotes` can also return "currencies" and "fxfutures" but we'll
+  ignore those, because investpy doesn't offer any price history retrieval for those.
 """
+
+from typing import Literal, Optional, Union, List, TypeVar
+
+
+T = TypeVar("T")
+ListOrItemOptional = Optional[Union[List[T], T]]
+
+InvestingType = Literal[
+    "certificate",
+    "commodity",
+    "bond",
+    "currency_cross",
+    "index",
+    "etf",
+    "stock",
+    "fund",
+]
+
 
 PLURALS2SINGULARS = {
     "certificates": "certificate",
@@ -13,9 +40,6 @@ PLURALS2SINGULARS = {
     "etfs": "etf",
     "stocks": "stock",
     "funds": "fund",
-    # "crypto" is also a valid type but tessa uses pycoingecko for crypto. investpy's
-    # `search_quotes` can also return "currencies" and "fxfutures" but we'll ignore
-    # those, so they are not included in the list above.
 }
 
 
@@ -39,3 +63,22 @@ def ensure_singular(type_: str) -> str:
     if type_ in PLURALS2SINGULARS.values():  # singular already?
         return type_
     return PLURALS2SINGULARS[type_]
+
+
+def ensure_plural(type_: str) -> str:
+    """Make sure `type_` is in its plural form."""
+    for k, v in PLURALS2SINGULARS.items():
+        if v == type_:
+            return k
+    # Will just return what it has received, even if the type_ is not even contained in
+    # PLURALS2SINGULARS:
+    return type_
+
+
+def pluralize_list(types: List[str]) -> List[str]:
+    """Pluralize an entire list."""
+    return [ensure_plural(x) for x in types]
+
+
+# FIXME Use InvestingType instead of str where appropriate
+# FIXME Rename ensure_singular to singularize and ensure_plural to pluralize

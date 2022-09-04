@@ -2,19 +2,19 @@
 
 import functools
 import ast
-from typing import Optional, Union
 import pandas as pd
 import investpy
 from .freezeargs import freezeargs
 from .rate_limiter import rate_limit
 from .symbol import Symbol
 from . import investing_types
+from .investing_types import ListOrItemOptional, InvestingType
 
 
 def investing_search(
     query: str,
-    countries: Optional[Union[list, str]] = None,
-    products: Optional[Union[list, str]] = None,
+    types: ListOrItemOptional[InvestingType] = None,
+    countries: ListOrItemOptional[str] = None,
 ) -> dict:
     """Find asset on investpy. This is the most generic function that simply combines
     the results of the 2 specific functions below.
@@ -30,27 +30,27 @@ def investing_search(
     ```
     from tessa.investing_search import investing_search
     r1 = investing_search("AAPL")
-    r2 = investing_search("AAPL", countries=["united states", "canada"], products="stocks")
+    r2 = investing_search("AAPL", countries=["united states", "canada"], types="stock")
     ```
     """
     return {
-        **search_name_or_symbol(query, countries, products),
-        **search_for_searchobjs(query, countries, products),
+        **search_name_or_symbol(query, types, countries),
+        **search_for_searchobjs(query, types, countries),
     }
 
 
-def _dataframe_to_symbols(df: pd.DataFrame, product: str) -> list:
+def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> list:
     """Convert a search result dataframe to a list of `Symbol`s.
 
     Unfortunately, investpy's dataframes are not well standardized. So we need to
-    convert from the dataframe columns to Symbol attributes with a number of if
+    convert from the dataframe columns to Symbol attributes with a number of `if`
     statements here. See also `_mapping_dataframe_columns_to_symbol_attributes` at the
     end of this file for a complete list of how to map the different types.
     """
     symbols = []
     for _, row in df.iterrows():
         d = row.to_dict()
-        type_ = investing_types.ensure_singular(product)
+        type_ = investing_types.ensure_singular(input_type)
         args = {
             "type_": type_,
             "aliases": [],
@@ -77,21 +77,18 @@ def _dataframe_to_symbols(df: pd.DataFrame, product: str) -> list:
 @functools.lru_cache(maxsize=None)
 def search_name_or_symbol(
     query: str,
-    countries: Optional[Union[list, str]] = None,
-    products: Optional[Union[list, str]] = None,
+    types: ListOrItemOptional[InvestingType] = None,
+    countries: ListOrItemOptional[str] = None,
 ) -> dict:
     """Run query through all of the search functions and all the search_by options of
-    `investpy` and return the results as a dict of product-search_by combinations. Also
-    print out how many results were found per key.
+    `investpy` and return the results as a dict of type-search_by combinations.
 
-    Args:
+    - `query`: The query to search for.
+    - `types`: A valid type, see `investing_types.InvestingType`.
+    - `countries`: A list of countries to search in.
 
-    - query: The query to search for.
-    - countries: A list of countries to search in.
-    - products: A valid product type, see `investing_types` module.
-
-    Both `countries` and `products` can be a list or a string. They can also be `None`,
-    in which case all products or countries are searched.
+    Both `countries` and `types` can be a list or a string. They can also be `None`,
+    in which case all types or countries are searched.
 
     Example calls:
 
@@ -99,35 +96,38 @@ def search_name_or_symbol(
     from tessa.investing_search import search_name_or_symbol
     r1 = search_name_or_symbol("carbon")
     r2 = search_name_or_symbol(
-        "carbon", countries=["united states", "switzerland"], products="etfs"
+        "carbon", countries=["united states", "switzerland"], types="etf"
     )
     ```
     """
-    rate_limit("investing")
-    valid_products = investing_types.get_plurals()
+    rate_limit("investing")  # FIXME Bug? This should be in the search loop below!?
+    valid_types = investing_types.get_plurals()
     valid_bys = ["full_name", "name", "symbol"]
 
-    # Prepare input parameters (make sure countries and products are (empty) lists):
+    # Prepare input parameters (make sure countries and types are (potentially empty)
+    # lists):
     query = query.lower()
     countries = [countries] if isinstance(countries, str) else countries
-    if products is not None:
-        products = [products] if isinstance(products, str) else products
-        products = set(products) & set(valid_products)  # Only valid products
+    if types is not None:
+        if isinstance(types, str):
+            types = [types]
+        types = investing_types.pluralize_list(types)
+        types = set(types) & set(valid_types)  # Only valid types
     else:
-        products = valid_products
+        types = valid_types
 
     # Search:
     res = {}
-    for product in products:
+    for type_ in types:
         for by in valid_bys:  # pylint: disable=invalid-name
             try:
-                df = getattr(investpy, "search_" + product)(by=by, value=query)
+                df = getattr(investpy, "search_" + type_)(by=by, value=query)
             except (RuntimeError, ValueError):
                 continue
             if countries is not None:
                 df = df[df.country.isin(countries)]
             if df.shape[0] > 0:
-                res[f"investing_{product}_by_{by}"] = _dataframe_to_symbols(df, product)
+                res[f"investing_{type_}_by_{by}"] = _dataframe_to_symbols(df, type_)
     return res
 
 
@@ -158,8 +158,8 @@ def _searchobj_to_symbols(objs: list) -> list:
 @functools.lru_cache(maxsize=None)
 def search_for_searchobjs(
     query: str,
-    countries: Optional[Union[list, str]] = None,
-    products: Optional[Union[list, str]] = None,
+    types: ListOrItemOptional[InvestingType] = None,
+    countries: ListOrItemOptional[str] = None,
 ) -> dict:
     """Run query through `investpy.search_quotes`, convert the `SearchObj` objects found
     into `Symbol`s and return those as lists triaged into perfect and other matches.
@@ -167,41 +167,38 @@ def search_for_searchobjs(
 
     cf https://github.com/alvarobartt/investpy/issues/129#issuecomment-604048750
 
-    Args:
+    - `query`: The query to search for.
+    - `types`: A valid type, see `investing_types.InvestingType`.
+    - `countries`: A list of countries to search in.
 
-    - query: The query to search for.
-    - countries: A list of countries to search in.
-    - products: A valid product type, see `investing_types` module.
-
-    Both `countries` and `products` can be a list or a string. They can also be `None`,
-    in which case all products or countries are searched.
+    Both `countries` and `types` can be a list or a string. They can also be `None`,
+    in which case all types or countries are searched.
 
     Example calls:
 
     ```
     from tessa.investing_search import search_for_searchobjs
     r1 = search_for_searchobjs("soft")
-    r2 = search_for_searchobjs("carbon", products=["etfs", "funds"])
+    r2 = search_for_searchobjs("carbon", types=["etf", "fund"])
     ```
     """
     rate_limit("investing")
-    valid_products = investing_types.get_plurals()
+    valid_types = investing_types.get_plurals()
 
     # Prepare input parameters:
     query = query.lower()
     countries = [countries] if isinstance(countries, str) else countries
-    if products is not None:
-        if isinstance(products, str):
-            products = [products]
-        products = list(set(products) & set(valid_products))  # Only valid products
-        products = products or None  # If empty, set to None
+    if types is not None:
+        if isinstance(types, str):
+            types = [types]
+        types = investing_types.pluralize_list(types)
+        types = list(set(types) & set(valid_types))  # Only valid types
+        types = types or None  # If empty, set to None
 
     # Search:
     try:
         search_res = investpy.search_quotes(
-            text=query,
-            products=products,
-            countries=countries,
+            text=query, products=types, countries=countries
         )
     except (ValueError, RuntimeError):
         return {}
