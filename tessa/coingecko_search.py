@@ -41,6 +41,8 @@ def coingecko_search(query: str) -> dict:
     r["coingecko_other_name"][0].price_latest()
     ```
     """
+    # FIXME Bug? Call to rate limiter missing? There is one in investing search
+    # functions.
     res = {}
     for category in ("symbol", "name"):
         for prefix, find_in in (
