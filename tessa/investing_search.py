@@ -50,7 +50,7 @@ def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> list:
     symbols = []
     for _, row in df.iterrows():
         d = row.to_dict()
-        type_ = investing_types.ensure_singular(input_type)
+        type_ = investing_types.singularize(input_type)
         args = {
             "type_": type_,
             "aliases": [],
@@ -139,7 +139,7 @@ def _searchobj_to_symbols(objs: list) -> list:
             Symbol(
                 name=obj.symbol,
                 type_=(
-                    investing_types.ensure_singular(obj.pair_type)
+                    investing_types.singularize(obj.pair_type)
                     if investing_types.is_valid(obj.pair_type)
                     else obj.pair_type
                     # Search objects can have certain types (e.g., currencies) that we

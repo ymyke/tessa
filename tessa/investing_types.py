@@ -58,14 +58,14 @@ def is_valid(type_: str) -> bool:
     return type_ in PLURALS2SINGULARS or type_ in PLURALS2SINGULARS.values()
 
 
-def ensure_singular(type_: str) -> str:
+def singularize(type_: str) -> str:
     """Make sure `type_` is in its singular form."""
     if type_ in PLURALS2SINGULARS.values():  # singular already?
         return type_
     return PLURALS2SINGULARS[type_]
 
 
-def ensure_plural(type_: str) -> str:
+def pluralize(type_: str) -> str:
     """Make sure `type_` is in its plural form."""
     for k, v in PLURALS2SINGULARS.items():
         if v == type_:
@@ -77,8 +77,7 @@ def ensure_plural(type_: str) -> str:
 
 def pluralize_list(types: List[str]) -> List[str]:
     """Pluralize an entire list."""
-    return [ensure_plural(x) for x in types]
+    return [pluralize(x) for x in types]
 
 
 # FIXME Use InvestingType instead of str where appropriate
-# FIXME Rename ensure_singular to singularize and ensure_plural to pluralize
