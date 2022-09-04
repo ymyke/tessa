@@ -16,6 +16,8 @@ These are internal notes that won't make much sense to anybody other than me...
     - also investing_types in here?
 - Add a separate type for search results instead of the generic dict: dict of strings
   (category names) to lists of Symbols.
+- Add a proper tessa type? (that is more or less aligned with the investing type -- see
+  the discussion under "products vs types discussion")
 - Why does `r = tessa.search("ldo", "switzerland")` find things?
 - What about fx?
 - Put the existing code and tests into subdirectories, e.g., price and search.
@@ -139,4 +141,48 @@ Note:
 - Use tessa in pypme for the investpy variants?
 - Do we have a timezone issue? Do the different APIs return datetimes in different
   timezones and should the standardized?
+
+
+# products vs types discussion
+
+A) just type_ ⭐ (future favorite?)
+- Align w/ the overall types w/ the search types
+- In all consequence, the search function should then also react to a "crypto" type and
+  only return coingecko results.
+- Should furthermore ignore searchobj
+- Need to add all kinds of code w/ questionable value-add
+
+⇒ Maybe revert to this once I added a type also for the "normal types"?
+
+Because:
+r = tessa.search("ldo", "stock")
+This returns stock and crypto, which is very counter-intuitive, isn't it?
+
+
+B) type_ and investing_type ⭐⭐
+- investing_type just for the search functions to select the dimensions along which to search.
+- Very straightforward, mostly name change.
+- But adds another type.
+- BUT do align type_ and investing_type anway!
+- BUT focus on investing_type for now and add type_ later in terms of using enums.
+
+C) type_ and search_type ❎
+- Don't have to ignore searchobj
+- Doesn't add much more other than that
+
+## The differences
+
+```python
+investing_types = set([ "certificate", "commodity", "bond", "currency_cross", "index",
+"etf", "stock", "fund", ])
+tessa_types = set(["crypto", "stock", "etf", "fund", "crypto", "bond", "index",
+  "certificate", "currency_cross", "searchobj"])
+
+s2 - s1
+{'crypto', 'searchobj'}
+
+s1 - s2
+{'commodity'}
+```
+
 
