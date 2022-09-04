@@ -78,6 +78,3 @@ def pluralize(type_: str) -> str:
 def pluralize_list(types: List[str]) -> List[str]:
     """Pluralize an entire list."""
     return [pluralize(x) for x in types]
-
-
-# FIXME Use InvestingType instead of str where appropriate
