@@ -14,9 +14,13 @@ These are internal notes that won't make much sense to anybody other than me...
   - tessa.search (same in tests)
   - tessa.utils? <- rate limiters? also freezeargs?
     - also investing_types in here?
+- Add a separate type for search results instead of the generic dict: dict of strings
+  (category names) to lists of Symbols.
+- Why does `r = tessa.search("ldo", "switzerland")` find things?
 - What about fx?
 - Put the existing code and tests into subdirectories, e.g., price and search.
 - Mark all tests that hit the net w/ @pytest.mark.net
+- Fix FIXMEs.
 
 - Add global configuration file for things like defaults, cf
   https://stackoverflow.com/questions/5055042/whats-the-best-practice-using-a-settings-file-in-python
@@ -31,15 +35,8 @@ These are internal notes that won't make much sense to anybody other than me...
       	+ some defaults for the new attributes?
       - symbol:
       	+ some defaults for the attributes?
-
-# QQ:
-
-- Add a more lenient `price_history` function? (Make this function as simple and
-straightforward as possible and then add another function that is as lenient and
-forgiving as possible and tries to assume reasonable defaults wherever possible. I.e.,
-set country to us if undefined or cycle through types if none given.) (E.g., would try
-to resolve an unknown crypto ticker using something like symbol_to_id or so...)
-
+  => Maybe just clean this all up and add proper documentation but no config file at 
+  this point in time.
 
 # Functionality
 
@@ -83,7 +80,7 @@ to resolve an unknown crypto ticker using something like symbol_to_id or so...)
     - Try stock / "united states"
     - Try crypto
   - Country given?
-    - Try stock, etfs, funds, bonds, ...
+    - Try stock, etfs, funds, bonds, ... (cycle through these)
 
 
 
@@ -139,8 +136,6 @@ Note:
 # Low prio stuff
 
 - Make sure we use pd.Dataframe vs Dataframe consistently.
-- Would still need a wrapper/monkeypatching function in fignal to patch in the LNKD
-  pricepoint.
 - Use tessa in pypme for the investpy variants?
 - Do we have a timezone issue? Do the different APIs return datetimes in different
   timezones and should the standardized?
