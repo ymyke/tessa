@@ -1,16 +1,18 @@
 """Everything related to searching via `investpy`."""
 
-from typing import List, Union
-import functools
 import ast
-import pandas as pd
+import functools
+from typing import List, Union
+
 import investpy
-from .freezeargs import freezeargs
-from .rate_limiter import rate_limit
-from .symbol import Symbol
+import pandas as pd
+
 from . import investing_types
-from .investing_types import ListOrItemOptional, InvestingType
+from .freezeargs import freezeargs
+from .investing_types import InvestingType, ListOrItemOptional
+from .rate_limiter import rate_limit
 from .search_result import SearchResult
+from .symbol import Symbol
 
 
 def investing_search(
