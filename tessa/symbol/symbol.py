@@ -60,13 +60,12 @@ class Symbol:
         """Special repr method that puts the `query` to the end and leaves out private
         attributes so a Symbol can be built directly from the repr output.
         """
-        query_str = (
-            f"'{self.query}'" if isinstance(self.query, str) else str(self.query)
-        )
-        return (
-            f"Symbol(name='{self.name}', type_='{self.type_}', "
-            f"country='{self.country}', aliases={self.aliases}, query={query_str})"
-        )
+        attributes = []
+        for attrib_name in ["name", "type_", "country", "aliases", "query"]:
+            attrib = getattr(self, attrib_name, None)
+            value = f"'{attrib}'" if isinstance(attrib, str) else attrib
+            attributes.append(f"{attrib_name}={value}")
+        return f"Symbol({', '.join(attributes)})"
 
     def __str__(self) -> str:
         txt = f"Symbol {self.name} of type {self.type_}"
