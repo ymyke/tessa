@@ -3,7 +3,6 @@
 from .investing_search import investing_search
 from .coingecko_search import coingecko_search
 from .investing_types import InvestingType, ListOrItemOptional
-from .search_result import SearchResult
 
 
 def search(
@@ -11,27 +10,29 @@ def search(
     types: ListOrItemOptional[InvestingType] = None,
     countries: ListOrItemOptional[str] = None,
     silent: bool = False,
-) -> SearchResult:
-    """Unified search function. Returns a `tessa.search_result.SearchResult`.
+) -> dict:
+    """Unified search function.
 
     Standard args:
 
-    - `query`: The string to search for. (Note that this query attribute has a different
-      semantics to the query attribute in the `Symbol` class.)
+    - `query`: The string to search for.
     - `silent`: No print output if True.
 
-    Situational, optional args: Use the following args to filter for countries or types
-    in order to go easy on the underlying APIs. Note that you can also filter on the
-    returned `SearchResult` object.
+    Situational, optional args:
 
     - `countries`: One or a list of countries to search in.
-    - `types`: One or a list of types such as "stock" or "etf" to search for. See
-      `investing_types.InvestingType` for a complete list.
+    - `types`: One or a list of types such as "stock" or "etf" to search for.
+      See `investing_types.InvestingType` for a complete list.
 
-    Both `countries` and `types` will only be used for the searches on investing. They
-    can be a list or a string. They can also be `None`, in which case all types (called
-    products in investpy) or countries are searched. `types` "type-hints" possible
-    strings via `investing_types.InvestingType`.
+    Both `countries` and `types` will only be used for the searches
+    on investing. They can be a list or a string. They can also be `None`, in which case
+    all types (called products in investpy) or countries are searched. `types`
+    "type-hints" possible strings via `investing_types.InvestingType`.
+
+    Returns:
+
+    - dict of category names (str), each containing the `Symbol`s found in this
+      category. Empty categories are omitted.
 
     Example calls:
 
@@ -42,8 +43,11 @@ def search(
     r3 = search("btc")
     ```
     """
-    res = investing_search(query, countries=countries, types=types)
-    res.add_symbols(coingecko_search(query).symbols)
+    res = investing_search(
+        query, countries=countries, types=types
+    ) | coingecko_search(query)
     if not silent:
-        res.p()
+        for k, v in res.items():
+            num = len(v) if isinstance(v, list) else v.shape[0]
+            print(f"{num:5d} of {k}")
     return res
