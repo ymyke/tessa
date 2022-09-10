@@ -1,6 +1,6 @@
 """Everything related to searching via `investpy`."""
 
-from typing import List
+from typing import List, Union
 import functools
 import ast
 import pandas as pd
@@ -73,10 +73,15 @@ def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> List[Symbol]:
     return symbols
 
 
-# @freezeargs
-# @functools.lru_cache(maxsize=None)
-# FIXME Caching doesn't work so easily here any longer -- will lead to new results being
-# added to the old list in SearchResult, thereby constantly extending the list.
+@freezeargs
+@functools.lru_cache(maxsize=None)
+def _investpy_search_for_type(type_: str, by_: str, query: str) -> pd.DataFrame:
+    """Tiny, separate wrapper so results can be cached in an easy and finegrained way
+    using functools.
+    """
+    return getattr(investpy, "search_" + type_)(by=by_, value=query).copy()
+
+
 def search_name_or_symbol(
     query: str,
     types: ListOrItemOptional[InvestingType] = None,
@@ -121,9 +126,9 @@ def search_name_or_symbol(
     # Search:
     res = SearchResult(query=query, symbols=[])
     for type_ in types:
-        for by in valid_bys:  # pylint: disable=invalid-name
+        for by_ in valid_bys:
             try:
-                df = getattr(investpy, "search_" + type_)(by=by, value=query)
+                df = _investpy_search_for_type(type_, by_, query)
             except (RuntimeError, ValueError):
                 continue
             if countries is not None:
@@ -156,8 +161,20 @@ def _searchobj_to_symbols(objs: list) -> list:
     return symbols
 
 
-# @freezeargs
-# @functools.lru_cache(maxsize=None)
+@freezeargs
+@functools.lru_cache(maxsize=None)
+def _investpy_search_for_search_quotes(
+    query: str, types: list, countries: list
+) -> Union[list, object]:
+    """Tiny, separate wrapper so results can be cached in an easy and finegrained way
+    using functools.
+    """
+    # freezeargs converts lists to tuples, so we have to convert them back if necessary:
+    types = list(types) if isinstance(types, tuple) else types
+    countries = list(countries) if isinstance(countries, tuple) else countries
+    return investpy.search_quotes(text=query, products=types, countries=countries)
+
+
 def search_for_searchobjs(
     query: str,
     types: ListOrItemOptional[InvestingType] = None,
@@ -199,9 +216,7 @@ def search_for_searchobjs(
 
     # Search:
     try:
-        search_res = investpy.search_quotes(
-            text=query, products=types, countries=countries
-        )
+        search_res = _investpy_search_for_search_quotes(query, types, countries)
     except (ValueError, RuntimeError):
         return SearchResult(query=query, symbols=[])
     if not isinstance(search_res, list):
