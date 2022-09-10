@@ -133,7 +133,17 @@ class SearchResult:
     purposes of the two classes are very different and because they have different
     equality definitions for symbols.)
 
-    FIXME Example use?
+    Example usage:
+
+    ```
+    from tessa import search
+    r = search("pins")
+    # Review results:
+    r.p()
+    # Get the 1 symbol in US in the best bucket (i.e., bucket 0):
+    s = r.filter(country="united states").buckets[0].symbols[0]
+    s.price_latest()
+    ```
     """
 
     query: str
