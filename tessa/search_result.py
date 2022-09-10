@@ -12,8 +12,6 @@ from .symbol import Symbol
 # Each matches_* function takes a `query` and a `Symbol` and returns an int denoting the
 # match, where lower numbers signify better matches but 0 (=falsy) signifies not match.
 
-# FIXME Add these examples to the tests?
-
 
 def matches_entire_name_or_alias(query: str, symbol: Symbol) -> int:
     """Try to match the complete name or one of the aliases completely. E.g.:

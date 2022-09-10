@@ -2,8 +2,20 @@
 
 # pylint: disable=missing-function-docstring
 
-from tessa.search_result import SearchResult
+from tessa.search_result import (
+    SearchResult,
+    matches_entire_name_or_alias,
+    matches_word_boundary,
+    matches_inanyway,
+)
 from tessa import Symbol
+
+
+def test_matches_predicates():
+    assert matches_entire_name_or_alias("eth", Symbol("ETH")) > 0
+    assert matches_word_boundary("eth", Symbol("ETHW", aliases=["PoW ETH"])) > 0
+    assert matches_inanyway("eth", Symbol("TOGETHER")) > 0
+    assert matches_inanyway("et h", Symbol("TOGETHER")) == 0
 
 
 def test_init_with_empty_list():
