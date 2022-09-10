@@ -116,8 +116,6 @@ def remove_duplicates(symbols: List[Symbol]) -> List[Symbol]:
     Note further that several symbols can have the same name but still be considered
     different if they differ in any of `type_`, `country`, or `query`.
     """
-    # FIXME Will this remove_duplicates function have a different definition of equality
-    # than the SymbolCollection class? -- If so, rightly so? Or is this an issue?
     equality_key = lambda symbol: str((symbol.type_, symbol.country, symbol.query))
     return [k for k, _ in itertools.groupby(sorted(symbols, key=equality_key))]
 
