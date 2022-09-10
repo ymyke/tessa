@@ -225,7 +225,10 @@ def search_for_searchobjs(
         # search_quotes sometimes returns just the SearchObj itself, but we always want
         # a list.
         search_res = [search_res]
-    return SearchResult(query=query, symbols=_searchobj_to_symbols(search_res))
+    symbols = _searchobj_to_symbols(search_res)
+    # Crypto is done exclusively via coingecko, so we filter symbols of that type here:
+    symbols = [s for s in symbols if s.type_ != "cryptos"]
+    return SearchResult(query=query, symbols=symbols)
 
 
 # -----·-----
