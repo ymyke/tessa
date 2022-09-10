@@ -1,5 +1,7 @@
 """Symbol-related tests."""
 
+import ast
+import re
 import pytest
 import pandas as pd
 import yaml
@@ -22,6 +24,13 @@ def test_initializer_with_defaults():
     assert s.type_ == "stock"
     assert s.country == "united states"
     assert s.query == "AAPL"
+
+
+def test_repr_can_be_transformed_back_into_symbol():
+    s = Symbol(name="x")
+    params = re.findall(r"Symbol\((.*)\)", repr(s))[0]
+    params_as_dict = "{" + re.sub(r"(^|, )((\w+)=)", r"\1'\3':", params) + "}"
+    assert Symbol(**ast.literal_eval(params_as_dict)) == s
 
 
 def test_querytype():

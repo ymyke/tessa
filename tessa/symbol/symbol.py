@@ -56,6 +56,18 @@ class Symbol:
         if self.__querytype in ["crypto", "searchobj"]:  # Reset country default
             self.country = None
 
+    def __repr__(self) -> str:
+        """Special repr method that puts the `query` to the end and leaves out private
+        attributes so a Symbol can be built directly from the repr output.
+        """
+        query_str = (
+            f"'{self.query}'" if isinstance(self.query, str) else str(self.query)
+        )
+        return (
+            f"Symbol(name='{self.name}', type_='{self.type_}', "
+            f"country='{self.country}', aliases={self.aliases}, query={query_str})"
+        )
+
     def __str__(self) -> str:
         txt = f"Symbol {self.name} of type {self.type_}"
         if getattr(self, "country", None):
