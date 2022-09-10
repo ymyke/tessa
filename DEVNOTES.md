@@ -23,6 +23,7 @@ These are internal notes that won't make much sense to anybody other than me...
 - Put the existing code and tests into subdirectories, e.g., price and search.
 - Mark all tests that hit the net w/ @pytest.mark.net
 - Fix FIXMEs.
+- Improve search (see section "Improving Search" below)
 
 - Add global configuration file for things like defaults, cf
   https://stackoverflow.com/questions/5055042/whats-the-best-practice-using-a-settings-file-in-python
@@ -39,6 +40,86 @@ These are internal notes that won't make much sense to anybody other than me...
       	+ some defaults for the attributes?
   => Maybe just clean this all up and add proper documentation but no config file at 
   this point in time.
+
+
+# Equality of symbols
+
+type_ + query + country ⇒ equality
+vs
+name
+
+in search results:
+- same name → can be different symbols
+- different type_ + query + country → different symbols, but can have same name
+- same type_ + query + country / different name → same symbols
+
+
+in SymbolCollection, if loaded from yaml:
+- same name → not possible
+- same type_ + query + country / different name → don't care
+
+
+⇒ SearchResult is not a subclass of SymbolCollection bc it has different invariants.
+⇒ Which invariants does SymbolCollection really have and impose?
+
+
+
+# Improving Search
+
+- FIX extend bug
+- FIX Symbols have no countries bug
+
+- Add a SearchResults (or similar) class that manages all the symbols from a search.
+  (What is the relationship between this SearchResults class and SearchCollection?)
+- Combine results in categories *_full_name, *_name and *_symbol, remove duplicates. --
+  Maybe combine all results in one collection (that would also answer the question re
+  SymbolCollection's role)
+  - With this approach, can we run into problems when we try to convert such a
+    collection to yaml bc several symbols can have the same key? (Brute force would be
+    to deactivate the to_yaml method -- another way to add some kind of check.)
+    - The problem is that in search results, we can have several symbols w the same name
+      but different other attributes.
+    - Options:
+      - A: Symbols in a collection can have duplicates in their names. However, when
+        they are stored to yaml, each name must be unique.
+      - B: Duplicate names in memory, but not in yaml.
+      - C: Have duplicates everywhere. -> no.
+  - Duplicate removal: E.g. via sorted + itertools.groupby.
+    - But requires class to be hashable -- 3 variants:
+      - frozen = True + workaround when setting attributes in post_init
+      - own __hash__ function
+      - unsafe_hash
+      - Do something with attrs library?
+
+- Offer methods to do the filtering, e.g., by type (and use the normal types instead of
+  the plurals), whether the match should be perfect, case-sensitive or not, etc.
+  (relationship to matches method in Symbol?).
+- Offer stats method or __str__ function that prints some summary. Maybe that gets
+  printed right after the search method completes?
+
+```
+   50 of investing_certificates_by_full_name
+    6 of investing_certificates_by_name
+   12 of investing_certificates_by_symbol
+   24 of investing_currency_crosses_by_full_name
+   24 of investing_currency_crosses_by_name
+   71 of investing_indices_by_full_name
+   72 of investing_indices_by_name
+   17 of investing_indices_by_symbol
+  183 of investing_etfs_by_full_name
+  127 of investing_etfs_by_name
+   20 of investing_etfs_by_symbol
+ 1813 of investing_stocks_by_full_name
+ 1048 of investing_stocks_by_name
+  362 of investing_stocks_by_symbol
+ 4213 of investing_funds_by_name
+  266 of investing_funds_by_symbol
+    3 of investing_searchobj_perfect
+ 3271 of investing_searchobj_other
+  144 of coingecko_other_symbol
+  278 of coingecko_other_name
+```
+
 
 # Functionality
 
