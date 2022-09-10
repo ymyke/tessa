@@ -53,7 +53,7 @@ class Symbol:
         if self.query is None:
             self.query = self.name
         self.__querytype = "searchobj" if isinstance(self.query, dict) else self.type_
-        if self.__querytype in ["crypto", "searchobj"]:  # Reset country default
+        if self.__querytype == "crypto":  # Reset country default
             self.country = None
 
     def __repr__(self) -> str:
@@ -100,7 +100,7 @@ class Symbol:
             "type_": self.__querytype,
             "currency_preference": self._currency_preference,
         }
-        if self.country is not None:
+        if self.country is not None and self.__querytype != "searchobj":
             args["country"] = self.country
         return args
 
