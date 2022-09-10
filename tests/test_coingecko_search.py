@@ -3,19 +3,17 @@
 Note that tests will hit the network and therefore will take a while to run.
 """
 
-# pylint: disable=use-implicit-booleaness-not-comparison
+# pylint: disable=missing-function-docstring
 
 from tessa.coingecko_search import coingecko_search
+from tessa.search_result import SearchResult
 
 
-def test_coingecko_search():
-    """It returns the correct result."""
+def test_coingecko_search_returns_plausible_results():
     res = coingecko_search("whale")
-    assert isinstance(res, dict)
-    assert len(res) == 4
-    assert len(res["coingecko_perfect_symbol"]) > 1
+    assert isinstance(res, SearchResult)
+    assert len(res.buckets[0].symbols) > 1
 
 
-def test_coingecko_search_non_existent_query():
-    """It returns an empty dict if the query doesn't exist."""
-    assert coingecko_search("non_existent_query") == {}
+def test_coingecko_search_returns_empty_result_for_non_existent_query():
+    assert coingecko_search("non_existent_query").symbols == []

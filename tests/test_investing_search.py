@@ -3,7 +3,7 @@
 Note that tests will hit the network and therefore will take a while to run.
 """
 
-# pylint: disable=use-implicit-booleaness-not-comparison,invalid-name
+# pylint: disable=invalid-name,missing-function-docstring
 
 from tessa.investing_search import (
     investing_search,
@@ -11,63 +11,57 @@ from tessa.investing_search import (
     search_for_searchobjs,
 )
 from tessa.symbol import Symbol
+from tessa.search_result import SearchResult
 
 
-# ----- investing_search related -----
-
-
-def test_investing_search():
-    """It returns the correct combined result."""
+def test_investing_search_returns_correct_combined_results():
     res = investing_search("AAPL", countries="united states", types="stock")
-    assert len(res["investing_stocks_by_symbol"]) == 1
-    assert len(res["investing_searchobj_perfect"]) == 1
+    assert isinstance(res, SearchResult)
+    assert len(res.symbols) > 0
+    # Make sure there are results from both investing-search sub-functions:
+    # pylint: disable=protected-access
+    assert any(s._Symbol__querytype == "stock" for s in res.symbols)  # type: ignore
+    assert any(s._Symbol__querytype == "searchobj" for s in res.symbols)  # type: ignore
 
 
 # ----- search_name_or_symbol related -----
 
 
-def test_searchnamesymbol_non_existent_name():
-    """It returns an empty list if the name doesn't exist."""
-    assert search_name_or_symbol("non_existent_name") == {}
+def test_searchnamesymbol_returns_empty_result_for_non_existent_query():
+    assert search_name_or_symbol("non_existent_name").symbols == []
 
 
-def test_searchnamesymbol():
-    """It returns a dictionary with dataframes and the filtering works correctly."""
+def test_searchnamesymbol_returns_plausible_results_inluding_when_filtering():
     fullres = search_name_or_symbol("carbon")
-    assert fullres != {}
-    assert isinstance(fullres["investing_stocks_by_full_name"][0], Symbol)
+    assert len(fullres.symbols) > 0
+    assert isinstance(fullres.symbols[0], Symbol)
     r1 = search_name_or_symbol("carbon", countries=["united states", "switzerland"])
-    assert r1 != {}
-    assert len(fullres["investing_stocks_by_full_name"]) > len(
-        r1["investing_stocks_by_full_name"]
-    )
+    assert len(r1.symbols) > 0
+    assert len(fullres.symbols) > len(r1.symbols)
     r2 = search_name_or_symbol(
         "carbon", countries=["united states", "switzerland"], types=["etf"]
     )
-    assert r2 != {}
-    assert len(fullres) > len(r2)
+    assert len(r2.symbols) > 0
+    assert len(fullres.symbols) > len(r2.symbols)
+    assert len(r1.symbols) > len(r2.symbols)
 
 
 # ----- search_for_searchobjs related -----
 
 
-def test_searchobjs_non_existent_name():
-    """It returns an empty list if the name doesn't exist."""
-    assert search_for_searchobjs("non_existent_name") == {}
+def test_searchobjs_returns_empty_result_for_non_existent_query():
+    assert search_for_searchobjs("non_existent_name").symbols == []
 
 
-def test_searchobjs_non_existent_country():
-    """It returns an empty list if the country doesn't exist."""
-    assert search_for_searchobjs("one", countries="non_existent_country") == {}
+def test_searchobjs_returns_empty_result_when_country_non_existent():
+    assert search_for_searchobjs("one", countries="non_existent_country").symbols == []
 
 
-def test_searchobjs():
-    """It returns a category with a list of `Symbol` objects."""
-    res = search_for_searchobjs("one", countries="switzerland")[
-        "investing_searchobj_perfect"
-    ]
-    assert len(res) == 1
-    assert res[0].query == {
+def test_searchobjs_returns_list_of_correct_symbol_objects_including_searchobj_query():
+    besthits = search_for_searchobjs("one", countries="switzerland").buckets[0].symbols
+    assert len(besthits) == 1
+    assert isinstance(besthits[0], Symbol)
+    assert besthits[0].query == {
         "id_": 949673,
         "name": "ONE swiss bank SA",
         "symbol": "ONE",
@@ -78,16 +72,21 @@ def test_searchobjs():
     }
 
 
-def test_searchobjs_filter_types():
-    """It works with different kinds of types filters."""
-    assert search_for_searchobjs("one", countries="switzerland", types="etf") == {}
+def test_searchobjs_returns_plausible_results_when_filtering():
     assert (
-        search_for_searchobjs("one", countries="switzerland", types=["etf", "stock"])
-        != {}
+        search_for_searchobjs("one", countries="switzerland", types="etf").symbols == []
     )
     assert (
         search_for_searchobjs(
-            "one", countries="switzerland", types=["etf", "stock", "non_existent_type"]
-        )
-        != {}
+            "one", countries="switzerland", types=["etf", "stock"]
+        ).symbols
+        != []
+    )
+    assert (
+        search_for_searchobjs(
+            "one",
+            countries="switzerland",
+            types=["etf", "stock", "non_existent_type"],  # type: ignore
+        ).symbols
+        != []
     )

@@ -3,6 +3,7 @@
 import functools
 from pycoingecko import CoinGeckoAPI
 from tessa.symbol import Symbol
+from .search_result import SearchResult
 
 
 @functools.lru_cache(maxsize=None)
@@ -26,28 +27,20 @@ def _matches_to_symbols(matches: list) -> list:
     ]
 
 
-def coingecko_search(query: str) -> dict:
-    """Help find coingecko ids.
-
-    Args:
-
-    - query: The query to search for.
+def coingecko_search(query: str) -> SearchResult:
+    """Find coingecko ids that match `query` somehow. Returns `SearchResult`.
 
     Example call:
 
     ```
     from tessa.coingecko_search import coingecko_search
     r = coingecko_search("jenny")
-    r["coingecko_other_name"][0].price_latest()
     ```
     """
-    res = {}
-    for category in ("symbol", "name"):
-        for prefix, find_in in (
-            ("coingecko_perfect", lambda x: query.lower() == x.lower()),
-            ("coingecko_other", lambda x: query.lower() in x.lower()),
-        ):
-            matches = [x for x in get_symbol_map() if find_in(x[category])]
-            if matches:
-                res[f"{prefix}_{category}"] = _matches_to_symbols(matches)
-    return res
+    matches = [
+        entry
+        for entry in get_symbol_map()
+        if query.lower() in entry["name"].lower()
+        or query.lower() in entry["symbol"].lower()
+    ]
+    return SearchResult(query=query, symbols=_matches_to_symbols(matches))

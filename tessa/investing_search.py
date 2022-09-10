@@ -1,5 +1,6 @@
 """Everything related to searching via `investpy`."""
 
+from typing import List
 import functools
 import ast
 import pandas as pd
@@ -9,18 +10,16 @@ from .rate_limiter import rate_limit
 from .symbol import Symbol
 from . import investing_types
 from .investing_types import ListOrItemOptional, InvestingType
+from .search_result import SearchResult
 
 
 def investing_search(
     query: str,
     types: ListOrItemOptional[InvestingType] = None,
     countries: ListOrItemOptional[str] = None,
-) -> dict:
+) -> SearchResult:
     """Find asset on investpy. This is the most generic function that simply combines
-    the results of the 2 specific functions below.
-
-    The result is a dictionary with different categories, each category with a list of
-    `Symbol`s.
+    the results of the 2 specific functions below. Returns a combined `SearchResult`.
 
     Also check the docstrings of the specific functions `search_name_or_symbol` and
     `search_for_searchobjs` below for more info.
@@ -33,13 +32,12 @@ def investing_search(
     r2 = investing_search("AAPL", countries=["united states", "canada"], types="stock")
     ```
     """
-    return {
-        **search_name_or_symbol(query, types, countries),
-        **search_for_searchobjs(query, types, countries),
-    }
+    res = search_name_or_symbol(query, types, countries)
+    res.add_symbols(search_for_searchobjs(query, types, countries).symbols)
+    return res
 
 
-def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> list:
+def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> List[Symbol]:
     """Convert a search result dataframe to a list of `Symbol`s.
 
     Unfortunately, investpy's dataframes are not well standardized. So we need to
@@ -75,15 +73,17 @@ def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> list:
     return symbols
 
 
-@freezeargs
-@functools.lru_cache(maxsize=None)
+# @freezeargs
+# @functools.lru_cache(maxsize=None)
+# FIXME Caching doesn't work so easily here any longer -- will lead to new results being
+# added to the old list in SearchResult, thereby constantly extending the list.
 def search_name_or_symbol(
     query: str,
     types: ListOrItemOptional[InvestingType] = None,
     countries: ListOrItemOptional[str] = None,
-) -> dict:
+) -> SearchResult:
     """Run query through all of the search functions and all the search_by options of
-    `investpy` and return the results as a dict of type-search_by combinations.
+    `investpy` and return the results as a `SearchResult`.
 
     - `query`: The query to search for.
     - `types`: A valid type, see `investing_types.InvestingType`.
@@ -119,7 +119,7 @@ def search_name_or_symbol(
         types = valid_types
 
     # Search:
-    res = {}
+    res = SearchResult(query=query, symbols=[])
     for type_ in types:
         for by in valid_bys:  # pylint: disable=invalid-name
             try:
@@ -129,7 +129,7 @@ def search_name_or_symbol(
             if countries is not None:
                 df = df[df.country.isin(countries)]
             if df.shape[0] > 0:
-                res[f"investing_{type_}_by_{by}"] = _dataframe_to_symbols(df, type_)
+                res.add_symbols(_dataframe_to_symbols(df, type_))
     return res
 
 
@@ -156,16 +156,15 @@ def _searchobj_to_symbols(objs: list) -> list:
     return symbols
 
 
-@freezeargs
-@functools.lru_cache(maxsize=None)
+# @freezeargs
+# @functools.lru_cache(maxsize=None)
 def search_for_searchobjs(
     query: str,
     types: ListOrItemOptional[InvestingType] = None,
     countries: ListOrItemOptional[str] = None,
-) -> dict:
+) -> SearchResult:
     """Run query through `investpy.search_quotes`, convert the `SearchObj` objects found
-    into `Symbol`s and return those as lists triaged into perfect and other matches.
-    Also print out how many results were found per category.
+    into `Symbol`s and return those as a `SearchResult`.
 
     cf https://github.com/alvarobartt/investpy/issues/129#issuecomment-604048750
 
@@ -196,6 +195,7 @@ def search_for_searchobjs(
         types = investing_types.pluralize_list(types)
         types = list(set(types) & set(valid_types))  # Only valid types
         types = types or None  # If empty, set to None
+    # FIXME Quite some redundancy with the other search method up to here...
 
     # Search:
     try:
@@ -203,26 +203,12 @@ def search_for_searchobjs(
             text=query, products=types, countries=countries
         )
     except (ValueError, RuntimeError):
-        return {}
-
-    # search_quotes sometimes returns just the SearchObj itself, but we always want a
-    # list:
+        return SearchResult(query=query, symbols=[])
     if not isinstance(search_res, list):
+        # search_quotes sometimes returns just the SearchObj itself, but we always want
+        # a list.
         search_res = [search_res]
-
-    # Triage:
-    perfect_matches = [
-        x for x in search_res if x.symbol.lower() == query or x.name.lower() == query
-    ]
-    other_matches = set(search_res) - set(perfect_matches)
-    return {
-        category_name: _searchobj_to_symbols(category_matches)
-        for category_name, category_matches in zip(
-            ["investing_searchobj_perfect", "investing_searchobj_other"],
-            [perfect_matches, other_matches],
-        )
-        if category_matches
-    }
+    return SearchResult(query=query, symbols=_searchobj_to_symbols(search_res))
 
 
 # -----·-----
