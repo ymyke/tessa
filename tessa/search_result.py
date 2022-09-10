@@ -110,7 +110,11 @@ def create_sort_key_for_query(query: str) -> Callable:
 
 def remove_duplicates(symbols: List[Symbol]) -> List[Symbol]:
     """Return a list in which every `Symbol` is unique. Two symbols are considered
-    equivalent if they match in `type_`, `country`, and `query`.
+    equivalent if they match in `type_`, `country`, and `query`. Regardless of whether
+    their names are the same or different.
+
+    Note further that several symbols can have the same name but still be considered
+    different if they differ in any of `type_`, `country`, or `query`.
     """
     # FIXME Will this remove_duplicates function have a different definition of equality
     # than the SymbolCollection class? -- If so, rightly so? Or is this an issue?
@@ -125,6 +129,10 @@ class SearchResult:
     """Manages a search result consisting of a list of `Symbol`s. Removes duplicates,
     bucketizes, sorts and offers methods to filter and print statistics.
 
+    (Design note: `SearchResult` has no relationship with `SymbolCollection` because the
+    purposes of the two classes are very different and because they have different
+    equality definitions for symbols.)
+
     FIXME Example use?
     """
 
@@ -132,7 +140,7 @@ class SearchResult:
     """The query that produced the results here."""
 
     symbols: List[Symbol]
-    """List of symbols in this result."""
+    """List of symbols in this result. Always deduplicated and sorted."""
 
     buckets: List[Bucket]
     """List of buckets after bucketizing the symbols."""
