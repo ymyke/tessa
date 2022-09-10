@@ -34,7 +34,7 @@ def coingecko_search(query: str) -> dict:
     - query: The query to search for.
 
     Example call:
-    
+
     ```
     from tessa.coingecko_search import coingecko_search
     r = coingecko_search("jenny")
