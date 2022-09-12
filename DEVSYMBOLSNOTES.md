@@ -10,14 +10,13 @@ These are internal notes that won't make much sense to anybody other than me...
 
 # Todo
 
-- Bug: symbols created from search objects from a search() call do not have the country
-  set.
-- Check all FIXMEs
+- Search:
+  - Check DEVSYMNOTES, Check DEVNOTES, Continue w documentation
+
 - Add documentation (see below) / pdoc
 - Compare to master and identify all changes to the price.* and search interface:
   - Adjust README accordingly.
   - Mention in release notes.
-- Try pydantic for the Symbols/YAML reader?
 - Add links to pdoc documentation to README and maybe toml file.
 - Check if it works w Python 3.7.x
 - Merge
@@ -51,7 +50,9 @@ These are internal notes that won't make much sense to anybody other than me...
   are now type hints thanks to InvestingType. (75426954040673cfd6c4b982a12221819ab86e8b)
 - In the main search function, the parameters are now called investing_countries and
   investing_types. (75426954040673cfd6c4b982a12221819ab86e8b)
-
+- All search functions no longer support types_ and countries parameters. Use
+  SearchResult instead.
+  
 
 # Terminology
 

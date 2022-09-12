@@ -14,32 +14,17 @@ These are internal notes that won't make much sense to anybody other than me...
   - tessa.search (same in tests)
   - tessa.utils? <- rate limiters? also freezeargs?
     - also investing_types in here?
-- Add a separate type for search results instead of the generic dict: dict of strings
-  (category names) to lists of Symbols.
-- Add a proper tessa type? (that is more or less aligned with the investing type -- see
-  the discussion under "products vs types discussion")
-- Why does `r = tessa.search("ldo", "switzerland")` find things?
-- What about fx?
 - Put the existing code and tests into subdirectories, e.g., price and search.
 - Mark all tests that hit the net w/ @pytest.mark.net
 - Fix FIXMEs.
-- Improve search (see section "Improving Search" below)
 
-- Add global configuration file for things like defaults, cf
-  https://stackoverflow.com/questions/5055042/whats-the-best-practice-using-a-settings-file-in-python
-  (If this is part of the git repo, doesn't this provoke problems (i.e., merge
-  conflicts) when the repo updates? What is the best practice here?)
-  Some things to put in there:
-      - timeouts in rate_limiter
-      - investing's MIN_FROM_DATE
-      - extended_symbol:
-      	+ j2r.jurisdiction2region.update
-      	+ j2r.region2name.update
-      	+ some defaults for the new attributes?
-      - symbol:
-      	+ some defaults for the attributes?
-  => Maybe just clean this all up and add proper documentation but no config file at 
-  this point in time.
+
+# Some day
+
+- Add some Literal type for "stock", "etf" etc. that can be used for type hints,
+  autocomplete suggestions, and type checking in price.py (and elsewhere?). (List of
+  types: ["crypto", "stock", "etf", "fund", "crypto", "bond", "index", "certificate",
+  "currency_cross", "searchobj"])
 
 
 # Equality of symbols
@@ -63,117 +48,12 @@ in SymbolCollection, if loaded from yaml:
 ⇒ Which invariants does SymbolCollection really have and impose?
 
 
-
-# Improving Search
-
-- FIX extend bug
-- FIX Symbols have no countries bug
-
-- Add a SearchResults (or similar) class that manages all the symbols from a search.
-  (What is the relationship between this SearchResults class and SearchCollection?)
-- Combine results in categories *_full_name, *_name and *_symbol, remove duplicates. --
-  Maybe combine all results in one collection (that would also answer the question re
-  SymbolCollection's role)
-  - With this approach, can we run into problems when we try to convert such a
-    collection to yaml bc several symbols can have the same key? (Brute force would be
-    to deactivate the to_yaml method -- another way to add some kind of check.)
-    - The problem is that in search results, we can have several symbols w the same name
-      but different other attributes.
-    - Options:
-      - A: Symbols in a collection can have duplicates in their names. However, when
-        they are stored to yaml, each name must be unique.
-      - B: Duplicate names in memory, but not in yaml.
-      - C: Have duplicates everywhere. -> no.
-  - Duplicate removal: E.g. via sorted + itertools.groupby.
-    - But requires class to be hashable -- 3 variants:
-      - frozen = True + workaround when setting attributes in post_init
-      - own __hash__ function
-      - unsafe_hash
-      - Do something with attrs library?
-
-- Offer methods to do the filtering, e.g., by type (and use the normal types instead of
-  the plurals), whether the match should be perfect, case-sensitive or not, etc.
-  (relationship to matches method in Symbol?).
-- Offer stats method or __str__ function that prints some summary. Maybe that gets
-  printed right after the search method completes?
-
-```
-   50 of investing_certificates_by_full_name
-    6 of investing_certificates_by_name
-   12 of investing_certificates_by_symbol
-   24 of investing_currency_crosses_by_full_name
-   24 of investing_currency_crosses_by_name
-   71 of investing_indices_by_full_name
-   72 of investing_indices_by_name
-   17 of investing_indices_by_symbol
-  183 of investing_etfs_by_full_name
-  127 of investing_etfs_by_name
-   20 of investing_etfs_by_symbol
- 1813 of investing_stocks_by_full_name
- 1048 of investing_stocks_by_name
-  362 of investing_stocks_by_symbol
- 4213 of investing_funds_by_name
-  266 of investing_funds_by_symbol
-    3 of investing_searchobj_perfect
- 3271 of investing_searchobj_other
-  144 of coingecko_other_symbol
-  278 of coingecko_other_name
-```
-
-
-# Functionality
-
-- Calls:
-  - price_history(asset_spec, target_currency)
-    - w/o target_currency: simply return whatever we get along with the currency?
-  - price_point(asset_spec, date, target_currency)
-    - return effective date, price, currency
-  - price_latest(asset_spec, target_currency)
-    - return effective date, price, currency
-  - exchange -- should be a separate function 
-  - BTW, should target_currency be more like an asset_spec for the target?
-    - Or is fiat enough? Or is there a need for something like history("BTC", "ETH"),
-      i.e. retrieving the price of "BTC" in "ETH"?
-  - Or: Make this oo? asset.price_history, asset.price_point, asset.price_latest,
-    asset.convert_to(asset) -- Then we'd have an asset directory.
-- Should this be more generic?
-  - history(asset_spec, return_spec)
-    - asset_spec example: sren.sw, public stock, bloombergticker, switzerland
-    - asset_spec example: metaportal-gaming-index, crypto, coingeckosymbol
-      - Is bloombergticker and coingeckosymbol a type or a namespace? I think rather a
-        namespace.
-    - return_spec example: price, chf
-  - => no, this is too generic.
-- Should there also be verbose variants that return all kind of additional information?
-- Give hints re asset characteristics such as type or country etc. -- or try to get them
-  from a central directory if nothing given.
-- Get any asset price in any arbitrary currency.
-  - No need for fx? (Or fx only as a helper method?)
-  - Might need "routing", i.e., exchange information over several hops whenever there is
-    no immediate exchange available between two assets? Could become complex to resolve.
-- Should there be finer-grained time resolution for things such as crypto?
-
-
-# More lenient version?
-
-- price_history_magic
-  - SearchObj? -> Use that
-  - Look up in config / directory
-  - No country given?
-    - Try stock / "united states"
-    - Try crypto
-  - Country given?
-    - Try stock, etfs, funds, bonds, ... (cycle through these)
-
-
-
-## Other dependencies
+## MetricHistory
 
 - What about MetricHistory? -- I guess this is part of alerts? Or should this be another
   separate package? If so, why? -- Or should the whole thing be a library and alerts,
   ticker, metric history etc. be packages within it? -- Would MetricHistory be a
   glorified / persistent cache for tessa?
-
 
 
 # Overall package architecture
@@ -222,48 +102,5 @@ Note:
 - Use tessa in pypme for the investpy variants?
 - Do we have a timezone issue? Do the different APIs return datetimes in different
   timezones and should the standardized?
-
-
-# products vs types discussion
-
-A) just type_ ⭐ (future favorite?)
-- Align w/ the overall types w/ the search types
-- In all consequence, the search function should then also react to a "crypto" type and
-  only return coingecko results.
-- Should furthermore ignore searchobj
-- Need to add all kinds of code w/ questionable value-add
-
-⇒ Maybe revert to this once I added a type also for the "normal types"?
-
-Because:
-r = tessa.search("ldo", "stock")
-This returns stock and crypto, which is very counter-intuitive, isn't it?
-
-
-B) type_ and investing_type ⭐⭐
-- investing_type just for the search functions to select the dimensions along which to search.
-- Very straightforward, mostly name change.
-- But adds another type.
-- BUT do align type_ and investing_type anway!
-- BUT focus on investing_type for now and add type_ later in terms of using enums.
-
-C) type_ and search_type ❎
-- Don't have to ignore searchobj
-- Doesn't add much more other than that
-
-## The differences
-
-```python
-investing_types = set([ "certificate", "commodity", "bond", "currency_cross", "index",
-"etf", "stock", "fund", ])
-tessa_types = set(["crypto", "stock", "etf", "fund", "crypto", "bond", "index",
-  "certificate", "currency_cross", "searchobj"])
-
-s2 - s1
-{'crypto', 'searchobj'}
-
-s1 - s2
-{'commodity'}
-```
 
 
