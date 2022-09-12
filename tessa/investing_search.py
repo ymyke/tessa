@@ -2,40 +2,26 @@
 
 import ast
 import functools
-from typing import List, Union
+import itertools
+import random
+from typing import List
 
 import investpy
 import pandas as pd
 
-from . import investing_types
+from . import investing_types as itypes
+from . import rate_limiter
 from .freezeargs import freezeargs
-from .investing_types import InvestingType, ListOrItemOptional
-from .rate_limiter import rate_limit
 from .search_result import SearchResult
 from .symbol import Symbol
 
 
-def investing_search(
-    query: str,
-    types: ListOrItemOptional[InvestingType] = None,
-    countries: ListOrItemOptional[str] = None,
-) -> SearchResult:
+def investing_search(query: str, silent: bool = False) -> SearchResult:
     """Find asset on investpy. This is the most generic function that simply combines
     the results of the 2 specific functions below. Returns a combined `SearchResult`.
-
-    Also check the docstrings of the specific functions `search_name_or_symbol` and
-    `search_for_searchobjs` below for more info.
-
-    Example calls:
-
-    ```
-    from tessa.investing_search import investing_search
-    r1 = investing_search("AAPL")
-    r2 = investing_search("AAPL", countries=["united states", "canada"], types="stock")
-    ```
     """
-    res = search_name_or_symbol(query, types, countries)
-    res.add_symbols(search_for_searchobjs(query, types, countries).symbols)
+    res = search_name_or_symbol(query, silent)
+    res.add_symbols(search_for_searchobjs(query).symbols)
     return res
 
 
@@ -50,7 +36,7 @@ def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> List[Symbol]:
     symbols = []
     for _, row in df.iterrows():
         d = row.to_dict()
-        type_ = investing_types.singularize(input_type)
+        type_ = itypes.singularize(input_type)
         args = {
             "type_": type_,
             "aliases": [],
@@ -77,66 +63,52 @@ def _dataframe_to_symbols(df: pd.DataFrame, input_type: str) -> List[Symbol]:
 
 @freezeargs
 @functools.lru_cache(maxsize=None)
-def _investpy_search_for_type(type_: str, by_: str, query: str) -> pd.DataFrame:
-    """Tiny, separate wrapper so results can be cached in an easy and finegrained way
+def _investpy_search_for_type(
+    type_: str, by_: str, query: str, silent: bool
+) -> List[Symbol]:
+    """Small wrapper so results can be cached in an easy and finegrained way
     using functools.
     """
-    return getattr(investpy, "search_" + type_)(by=by_, value=query).copy()
+    if not silent:
+        print(random.choice("☕🥱😴💤🛌🦥🕰️🐌🐛🪱🐢"), end="")
+    rate_limiter.rate_limit("investing_search")
+    try:
+        df = getattr(investpy, "search_" + type_)(by=by_, value=query)
+    except (RuntimeError, ValueError):
+        return []
+    return _dataframe_to_symbols(df, type_)
 
 
-def search_name_or_symbol(
-    query: str,
-    types: ListOrItemOptional[InvestingType] = None,
-    countries: ListOrItemOptional[str] = None,
-) -> SearchResult:
+def search_name_or_symbol(query: str, silent: bool = False) -> SearchResult:
     """Run query through all of the search functions and all the search_by options of
     `investpy` and return the results as a `SearchResult`.
-
-    - `query`: The query to search for.
-    - `types`: A valid type, see `investing_types.InvestingType`.
-    - `countries`: A list of countries to search in.
-
-    Both `countries` and `types` can be a list or a string. They can also be `None`,
-    in which case all types or countries are searched.
-
-    Example calls:
-
-    ```
-    from tessa.investing_search import search_name_or_symbol
-    r1 = search_name_or_symbol("carbon")
-    r2 = search_name_or_symbol(
-        "carbon", countries=["united states", "switzerland"], types="etf"
-    )
-    ```
     """
-    rate_limit("investing")  # FIXME Bug? This should be in the search loop below!?
-    valid_types = investing_types.get_plurals()
-    valid_bys = ["full_name", "name", "symbol"]
 
-    # Prepare input parameters (make sure countries and types are (potentially empty)
-    # lists):
-    query = query.lower()
-    countries = [countries] if isinstance(countries, str) else countries
-    if types is not None:
-        if isinstance(types, str):
-            types = [types]
-        types = investing_types.pluralize_list(types)
-        types = set(types) & set(valid_types)  # Only valid types
-    else:
-        types = valid_types
+    which_types = itypes.pluralize_list(itypes.get_enabled_investing_types())
+    which_bys = ["full_name", "name", "symbol"]
+
+    # Print some search stats and advise:
+    if not silent:
+        estimated_time = (
+            len(which_types)
+            * len(which_bys)
+            * rate_limiter.original_guards["investing_search"]["wait_seconds"]
+        )
+        print(f"This search could take up to about {estimated_time} seconds.")
+        if estimated_time > 10:
+            print(
+                "Consider using tessa.set_enabled_investing_types() to reduce the "
+                "number of investing types to the necessary minimum. (Currently "
+                f"enabled: {itypes.get_enabled_investing_types()})"
+            )
 
     # Search:
-    res = SearchResult(query=query, symbols=[])
-    for type_ in types:
-        for by_ in valid_bys:
-            try:
-                df = _investpy_search_for_type(type_, by_, query)
-            except (RuntimeError, ValueError):
-                continue
-            if countries is not None:
-                df = df[df.country.isin(countries)]
-            if df.shape[0] > 0:
-                res.add_symbols(_dataframe_to_symbols(df, type_))
+    res = SearchResult(query=query.lower(), symbols=[])
+    for type_, by_ in itertools.product(which_types, which_bys):
+        res.add_symbols(_investpy_search_for_type(type_, by_, query, silent))
+
+    if not silent:
+        print("\n\n")
     return res
 
 
@@ -148,8 +120,8 @@ def _searchobj_to_symbols(objs: list) -> list:
             Symbol(
                 name=obj.symbol,
                 type_=(
-                    investing_types.singularize(obj.pair_type)
-                    if investing_types.is_valid(obj.pair_type)
+                    itypes.singularize(obj.pair_type)
+                    if itypes.is_valid(obj.pair_type)
                     else obj.pair_type
                     # Search objects can have certain types (e.g., currencies) that we
                     # don't "officially" support in symbols. We simply pass these
@@ -165,67 +137,28 @@ def _searchobj_to_symbols(objs: list) -> list:
 
 @freezeargs
 @functools.lru_cache(maxsize=None)
-def _investpy_search_for_search_quotes(
-    query: str, types: list, countries: list
-) -> Union[list, object]:
-    """Tiny, separate wrapper so results can be cached in an easy and finegrained way
-    using functools.
+def _investpy_search_for_search_quotes(query: str) -> List[Symbol]:
+    """Small wrapper so results can be cached in an easy and finegrained way using
+    functools.
     """
-    # freezeargs converts lists to tuples, so we have to convert them back if necessary:
-    types = list(types) if isinstance(types, tuple) else types
-    countries = list(countries) if isinstance(countries, tuple) else countries
-    return investpy.search_quotes(text=query, products=types, countries=countries)
+    rate_limiter.rate_limit("investing_search")
+    try:
+        search_res = investpy.search_quotes(query)
+    except (ValueError, RuntimeError):
+        return []
+    # search_quotes sometimes returns just a SearchObj, but we always want a list:
+    if not isinstance(search_res, list):
+        search_res = [search_res]
+    return _searchobj_to_symbols(search_res)
 
 
-def search_for_searchobjs(
-    query: str,
-    types: ListOrItemOptional[InvestingType] = None,
-    countries: ListOrItemOptional[str] = None,
-) -> SearchResult:
+def search_for_searchobjs(query: str) -> SearchResult:
     """Run query through `investpy.search_quotes`, convert the `SearchObj` objects found
     into `Symbol`s and return those as a `SearchResult`.
 
-    cf https://github.com/alvarobartt/investpy/issues/129#issuecomment-604048750
-
-    - `query`: The query to search for.
-    - `types`: A valid type, see `investing_types.InvestingType`.
-    - `countries`: A list of countries to search in.
-
-    Both `countries` and `types` can be a list or a string. They can also be `None`,
-    in which case all types or countries are searched.
-
-    Example calls:
-
-    ```
-    from tessa.investing_search import search_for_searchobjs
-    r1 = search_for_searchobjs("soft")
-    r2 = search_for_searchobjs("carbon", types=["etf", "fund"])
-    ```
+    See also https://github.com/alvarobartt/investpy/issues/129#issuecomment-604048750
     """
-    rate_limit("investing")
-    valid_types = investing_types.get_plurals()
-
-    # Prepare input parameters:
-    query = query.lower()
-    countries = [countries] if isinstance(countries, str) else countries
-    if types is not None:
-        if isinstance(types, str):
-            types = [types]
-        types = investing_types.pluralize_list(types)
-        types = list(set(types) & set(valid_types))  # Only valid types
-        types = types or None  # If empty, set to None
-    # FIXME Quite some redundancy with the other search method up to here...
-
-    # Search:
-    try:
-        search_res = _investpy_search_for_search_quotes(query, types, countries)
-    except (ValueError, RuntimeError):
-        return SearchResult(query=query, symbols=[])
-    if not isinstance(search_res, list):
-        # search_quotes sometimes returns just the SearchObj itself, but we always want
-        # a list.
-        search_res = [search_res]
-    symbols = _searchobj_to_symbols(search_res)
+    symbols = _investpy_search_for_search_quotes(query)
     # Crypto is done exclusively via coingecko, so we filter symbols of that type here:
     symbols = [s for s in symbols if s.type_ != "cryptos"]
     return SearchResult(query=query, symbols=symbols)

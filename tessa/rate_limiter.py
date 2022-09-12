@@ -14,6 +14,9 @@ guards = {}
 
 original_guards = {
     # `reset_guards` will add `last_call` to each guard.
+    "investing_search": {
+        "wait_seconds": 1,
+    },
     "investing": {
         "wait_seconds": 2,
     },
@@ -39,7 +42,8 @@ def reset_guards() -> None:
 
 def rate_limit(type_: str) -> None:
     """Do the actual rate limiting."""
-    which_guard = "crypto" if type_ == "crypto" else "investing"
+    # This is necessary because the price functions simply send the `type_`:
+    which_guard = type_ if type_ in ["crypto", "investing_search"] else "investing"
     guard = guards[which_guard]
     diff = (pendulum.now() - guard["last_call"]).total_seconds()
     if diff < guard["wait_seconds"]:

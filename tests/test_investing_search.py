@@ -3,7 +3,7 @@
 Note that tests will hit the network and therefore will take a while to run.
 """
 
-# pylint: disable=invalid-name,missing-function-docstring
+# pylint: disable=invalid-name,missing-docstring
 
 from tessa.investing_search import (
     investing_search,
@@ -12,10 +12,12 @@ from tessa.investing_search import (
 )
 from tessa.symbol import Symbol
 from tessa.search_result import SearchResult
+from tessa.investing_types import set_enabled_investing_types_temporarily
 
 
 def test_investing_search_returns_correct_combined_results():
-    res = investing_search("AAPL", countries="united states", types="stock")
+    with set_enabled_investing_types_temporarily(["stock"]):
+        res = investing_search("AAPL")
     assert isinstance(res, SearchResult)
     assert len(res.symbols) > 0
     # Make sure there are results from both investing-search sub-functions:
@@ -28,21 +30,23 @@ def test_investing_search_returns_correct_combined_results():
 
 
 def test_searchnamesymbol_returns_empty_result_for_non_existent_query():
-    assert search_name_or_symbol("non_existent_name").symbols == []
+    with set_enabled_investing_types_temporarily(["stock"]):
+        assert search_name_or_symbol("non_existent_name").symbols == []
 
 
 def test_searchnamesymbol_returns_plausible_results_inluding_when_filtering():
-    fullres = search_name_or_symbol("carbon")
-    assert len(fullres.symbols) > 0
-    assert isinstance(fullres.symbols[0], Symbol)
-    r1 = search_name_or_symbol("carbon", countries=["united states", "switzerland"])
+    with set_enabled_investing_types_temporarily(["stock", "fund", "etf"]):
+        r0 = search_name_or_symbol("carbon")
+    assert len(r0.symbols) > 0
+    assert isinstance(r0.symbols[0], Symbol)
+    with set_enabled_investing_types_temporarily(["stock", "fund"]):
+        r1 = search_name_or_symbol("carbon")
     assert len(r1.symbols) > 0
-    assert len(fullres.symbols) > len(r1.symbols)
-    r2 = search_name_or_symbol(
-        "carbon", countries=["united states", "switzerland"], types=["etf"]
-    )
+    assert len(r0.symbols) > len(r1.symbols)
+    with set_enabled_investing_types_temporarily(["stock"]):
+        r2 = search_name_or_symbol("carbon")
     assert len(r2.symbols) > 0
-    assert len(fullres.symbols) > len(r2.symbols)
+    assert len(r0.symbols) > len(r2.symbols)
     assert len(r1.symbols) > len(r2.symbols)
 
 
@@ -53,12 +57,10 @@ def test_searchobjs_returns_empty_result_for_non_existent_query():
     assert search_for_searchobjs("non_existent_name").symbols == []
 
 
-def test_searchobjs_returns_empty_result_when_country_non_existent():
-    assert search_for_searchobjs("one", countries="non_existent_country").symbols == []
-
-
 def test_searchobjs_returns_list_of_correct_symbol_objects_including_searchobj_query():
-    besthits = search_for_searchobjs("one", countries="switzerland").buckets[0].symbols
+    besthits = (
+        search_for_searchobjs("one").filter(country="switzerland").buckets[0].symbols
+    )
     assert len(besthits) == 1
     assert isinstance(besthits[0], Symbol)
     assert besthits[0].query == {
@@ -70,23 +72,3 @@ def test_searchobjs_returns_list_of_correct_symbol_objects_including_searchobj_q
         "pair_type": "stocks",
         "exchange": "Switzerland",
     }
-
-
-def test_searchobjs_returns_plausible_results_when_filtering():
-    assert (
-        search_for_searchobjs("one", countries="switzerland", types="etf").symbols == []
-    )
-    assert (
-        search_for_searchobjs(
-            "one", countries="switzerland", types=["etf", "stock"]
-        ).symbols
-        != []
-    )
-    assert (
-        search_for_searchobjs(
-            "one",
-            countries="switzerland",
-            types=["etf", "stock", "non_existent_type"],  # type: ignore
-        ).symbols
-        != []
-    )

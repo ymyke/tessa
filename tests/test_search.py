@@ -8,6 +8,7 @@ import pytest
 from tessa import search
 from tessa.symbol import Symbol
 from tessa.search_result import SearchResult
+from tessa.investing_types import set_enabled_investing_types
 
 
 @pytest.mark.parametrize(
@@ -31,6 +32,10 @@ from tessa.search_result import SearchResult
 @pytest.mark.net
 def test_working_symbols_are_returned_by_search(querytype: str, symbol: str):
     """For each possible type of symbol, will we get a working `Symbol` object?"""
+    try:
+        set_enabled_investing_types([querytype])
+    except ValueError:
+        pass  # So we can run the "searchobj" and "crypto" cases
     res = search(symbol)
     assert isinstance(res, SearchResult)
     # pylint: disable=protected-access
