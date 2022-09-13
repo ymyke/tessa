@@ -15,9 +15,13 @@ from tessa.price import PriceHistory
 
 @pytest.mark.net
 def test_price_history_investpy_stock_including_caching_and_ratelimiting():
+    # pylint: disable=no-value-for-parameter
+
     # Make sure rate limiter is in a pristine setup:
     rate_limiter.reset_guards()
     assert rate_limiter.guards["investing"]["last_call"] == pendulum.parse("1900")
+
+    price_history.cache_clear()
 
     # Retrieve stock and make sure the result is correct:
     df, crncy = price_history("AAPL", "stock", country="united states")
