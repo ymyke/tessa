@@ -175,7 +175,7 @@ class SearchResult:
         """Filter for country or type and return a new `SearchResult` with the results
         after filtering. Also updates the filter history.
         """
-        # FIXME Use InvestingType or TessaType for type_.
+        # FIXME Maybe use a "type" type here once one gets introduced.
         symbols = self.symbols
         filters = []
         if country:
@@ -228,6 +228,3 @@ class SearchResult:
     def p(self) -> None:
         """Convenience method to print str rep."""
         print(self)
-
-    # FIXME Use the TessaType or whatever it is called for the filter (and maybe
-    # elsewhere)
