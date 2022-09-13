@@ -125,9 +125,15 @@ class SearchResult:
     """Manages a search result consisting of a list of `Symbol`s. Removes duplicates,
     bucketizes, sorts and offers methods to filter and print statistics.
 
-    (Design note: `SearchResult` has no relationship with `SymbolCollection` because the
-    purposes of the two classes are very different and because they have different
-    equality definitions for symbols.)
+    (Design note 1: `SearchResult` has no relationship with `SymbolCollection` because
+    the purposes of the two classes are very different and because they have different
+    equality definitions for symbols.
+
+    Design note 2: `SearchResult` and `SymbolCollection` have different definitions of
+    equality between symbols: `SearchResult` considers 2 symbols to be equal if they are
+    equal in `type_`, `country`, or `query`, regardless of whether they have the same
+    name or not. A `SymbolCollection` does not have a definition of equality, but it
+    does enforce that names are unique.)
 
     Example usage:
 
