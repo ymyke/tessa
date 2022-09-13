@@ -1,6 +1,6 @@
 """SymbolCollection-related tests."""
 
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,invalid-name
 
 import pytest
 from tessa.symbol import SymbolCollection, Symbol
@@ -44,6 +44,24 @@ def test_add():
     sc.add(Symbol("A"))
     sc.add([Symbol("B"), Symbol("C")])
     assert sc.symbols == [Symbol("A"), Symbol("B"), Symbol("C")]
+
+
+def test_add_with_wrong_type():
+    sc = SymbolCollection()
+    with pytest.raises(ValueError):
+        sc.add(1)  # type: ignore
+
+
+def test_add_with_duplicate_names_in_new_symbols():
+    sc = SymbolCollection()
+    with pytest.raises(ValueError):
+        sc.add([Symbol("A"), Symbol("A")])
+
+
+def test_add_with_duplicate_names_in_existing_plus_new_symbols():
+    sc = SymbolCollection([Symbol("A")])
+    with pytest.raises(ValueError):
+        sc.add(Symbol("A"))
 
 
 def test_find_and_find_one(tmp_path):
