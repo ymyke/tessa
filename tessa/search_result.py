@@ -170,7 +170,7 @@ class SearchResult:
         return self
 
     def filter(
-        self, country: Optional[str] = None, type_: Optional[str] = None
+        self, type_: Optional[str] = None, country: Optional[str] = None
     ) -> SearchResult:
         """Filter for country or type and return a new `SearchResult` with the results
         after filtering. Also updates the filter history.
