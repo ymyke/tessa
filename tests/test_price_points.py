@@ -57,12 +57,14 @@ def test_verify_pricepoint_types_are_used(mock_price_history):
 # ----- Tests that do hit the net -----
 
 
+@pytest.mark.net
 def test_concrete_investing_price_point():
     assert price_point("AAPL", "stock", "2018-01-11", "united states") == PricePoint(
         when=pd.Timestamp("2018-01-11", tz="utc"), price=43.82, currency="USD"
     )
 
 
+@pytest.mark.net
 def test_concrete_crypto_price_point():
     assert price_point("bitcoin", "crypto", "2018-01-11") == PricePoint(
         when=pd.Timestamp("2018-01-11", tz="utc"),

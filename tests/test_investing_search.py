@@ -5,6 +5,7 @@ Note that tests will hit the network and therefore will take a while to run.
 
 # pylint: disable=invalid-name,missing-docstring
 
+import pytest
 from tessa.investing_search import (
     investing_search,
     search_name_or_symbol,
@@ -15,6 +16,7 @@ from tessa.search_result import SearchResult
 from tessa.investing_types import set_enabled_investing_types_temporarily
 
 
+@pytest.mark.net
 def test_investing_search_returns_correct_combined_results():
     with set_enabled_investing_types_temporarily(["stock"]):
         res = investing_search("AAPL")
@@ -29,11 +31,13 @@ def test_investing_search_returns_correct_combined_results():
 # ----- search_name_or_symbol related -----
 
 
+@pytest.mark.net
 def test_searchnamesymbol_returns_empty_result_for_non_existent_query():
     with set_enabled_investing_types_temporarily(["stock"]):
         assert search_name_or_symbol("non_existent_name").symbols == []
 
 
+@pytest.mark.net
 def test_searchnamesymbol_returns_plausible_results_inluding_when_filtering():
     with set_enabled_investing_types_temporarily(["stock", "fund", "etf"]):
         r0 = search_name_or_symbol("carbon")
@@ -53,10 +57,12 @@ def test_searchnamesymbol_returns_plausible_results_inluding_when_filtering():
 # ----- search_for_searchobjs related -----
 
 
+@pytest.mark.net
 def test_searchobjs_returns_empty_result_for_non_existent_query():
     assert search_for_searchobjs("non_existent_name").symbols == []
 
 
+@pytest.mark.net
 def test_searchobjs_returns_list_of_correct_symbol_objects_including_searchobj_query():
     besthits = (
         search_for_searchobjs("one").filter(country="switzerland").buckets[0].symbols

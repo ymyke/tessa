@@ -13,6 +13,7 @@ from tessa import price_history, rate_limiter
 from tessa.price import PriceHistory
 
 
+@pytest.mark.net
 def test_price_history_investpy_stock_including_caching_and_ratelimiting():
     # Make sure rate limiter is in a pristine setup:
     rate_limiter.reset_guards()
@@ -42,6 +43,7 @@ def test_price_history_investpy_stock_including_caching_and_ratelimiting():
     assert price_history.cache_info().hits == 1
 
 
+@pytest.mark.net
 def test_price_history_verify_type():
     """price_history returns the correct type. At the same time tests that price
     retrieval works w/o a country parameter for types such as currency_cross."""
@@ -50,6 +52,7 @@ def test_price_history_verify_type():
     )
 
 
+@pytest.mark.net
 def test_price_history_investpy_searchobj():
     df, crncy = price_history(
         "{'id_': 995876, 'name': 'UBS MSCI Emerging Markets UCITS', "
@@ -66,6 +69,7 @@ def test_price_history_investpy_searchobj():
     assert df.dtypes.to_string() == "close    float64"
 
 
+@pytest.mark.net
 def test_price_history_crypto():
     df, crncy = price_history("ethereum", "crypto", currency_preference="chf")
     assert crncy == "CHF"
@@ -79,30 +83,35 @@ def test_price_history_crypto():
 # ---------- Error conditions ----------
 
 
+@pytest.mark.net
 def test_error_crypto_non_existent_currency_preference():
     with pytest.raises(ValueError) as excinfo:
         price_history("ethereum", "crypto", currency_preference="non-existent")
         assert "invalid vs_currency" in excinfo
 
 
+@pytest.mark.net
 def test_error_crypto_non_existent_name():
     with pytest.raises(ValueError) as excinfo:
         price_history("non-existent", "crypto")
         assert "Could not find coin with the given id" in excinfo
 
 
+@pytest.mark.net
 def test_error_unsupported_asset_type():
     with pytest.raises(ValueError) as excinfo:
         price_history("AAPL", "xxx")
         assert "Unsupported asset type" in excinfo
 
 
+@pytest.mark.net
 def test_error_missing_country():
     with pytest.raises(ValueError) as excinfo:
         price_history("AAPL", "stock")
         assert "country can not be None" in excinfo
 
 
+@pytest.mark.net
 def test_error_stock_not_found():
     with pytest.raises(RuntimeError) as excinfo:
         price_history("non-existent", "stock", country="united states")
