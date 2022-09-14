@@ -1,15 +1,14 @@
 
-# tessa
+# tessa – simple, hassle-free access to price information of financial assets 📉🤓📈
 
-### Find financial assets and get their price history without worrying about different APIs or rate limiting.
+tessa is a Python library to help you **easily search asset identifiers** (e.g.,
+tickers) and **retrieve price information** for assets in different categories such as
+stocks, crypto, etfs, etc. It takes care of the different APIs, caching, rate limiting,
+and other hassles.
 
-tessa is a small package to help you **easily search asset identifiers** (e.g., tickers) and
-**retrieve price information** for assets in different categories such as stocks,
-crypto, etfs, etc.
-
-tessa builds on investpy and pycoingecko and offers **a simplified and somewhat unified
-interface**. This applies especially to investpy, which for some reason has different ways
-of finding assets and accessing the respective data.
+tessa builds on investpy and pycoingecko and offers **a simplified and unified
+interface**. This applies especially to investpy, which for some reason has different
+ways of finding assets and accessing the respective data.
 
 Why these two packages? [investpy](https://github.com/alvarobartt/investpy) offers
 high-quality data for most categories from [investing.com](https://www.investing.com/).
@@ -22,7 +21,41 @@ Importantly, tessa makes sure to be nice to the sites being accessed and tries t
 retrieval and 2) keeping track of request timestamps and waiting appropriate amounts of
 time if necessary.
 
-# Main functions
+Finally, tessa provides functionality to **manage collections of symbols**, store and
+load them, and extend their functionality.
+
+
+## FIXME
+
+- Use case: search for some symbol/ticker, pick one, use the Symbol object directly to
+  retrieve price information, print YAML from symbol, add several symbols to a
+  SymbolCollection, store yaml in symbols.yaml file, load the file as a
+  SymbolCollection. Do some analysis on the symbols. (Maybe even load a yaml file, find
+  some more symbols, add those symbols to the collection, save the collection.)
+- Existing use cases in README which access price.* functions directly should be rather
+  lower prio in the future. Only keep as illustrations of how things work under the
+  hood?
+- Maybe the fact that the price functions now return PricePoint and PriceHistory types?
+- ((Maybe provide a comprehensive jupyter notebook as documentation?))
+
+
+
+
+
+## Main submodules FIXME
+
+symbol, search, price
+
+FIXME Needs new architecture in file system first.
+
+
+## How to use
+
+
+FIXME Continue here somehow
+
+
+## Main functions
 
 - `search`: Search for an asset in all sources and types.
 - `price_history`: Retrieve the full history of an asset as a dataframe.
@@ -32,7 +65,15 @@ time if necessary.
   price.
 - `price_latest`: Get an asset's latest price.
 
-# Usage examples
+## How to use the `price_*` functions directly
+
+FIXME: Does this still make sense? Remove the search examples, since they should be used
+differently now. 
+
+FIXME: Put this elsewhere? E.g., in price/__init__? -- or to the different price
+functions to which the examples fit?
+
+FIXME Remove types_ and countries from seach functions as they are no longer supported.
 
 ```python
 >>> from tessa import price_history, search, price_point, price_latest
@@ -89,17 +130,17 @@ df, currency = price_history("ROG", "stock", country="switzerland")
 ```
 
 
-# How to install
+## How to install
 
 pip install tessa
 
 
-# Prerequisites
+## Prerequisites
 
 See `pyproject.toml`. Major prerequisites are the `investpy` and `pycoingecko` packages.
 
 
-# Future Work
+## Future Work
 
 This if an initial version. There are a number of ideas on how to extend. Please leave
 your suggestions and comments in the [Issues

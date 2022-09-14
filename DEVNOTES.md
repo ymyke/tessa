@@ -13,10 +13,46 @@ These are internal notes that won't make much sense to anybody other than me...
   - tessa.price (same in tests)
   - tessa.search (same in tests)
   - tessa.utils? <- rate limiters? also freezeargs?
-    - also investing_types in here?
 - Put the existing code and tests into subdirectories, e.g., price and search.
-- Mark all tests that hit the net w/ @pytest.mark.net
 - Fix FIXMEs.
+
+# On directory structure
+
+Var A:
+price/
+  price.py
+  investing.py
+  coingecko.py
+search/
+  search.py
+  search_result.py
+  investing.py
+  coingecko.py
+  investing_types.py <- ???
+symbol/
+  ...
+utils/
+  freezeargs, rate limiters
+  investing_types <- ???
+
+Var B:
+investing/
+  price.py
+  search.py
+  types.py
+coingecko/
+  price.py
+  search.py
+price/
+  price.py
+symbol/
+  ...
+search/
+  search.py
+  search_result.py
+utils/
+  freezeargs, rate limiters
+  investing_types <- ???
 
 
 # Some day
@@ -25,27 +61,7 @@ These are internal notes that won't make much sense to anybody other than me...
   autocomplete suggestions, and type checking in price.py (and elsewhere?). (List of
   types: ["crypto", "stock", "etf", "fund", "crypto", "bond", "index", "certificate",
   "currency_cross", "searchobj"])
-
-
-# Equality of symbols
-
-type_ + query + country ⇒ equality
-vs
-name
-
-in search results:
-- same name → can be different symbols
-- different type_ + query + country → different symbols, but can have same name
-- same type_ + query + country / different name → same symbols
-
-
-in SymbolCollection, if loaded from yaml:
-- same name → not possible
-- same type_ + query + country / different name → don't care
-
-
-⇒ SearchResult is not a subclass of SymbolCollection bc it has different invariants.
-⇒ Which invariants does SymbolCollection really have and impose?
+  - Check the use of types in price_* functions and in symbol/*
 
 
 ## MetricHistory
