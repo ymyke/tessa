@@ -2,7 +2,7 @@
 
 import functools
 from pycoingecko import CoinGeckoAPI
-from tessa.symbol import Symbol
+from ..symbol import Symbol
 from . import SearchResult
 
 
@@ -28,15 +28,7 @@ def _matches_to_symbols(matches: list) -> list:
 
 
 def coingecko_search(query: str) -> SearchResult:
-    """Find coingecko ids that match `query` somehow. Returns `SearchResult`.
-
-    Example call:
-
-    ```
-    from tessa.coingecko_search import coingecko_search
-    r = coingecko_search("jenny")
-    ```
-    """
+    """Find coingecko ids that match `query` somehow. Returns `SearchResult`."""
     matches = [
         entry
         for entry in get_symbol_map()
