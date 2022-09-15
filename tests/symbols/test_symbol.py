@@ -36,9 +36,9 @@ def test_repr_can_be_transformed_back_into_symbol():
 def test_querytype():
     # pylint: disable=protected-access
     s = Symbol(name="X", type_="fund")
-    assert s._Symbol__querytype == "fund"  # type: ignore
+    assert s._querytype == "fund"
     s = Symbol(name="X", query={})
-    assert s._Symbol__querytype == "searchobj"  # type: ignore
+    assert s._querytype == "searchobj"
 
 
 def test_initalizer_without_country():

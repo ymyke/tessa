@@ -46,14 +46,14 @@ class Symbol:
     """
 
     # Private variables:
-    __querytype: str = field(init=False)
+    _querytype: str = field(init=False)
 
     def __post_init__(self) -> None:
         """Re/set some attributes."""
         if self.query is None:
             self.query = self.name
-        self.__querytype = "searchobj" if isinstance(self.query, dict) else self.type_
-        if self.__querytype == "crypto":  # Reset country default
+        self._querytype = "searchobj" if isinstance(self.query, dict) else self.type_
+        if self._querytype == "crypto":  # Reset country default
             self.country = None
 
     def __repr__(self) -> str:
@@ -96,10 +96,10 @@ class Symbol:
         """Create a dictionary of arguments that work with tessa's price functions."""
         args = {
             "query": str(self.query),
-            "type_": self.__querytype,
+            "type_": self._querytype,
             "currency_preference": self.currency_preference,
         }
-        if self.country is not None and self.__querytype != "searchobj":
+        if self.country is not None and self._querytype != "searchobj":
             args["country"] = self.country
         return args
 

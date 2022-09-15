@@ -24,8 +24,8 @@ def test_investing_search_returns_correct_combined_results():
     assert len(res.symbols) > 0
     # Make sure there are results from both investing-search sub-functions:
     # pylint: disable=protected-access
-    assert any(s._Symbol__querytype == "stock" for s in res.symbols)  # type: ignore
-    assert any(s._Symbol__querytype == "searchobj" for s in res.symbols)  # type: ignore
+    assert any(s._querytype == "stock" for s in res.symbols)
+    assert any(s._querytype == "searchobj" for s in res.symbols)
 
 
 # ----- search_name_or_symbol related -----

@@ -39,5 +39,5 @@ def test_working_symbols_are_returned_by_search(querytype: str, symbol: str):
     res = search(symbol)
     assert isinstance(res, SearchResult)
     # pylint: disable=protected-access
-    s = [s for s in res.symbols if s._Symbol__querytype == querytype][0]  # type: ignore
+    s = [s for s in res.symbols if s._querytype == querytype][0]
     assert isinstance(s, Symbol)
