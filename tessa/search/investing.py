@@ -12,7 +12,7 @@ import pandas as pd
 from .. import investing_types as itypes
 from .. import rate_limiter
 from ..freezeargs import freezeargs
-from .search_result import SearchResult
+from . import SearchResult
 from ..symbol import Symbol
 
 

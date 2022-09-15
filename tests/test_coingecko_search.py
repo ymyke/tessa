@@ -7,7 +7,7 @@ Note that tests will hit the network and therefore will take a while to run.
 
 import pytest
 from tessa.search.coingecko import coingecko_search
-from tessa.search.search_result import SearchResult
+from tessa.search import SearchResult
 
 
 @pytest.mark.net
