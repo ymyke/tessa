@@ -22,7 +22,7 @@ def mock_price_history(mocker):
         "close": [1.0, 2.0, 3.0],
     }
     mocker.patch(
-        "tessa.price.price_history",
+        "tessa.price.price.price_history",
         return_value=PriceHistory(pd.DataFrame(df_as_json).set_index("date"), "usd"),
     )
 
