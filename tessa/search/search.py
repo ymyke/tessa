@@ -1,8 +1,8 @@
 """Unified search."""
 
-from .investing_search import investing_search
-from .coingecko_search import coingecko_search
-from .search_result import SearchResult
+from .investing import investing_search
+from .coingecko import coingecko_search
+from ..search_result import SearchResult
 
 
 def search(query: str, silent: bool = False) -> SearchResult:

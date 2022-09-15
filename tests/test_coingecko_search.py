@@ -6,7 +6,7 @@ Note that tests will hit the network and therefore will take a while to run.
 # pylint: disable=missing-function-docstring
 
 import pytest
-from tessa.coingecko_search import coingecko_search
+from tessa.search.coingecko import coingecko_search
 from tessa.search_result import SearchResult
 
 
