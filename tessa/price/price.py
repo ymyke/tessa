@@ -5,7 +5,7 @@ from typing import Union, NamedTuple
 import pandas as pd
 
 from . import coingecko, investing
-from .. import investing_types
+from ..utils import investing_types
 from ..utils.freezeargs import freezeargs
 from ..utils.rate_limiter import rate_limit
 

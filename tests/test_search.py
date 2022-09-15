@@ -8,7 +8,7 @@ import pytest
 from tessa import search
 from tessa.symbol import Symbol
 from tessa.search import SearchResult
-from tessa.investing_types import set_enabled_investing_types
+from tessa import set_enabled_investing_types
 
 
 @pytest.mark.parametrize(

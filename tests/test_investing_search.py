@@ -13,7 +13,7 @@ from tessa.search.investing import (
 )
 from tessa.symbol import Symbol
 from tessa.search import SearchResult
-from tessa.investing_types import set_enabled_investing_types_temporarily
+from tessa import set_enabled_investing_types_temporarily
 
 
 @pytest.mark.net

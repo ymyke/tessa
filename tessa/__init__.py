@@ -8,7 +8,7 @@ from .price import (
 )
 from .search import search
 from .symbol import Symbol, ExtendedSymbol, SymbolCollection
-from .investing_types import (
+from .utils.investing_types import (
     set_enabled_investing_types,
     get_enabled_investing_types,
     set_enabled_investing_types_temporarily,
