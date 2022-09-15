@@ -12,10 +12,10 @@ from tessa.symbol import Symbol
 
 
 def test_initializer():
-    s = Symbol(name="x", type_="y", country="z", query="qq")
+    s = Symbol(name="x", type_="etf", country="togo", query="qq")
     assert s.name == "x"
-    assert s.type_ == "y"
-    assert s.country == "z"
+    assert s.type_ == "etf"
+    assert s.country == "togo"
     assert s.query == "qq"
 
 
@@ -56,7 +56,7 @@ def test_matches():
 
 
 def test_to_yaml():
-    s = Symbol(name="X", aliases=["X", "Y", "Z"], country="C")
+    s = Symbol(name="X", aliases=["X", "Y", "Z"], country="togo")
     k, v = list(yaml.safe_load(s.to_yaml()).items())[0]
     assert Symbol(k, **v) == s
 

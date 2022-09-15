@@ -1,10 +1,11 @@
 """Price information."""
 
 import functools
-from typing import Union, NamedTuple
+from typing import Union, NamedTuple, Optional
 import pandas as pd
 
 from . import coingecko, investing
+from .. import QueryType, CountryName
 from ..utils import investing_types
 from ..utils.freezeargs import freezeargs
 from ..utils.rate_limiter import rate_limit
@@ -19,7 +20,10 @@ PricePoint = NamedTuple(
 @freezeargs
 @functools.lru_cache(maxsize=None)
 def price_history(
-    query: str, type_: str, country: str = None, currency_preference: str = "usd"
+    query: str,
+    type_: QueryType,
+    country: Optional[CountryName] = None,
+    currency_preference: str = "usd",
 ) -> PriceHistory:
     """Get price history and return tuple of dataframe and currency.
 
@@ -28,8 +32,7 @@ def price_history(
     - query: A query string that makes sense in combination with the type. E.g.,
       "bitcoin" for "crypto", "AAPL" for a "stock", or a `investpy.utils.search_obj`
       object's string representation for "searchobj".
-    - type_: Any of ["crypto", "stock", "etf", "fund", "crypto", "bond", "index",
-      "certificate", "currency_cross", "searchobj"].
+    - type_: A `QueryType` (i.e., including "searchobj").
 
     Optional/situational args:
 
@@ -77,9 +80,9 @@ def price_history(
 
 def price_point(
     query: str,
-    type_: str,
+    type_: QueryType,
     when: Union[str, pd.Timestamp],
-    country: str = None,
+    country: Optional[CountryName] = None,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Return the price at a given point in time given by `when`. Look for the closest
@@ -102,9 +105,9 @@ def price_point(
 
 def price_point_strict(
     query: str,
-    type_: str,
+    type_: QueryType,
     when: str,
-    country: str = None,
+    country: Optional[CountryName] = None,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Same as `price_point` but will return either the price at the exact point in time
@@ -118,8 +121,8 @@ def price_point_strict(
 
 def price_latest(
     query: str,
-    type_: str,
-    country: str = None,
+    type_: QueryType,
+    country: Optional[CountryName] = None,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Same as `price_point` but will return the latest price."""

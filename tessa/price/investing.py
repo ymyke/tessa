@@ -6,6 +6,7 @@ import pandas as pd
 import investpy
 from investpy.utils.search_obj import SearchObj
 import pendulum
+from .. import QueryType, CountryName
 
 MIN_FROM_DATE = "01/01/2010"
 # Adjust this date if you need to get historical data further in the past. Note that
@@ -34,7 +35,9 @@ def dataframify_investpy_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_price_history(query: str, type_: str, country: str) -> Tuple[pd.DataFrame, str]:
+def get_price_history(
+    query: str, type_: QueryType, country: CountryName
+) -> Tuple[pd.DataFrame, str]:
     """Get price history for a given query using investpy's `get_*_historical_data`
     functions.
     """

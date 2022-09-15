@@ -72,16 +72,21 @@ def test_filtering():
     assert names_as_set(res) == set("ABCD")
     assert names_as_set(res.filter(country="switzerland")) == set("AB")
     assert names_as_set(res.filter(type_="stock")) == set("AC")
-    assert names_as_set(res.filter(country="nowhere")) == set()
+    assert names_as_set(res.filter(country="nowhere")) == set()  # type: ignore
     assert names_as_set(res.filter(country="spain", type_="stock")) == set("C")
     assert names_as_set(res.filter(type_="stock").filter(country="spain")) == set("C")
-    assert names_as_set(res.filter(country="nowhere").filter(type_="nothing")) == set()
+    assert (
+        names_as_set(
+            res.filter(country="nowhere").filter(type_="nothing")  # type:ignore
+        )
+        == set()
+    )
 
 
 def test_filter_history_gets_updated():
     res = SearchResult("q", [])
     assert res.filter_history == []
-    assert res.filter(country="x").filter(type_="y").filter_history == [
-        "country=x",
-        "type_=y",
+    assert res.filter(country="togo").filter(type_="fund").filter_history == [
+        "country=togo",
+        "type_=fund",
     ]

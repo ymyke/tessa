@@ -6,6 +6,7 @@ from typing import List, NamedTuple, Optional, Callable
 import itertools
 import re
 from ..symbol import Symbol
+from .. import AssetType, CountryName
 
 # ----- The predicates used to sort and bucketize results based on a query -----
 
@@ -176,12 +177,11 @@ class SearchResult:
         return self
 
     def filter(
-        self, type_: Optional[str] = None, country: Optional[str] = None
+        self, type_: Optional[AssetType] = None, country: Optional[CountryName] = None
     ) -> SearchResult:
         """Filter for country or type and return a new `SearchResult` with the results
         after filtering. Also updates the filter history.
         """
-        # FIXME Maybe use a "type" type here once one gets introduced.
         symbols = self.symbols
         filters = []
         if country:

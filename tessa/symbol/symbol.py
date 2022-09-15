@@ -6,8 +6,8 @@ import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .. import price_history, price_latest, price_point
-from ..price import PricePoint, PriceHistory
+from ..price import price_history, price_latest, price_point, PricePoint, PriceHistory
+from .. import AssetType, QueryType, CountryName
 
 pd.plotting.register_matplotlib_converters()
 
@@ -29,9 +29,9 @@ class Symbol:
     """
 
     name: str
-    type_: str = "stock"
+    type_: AssetType = "stock"
     query: Optional[str] = None
-    country: Optional[str] = "united states"
+    country: Optional[CountryName] = "united states"
     aliases: list[str] = field(default_factory=list)
 
     # Class variables:
@@ -46,7 +46,7 @@ class Symbol:
     """
 
     # Private variables:
-    _querytype: str = field(init=False)
+    _querytype: QueryType = field(init=False)
 
     def __post_init__(self) -> None:
         """Re/set some attributes."""
