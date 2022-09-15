@@ -10,8 +10,8 @@ import investpy
 import pandas as pd
 
 from .. import investing_types as itypes
-from .. import rate_limiter
-from ..freezeargs import freezeargs
+from ..utils.freezeargs import freezeargs
+from ..utils import rate_limiter
 from . import SearchResult
 from ..symbol import Symbol
 

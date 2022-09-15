@@ -6,8 +6,8 @@ import pandas as pd
 
 from . import coingecko, investing
 from .. import investing_types
-from ..freezeargs import freezeargs
-from ..rate_limiter import rate_limit
+from ..utils.freezeargs import freezeargs
+from ..utils.rate_limiter import rate_limit
 
 
 PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])

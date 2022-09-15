@@ -9,7 +9,8 @@ import pandas as pd
 import pendulum
 import pytest
 from pandas.core.dtypes.dtypes import DatetimeTZDtype
-from tessa import price_history, rate_limiter
+from tessa import price_history
+from tessa.utils import rate_limiter
 from tessa.price import PriceHistory
 
 
