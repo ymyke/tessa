@@ -2,7 +2,7 @@
 
 # pylint: disable=missing-function-docstring
 
-from tessa.search_result import (
+from tessa.search.search_result import (
     SearchResult,
     matches_entire_name_or_alias,
     matches_word_boundary,

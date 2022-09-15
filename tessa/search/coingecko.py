@@ -3,7 +3,7 @@
 import functools
 from pycoingecko import CoinGeckoAPI
 from tessa.symbol import Symbol
-from ..search_result import SearchResult
+from .search_result import SearchResult
 
 
 @functools.lru_cache(maxsize=None)

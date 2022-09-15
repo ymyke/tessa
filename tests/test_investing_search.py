@@ -12,7 +12,7 @@ from tessa.search.investing import (
     search_for_searchobjs,
 )
 from tessa.symbol import Symbol
-from tessa.search_result import SearchResult
+from tessa.search.search_result import SearchResult
 from tessa.investing_types import set_enabled_investing_types_temporarily
 
 

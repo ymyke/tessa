@@ -2,7 +2,7 @@
 
 from .investing import investing_search
 from .coingecko import coingecko_search
-from ..search_result import SearchResult
+from .search_result import SearchResult
 
 
 def search(query: str, silent: bool = False) -> SearchResult:

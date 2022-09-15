@@ -5,7 +5,7 @@ import functools
 from typing import List, NamedTuple, Optional, Callable
 import itertools
 import re
-from .symbol import Symbol
+from ..symbol import Symbol
 
 # ----- The predicates used to sort and bucketize results based on a query -----
 
