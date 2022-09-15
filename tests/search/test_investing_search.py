@@ -6,14 +6,14 @@ Note that tests will hit the network and therefore will take a while to run.
 # pylint: disable=invalid-name,missing-docstring
 
 import pytest
-from tessa.investing_search import (
+from tessa.search.investing import (
     investing_search,
     search_name_or_symbol,
     search_for_searchobjs,
 )
 from tessa.symbol import Symbol
-from tessa.search_result import SearchResult
-from tessa.investing_types import set_enabled_investing_types_temporarily
+from tessa.search import SearchResult
+from tessa import set_enabled_investing_types_temporarily
 
 
 @pytest.mark.net

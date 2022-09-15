@@ -3,9 +3,11 @@
 import functools
 from typing import Union, NamedTuple
 import pandas as pd
-from . import investing, investing_types, coingecko
-from .freezeargs import freezeargs
-from .rate_limiter import rate_limit
+
+from . import coingecko, investing
+from ..utils import investing_types
+from ..utils.freezeargs import freezeargs
+from ..utils.rate_limiter import rate_limit
 
 
 PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])

@@ -1,12 +1,12 @@
 """Unified search."""
 
-from .investing_search import investing_search
-from .coingecko_search import coingecko_search
-from .search_result import SearchResult
+from .investing import investing_search
+from .coingecko import coingecko_search
+from . import SearchResult
 
 
 def search(query: str, silent: bool = False) -> SearchResult:
-    """Unified search function. Returns a `tessa.search_result.SearchResult`.
+    """Unified search function. Returns a `tessa.search.SearchResult`.
 
     - `query`: The string to search for. (Note that this query attribute has a different
       semantics to the query attribute in the `Symbol` class.)

@@ -9,11 +9,11 @@ from typing import List
 import investpy
 import pandas as pd
 
-from . import investing_types as itypes
-from . import rate_limiter
-from .freezeargs import freezeargs
-from .search_result import SearchResult
-from .symbol import Symbol
+from ..utils import investing_types as itypes
+from ..utils.freezeargs import freezeargs
+from ..utils import rate_limiter
+from . import SearchResult
+from ..symbol import Symbol
 
 
 def investing_search(query: str, silent: bool = False) -> SearchResult:
