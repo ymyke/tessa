@@ -25,7 +25,7 @@ class Symbol:
     - The `tessa.price` functions are used to get the actual price information, and they
       have a  `currency_preference` argument. This argument is not exposed explicitly by
       `Symbol` but if you need, you can set a preference by setting the
-      `_currency_preference` attribute.
+      `currency_preference` class attribute.
     """
 
     name: str
@@ -35,7 +35,7 @@ class Symbol:
     aliases: list[str] = field(default_factory=list)
 
     # Class variables:
-    _currency_preference: ClassVar[str] = "USD"
+    currency_preference: ClassVar[str] = "USD"
     """Use this to set the preferred currency to get price information in.
 
     This is no guarantee and you should always double-check the currency that gets
@@ -97,7 +97,7 @@ class Symbol:
         args = {
             "query": str(self.query),
             "type_": self.__querytype,
-            "currency_preference": self._currency_preference,
+            "currency_preference": self.currency_preference,
         }
         if self.country is not None and self.__querytype != "searchobj":
             args["country"] = self.country

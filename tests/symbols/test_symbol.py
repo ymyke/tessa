@@ -81,5 +81,5 @@ def test_price_functions():
 @pytest.mark.net
 def test_currency_preference():
     for check_currency in ["USD", "CHF"]:
-        Symbol._currency_preference = check_currency  # pylint: disable=protected-access
+        Symbol.currency_preference = check_currency
         assert Symbol("bitcoin", type_="crypto").currency() == check_currency
