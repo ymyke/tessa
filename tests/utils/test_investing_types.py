@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring
 
 import pytest
-from tessa.utils.investing_types import (
+from tessa.types.investing_types import (
     set_enabled_investing_types,
     get_enabled_investing_types,
     is_valid,

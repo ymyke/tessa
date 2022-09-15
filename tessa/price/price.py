@@ -6,7 +6,7 @@ import pandas as pd
 
 from . import coingecko, investing
 from .. import QueryType, CountryName
-from ..utils import investing_types
+from ..types import investing_types
 from ..utils.freezeargs import freezeargs
 from ..utils.rate_limiter import rate_limit
 

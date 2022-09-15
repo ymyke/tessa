@@ -9,7 +9,7 @@ from typing import List
 import investpy
 import pandas as pd
 
-from ..utils import investing_types as itypes
+from ..types import investing_types as itypes
 from ..utils.freezeargs import freezeargs
 from ..utils import rate_limiter
 from . import SearchResult
