@@ -19,6 +19,7 @@ These are internal notes that won't make much sense to anybody other than me...
   - Mention in release notes.
 - Add links to pdoc documentation to README and maybe toml file.
 - Check if it works w Python 3.7.x
+- Check if it works w fignal & strela
 - Merge
 - Release
 - Update fignal, strela/dev, strela/prod and make sure they work.
@@ -36,6 +37,8 @@ These are internal notes that won't make much sense to anybody other than me...
   hood?
 - Maybe the fact that the price functions now return PricePoint and PriceHistory types?
 - ((Maybe provide a comprehensive jupyter notebook as documentation?))
+- The usefulness of AssetType and CountryName types and how they enable autocomplete
+  suggestions.
 
 
 # Interface-breaking updates
@@ -52,6 +55,8 @@ These are internal notes that won't make much sense to anybody other than me...
   investing_types. (75426954040673cfd6c4b982a12221819ab86e8b)
 - All search functions no longer support types_ and countries parameters. Use
   SearchResult instead.
+- Only internally:
+  - _currency_preference in Symbol now currency_preference
   
 
 # Terminology
