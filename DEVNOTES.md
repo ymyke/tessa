@@ -7,61 +7,7 @@ These are internal notes that won't make much sense to anybody other than me...
 
 
 
-# Next up
 
-- Add new folders and subpackages:
-  - tessa.price (same in tests)
-  - tessa.search (same in tests)
-  - tessa.utils? <- rate limiters? also freezeargs?
-- Put the existing code and tests into subdirectories, e.g., price and search.
-- Fix FIXMEs.
-
-# On directory structure
-
-Var A:
-price/
-  price.py
-  investing.py
-  coingecko.py
-search/
-  search.py
-  search_result.py
-  investing.py
-  coingecko.py
-  investing_types.py <- ???
-symbol/
-  ...
-utils/
-  freezeargs, rate limiters
-  investing_types <- ???
-
-Var B:
-investing/
-  price.py
-  search.py
-  types.py
-coingecko/
-  price.py
-  search.py
-price/
-  price.py
-symbol/
-  ...
-search/
-  search.py
-  search_result.py
-utils/
-  freezeargs, rate limiters
-  investing_types <- ???
-
-
-# Some day
-
-- Add some Literal type for "stock", "etf" etc. that can be used for type hints,
-  autocomplete suggestions, and type checking in price.py (and elsewhere?). (List of
-  types: ["crypto", "stock", "etf", "fund", "crypto", "bond", "index", "certificate",
-  "currency_cross", "searchobj"])
-  - Check the use of types in price_* functions and in symbol/*
 
 
 ## MetricHistory
