@@ -59,15 +59,17 @@ def test_verify_pricepoint_types_are_used(mock_price_history):
 
 @pytest.mark.net
 def test_concrete_investing_price_point():
-    assert price_point("AAPL", "stock", "2018-01-11", "united states") == PricePoint(
-        when=pd.Timestamp("2018-01-11", tz="utc"), price=43.82, currency="USD"
-    )
+    res = price_point("AAPL", "stock", "2018-01-11")
+    assert isinstance(res, PricePoint)
+    assert res.when == pd.Timestamp("2018-01-11", tz="utc")
+    assert round(res.price) == 42
+    assert res.currency == "USD"
 
 
 @pytest.mark.net
 def test_concrete_crypto_price_point():
-    assert price_point("bitcoin", "crypto", "2018-01-11") == PricePoint(
-        when=pd.Timestamp("2018-01-11", tz="utc"),
-        price=14050.5696063543,
-        currency="USD",
-    )
+    res = price_point("bitcoin", "crypto", "2018-01-11")
+    assert isinstance(res, PricePoint)
+    assert res.when == pd.Timestamp("2018-01-11", tz="utc")
+    assert round(res.price) == 14051
+    assert res.currency == "USD"
