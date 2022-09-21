@@ -31,3 +31,7 @@ def get_price_history(
         ),
         currency_preference,
     )
+    # FIXME Check for ValueError when id doesn't exist. Add common exception
+    # SymbolNotFoundError or so. Reraise that exception in such cases. Same in yahoo
+    # module. Add a test for such error condition to coingecko test module (already
+    # there -- move from generic price module to coingecko module)
