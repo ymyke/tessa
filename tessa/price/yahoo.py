@@ -1,5 +1,17 @@
-"""Everything Yahoo-Finance-related (other than search)."""
+"""Everything Yahoo-Finance-related (other than search).
 
+Note that yfinance has some inconsistent/strange error behavior. E.g., when a ticker
+doesn't exist:
+- `history()` will return an empty dataframe (but with all the column headers as usual)
+  and print "No data found, symbol may be delisted" to stdout.
+- `get_info()` will simply return a json such as this one: `{'regularMarketPrice': None,
+  'preMarketPrice': None, 'logo_url': ''}`.
+This module will streamline this behavior and raise a `RuntimeError` in such cases.
+
+"""
+
+import io
+import contextlib
 import functools
 from typing import Tuple
 import pandas as pd
@@ -16,7 +28,15 @@ extending this date will lead to increased load on the Yahoo Finance servers.
 @functools.lru_cache(maxsize=None)
 def get_ticker_info(query: str) -> dict:
     """FIXME add documentation"""
-    return yf.Ticker(query).get_info()  # type: ignore
+    res = yf.Ticker(query).get_info()
+    failed_get_info_output = {
+        "regularMarketPrice": None,
+        "preMarketPrice": None,
+        "logo_url": "",
+    }
+    if res == failed_get_info_output:
+        raise RuntimeError(f"No data found on Yahoo for query {query}")
+    return res  # type: ignore
 
 
 def get_price_history(
@@ -26,8 +46,13 @@ def get_price_history(
     ignored since Yahoo Finance returns each ticker in the one currency that is set for
     that ticker.
     """
-
-    df = yf.Ticker(query).history(start=START_FROM, debug=False)
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        df = yf.Ticker(query).history(start=START_FROM, debug=False)
+    if "No data found" in stdout.getvalue():
+        raise RuntimeError(f"No data found on Yahoo for query {query}")
+        # FIXME Consider introducing a specific SymbolNotExistingException or so (also
+        # for coingecko).
 
     # Simplify dataframe:
     df = df.copy()
