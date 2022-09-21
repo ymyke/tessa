@@ -25,7 +25,7 @@ def get_price_history(
             CoinGeckoAPI().get_coin_market_chart_by_id(
                 id=query,
                 vs_currency=currency_preference,
-                days="max",
+                days="max",  # FIXME Add some lower default bound similar to yahoo?
                 interval="daily",
             )["prices"]
         ),
