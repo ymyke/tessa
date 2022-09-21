@@ -15,7 +15,7 @@ from tessa.price import yahoo
     ],
 )
 @pytest.mark.net
-def test_yahoo_api_returns_reasonable_data(query: str, expected_currency: str):
+def test_api_returns_reasonable_data(query: str, expected_currency: str):
     # FIXME Why does this test take so long?
     old_start_from = yahoo.START_FROM
     yahoo.START_FROM = "2022-01-01"
@@ -23,3 +23,10 @@ def test_yahoo_api_returns_reasonable_data(query: str, expected_currency: str):
     assert df.shape[0] > 0
     assert crncy == expected_currency
     yahoo.START_FROM = old_start_from
+
+
+@pytest.mark.net
+def test_non_existing_query_raises():
+    with pytest.raises(RuntimeError) as excinfo:
+        yahoo.get_price_history("thisshouldntexistreally")
+        assert "No data found" in excinfo
