@@ -1,12 +1,11 @@
 """Price information."""
 
 import functools
-from typing import Union, NamedTuple, Optional
+from typing import Union, NamedTuple
 import pandas as pd
 
-from . import coingecko, investing
-from .. import QueryType, CountryName
-from ..types import investing_types
+from . import coingecko, yahoo
+from .. import QueryType  # FIXME Reconsider QueryType
 from ..utils.freezeargs import freezeargs
 from ..utils.rate_limiter import rate_limit
 
@@ -21,8 +20,7 @@ PricePoint = NamedTuple(
 @functools.lru_cache(maxsize=None)
 def price_history(
     query: str,
-    type_: QueryType,
-    country: Optional[CountryName] = None,
+    type_: QueryType,  # FIXME ???
     currency_preference: str = "usd",
 ) -> PriceHistory:
     """Get price history and return tuple of dataframe and currency.
@@ -33,12 +31,13 @@ def price_history(
       "bitcoin" for "crypto", "AAPL" for a "stock", or a `investpy.utils.search_obj`
       object's string representation for "searchobj".
     - type_: A `QueryType` (i.e., including "searchobj").
+    FIXME Is `type_` now more like a namespace or retriever spec?
 
     Optional/situational args:
 
     - currency_preference: The currency to the prices should be returned in. The
       effective currency might differ and will be returned in the second return value.
-    - country: Used w types "stock" and similar.
+    - country: Used w types "stock" and similar. FIXME Obsolete
 
     Examples combinations:
 
@@ -63,15 +62,8 @@ def price_history(
 
     if type_ == "crypto":
         df, effective_currency = coingecko.get_price_history(query, currency_preference)
-    elif investing_types.is_valid(type_):
-        df, effective_currency = investing.get_price_history(query, type_, country)
-    elif type_ == "searchobj":
-        df, effective_currency = investing.get_price_history_from_searchobj(query)
-    else:
-        raise ValueError(
-            f"Unsupported asset type '{type_}'; these are the supported types: "
-            f"{', '.join(investing_types.get_singulars())}."
-        )
+    else:  # FIXME What to do w type in the future?
+        df, effective_currency = yahoo.get_price_history(query, currency_preference)
 
     return PriceHistory(df.copy(), effective_currency.upper())
     # (Returning a copy of the dataframe so the cached original is preserved even if it
@@ -82,7 +74,6 @@ def price_point(
     query: str,
     type_: QueryType,
     when: Union[str, pd.Timestamp],
-    country: Optional[CountryName] = None,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Return the price at a given point in time given by `when`. Look for the closest
@@ -96,9 +87,9 @@ def price_point(
     Example call:
     ```
     price_point("AAPL", "stock", "2020-01-01", "united states")
-    ```
+    ``` FIXME Example
     """
-    df, currency = price_history(query, type_, country, currency_preference)
+    df, currency = price_history(query, type_, currency_preference)
     price = df.iloc[df.index.get_indexer([when], method="nearest")[0]]
     return PricePoint(when=price.name, price=float(price), currency=currency)
 
@@ -107,13 +98,12 @@ def price_point_strict(
     query: str,
     type_: QueryType,
     when: str,
-    country: Optional[CountryName] = None,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Same as `price_point` but will return either the price at the exact point in time
     or raise a KeyError.
     """
-    df, currency = price_history(query, type_, country, currency_preference)
+    df, currency = price_history(query, type_, currency_preference)
     return PricePoint(
         when=df.loc[when].name, price=float(df.loc[when]["close"]), currency=currency
     )
@@ -122,11 +112,10 @@ def price_point_strict(
 def price_latest(
     query: str,
     type_: QueryType,
-    country: Optional[CountryName] = None,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Same as `price_point` but will return the latest price."""
-    df, currency = price_history(query, type_, country, currency_preference)
+    df, currency = price_history(query, type_, currency_preference)
     return PricePoint(
         when=df.iloc[-1].name, price=float(df.iloc[-1]["close"]), currency=currency
     )
