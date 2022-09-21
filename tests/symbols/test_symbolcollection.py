@@ -19,7 +19,6 @@ A:
 B:
     aliases: [BB, BBB]
     type_: etf
-    country: switzerland
     query: p
 C:
 """
@@ -30,7 +29,6 @@ C:
     b = sc.find_one("B")
     assert b
     assert b.type_ == "etf"
-    assert b.country == "switzerland"
     assert b.query == "p"
     assert sc.find_one("BB")
     assert sc.find_one("BBB")

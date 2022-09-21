@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from ..price import price_history, price_latest, price_point, PricePoint, PriceHistory
-from .. import AssetType, QueryType, CountryName
+from .. import AssetType
 
 pd.plotting.register_matplotlib_converters()
 
@@ -22,17 +22,19 @@ class Symbol:
       this is fulfilled thanks to the way tessa's caching works.
     - The initializers don't hit the network -- it will only be hit when accessing the
       price methods or related methods such as `currency`.
-    - The `tessa.price` functions are used to get the actual price information, and they
-      have a  `currency_preference` argument. This argument is not exposed explicitly by
-      `Symbol` but if you need, you can set a preference by setting the
-      `currency_preference` class attribute.
     """
 
     name: str
+    """Symbol's name and default query."""
+
     type_: AssetType = "stock"
+    """FIXME ???"""
+
     query: Optional[str] = None
-    country: Optional[CountryName] = "united states"
+    """Use this to use a query that is different than the name."""
+
     aliases: list[str] = field(default_factory=list)
+    """Other names this symbol should be found under."""
 
     # Class variables:
     currency_preference: ClassVar[str] = "USD"
@@ -45,33 +47,13 @@ class Symbol:
     Since this is a class variable, you can set your preference once for all objects.
     """
 
-    # Private variables:
-    _querytype: QueryType = field(init=False)
-
     def __post_init__(self) -> None:
         """Re/set some attributes."""
         if self.query is None:
             self.query = self.name
-        self._querytype = "searchobj" if isinstance(self.query, dict) else self.type_
-        if self._querytype == "crypto":  # Reset country default
-            self.country = None
-
-    def __repr__(self) -> str:
-        """Special repr method that puts the `query` to the end and leaves out private
-        attributes so a Symbol can be built directly from the repr output.
-        """
-        attributes = []
-        for attrib_name in ["name", "type_", "country", "aliases", "query"]:
-            attrib = getattr(self, attrib_name, None)
-            value = f"'{attrib}'" if isinstance(attrib, str) else attrib
-            attributes.append(f"{attrib_name}={value}")
-        return f"Symbol({', '.join(attributes)})"
 
     def __str__(self) -> str:
-        txt = f"Symbol {self.name} of type {self.type_}"
-        if getattr(self, "country", None):
-            txt += f" ({self.country})"
-        return txt
+        return f"Symbol {self.name} of type {self.type_}"
 
     def p(self) -> None:
         """Convenience method to print the symbol."""
@@ -84,7 +66,6 @@ class Symbol:
     query: {self.query}
     aliases: [{", ".join(self.aliases)}]
     type_: {self.type_}
-    country: {self.country}
 """
 
     def currency(self) -> str:
@@ -96,11 +77,9 @@ class Symbol:
         """Create a dictionary of arguments that work with tessa's price functions."""
         args = {
             "query": str(self.query),
-            "type_": self._querytype,
+            "type_": self.type_,
             "currency_preference": self.currency_preference,
         }
-        if self.country is not None and self._querytype != "searchobj":
-            args["country"] = self.country
         return args
 
     def price_latest(self) -> PricePoint:

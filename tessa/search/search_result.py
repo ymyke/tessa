@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 import functools
-from typing import List, NamedTuple, Optional, Callable
+from typing import List, NamedTuple, Callable
 import itertools
 import re
 from ..symbol import Symbol
-from .. import AssetType, CountryName
+from .. import AssetType
 
 # ----- The predicates used to sort and bucketize results based on a query -----
 
@@ -109,13 +109,13 @@ def create_sort_key_for_query(query: str) -> Callable:
 
 def remove_duplicates(symbols: List[Symbol]) -> List[Symbol]:
     """Return a list in which every `Symbol` is unique. Two symbols are considered
-    equivalent if they match in `type_`, `country`, and `query`. Regardless of whether
-    their names are the same or different.
+    equivalent if they match in `type_` and `query`. Regardless of whether their names
+    are the same or different.
 
     Note further that several symbols can have the same name but still be considered
-    different if they differ in any of `type_`, `country`, or `query`.
+    different if they differ in any of `type_` or `query`.
     """
-    equality_key = lambda symbol: str((symbol.type_, symbol.country, symbol.query))
+    equality_key = lambda symbol: str((symbol.type_, symbol.query))
     return [k for k, _ in itertools.groupby(sorted(symbols, key=equality_key))]
 
 
@@ -132,19 +132,19 @@ class SearchResult:
 
     Design note 2: `SearchResult` and `SymbolCollection` have different definitions of
     equality between symbols: `SearchResult` considers 2 symbols to be equal if they are
-    equal in `type_`, `country`, or `query`, regardless of whether they have the same
-    name or not. A `SymbolCollection` does not have a definition of equality, but it
-    does enforce that names are unique.)
+    equal in `type_` and `query`, regardless of whether they have the same name or not.
+    A `SymbolCollection` does not have a definition of equality, but it does enforce
+    that names are unique.)
 
     Example usage:
 
     ```
     from tessa import search
-    r = search("pins")
+    r = search("harmony")
     # Review results:
     r.p()
-    # Get the 1 symbol in US in the best bucket (i.e., bucket 0):
-    s = r.filter(country="united states").buckets[0].symbols[0]
+    # Get the 1 symbol in crypto in the best bucket (i.e., bucket 0):
+    s = r.filter(type_="crypto").buckets[0].symbols[0]
     s.price_latest()
     ```
     """
@@ -176,24 +176,14 @@ class SearchResult:
         self.buckets = bucketize(self.query, self.symbols)
         return self
 
-    def filter(
-        self, type_: Optional[AssetType] = None, country: Optional[CountryName] = None
-    ) -> SearchResult:
-        """Filter for country or type and return a new `SearchResult` with the results
-        after filtering. Also updates the filter history.
+    def filter(self, type_: AssetType) -> SearchResult:
+        """Filter for type and return a new `SearchResult` with the results after
+        filtering. Also updates the filter history.
         """
         symbols = self.symbols
-        filters = []
-        if country:
-            symbols = [
-                s for s in symbols if s.country and s.country.lower() == country.lower()
-            ]
-            filters.append(f"country={country}")
-        if type_:
-            symbols = [s for s in symbols if s.type_ == type_]
-            filters.append(f"type_={type_}")
+        symbols = [s for s in symbols if s.type_ == type_]
         newres = SearchResult(self.query, symbols)
-        newres.filter_history = self.filter_history + filters
+        newres.filter_history = self.filter_history + [f"type_={type_}"]
         return newres
 
     def __str__(self) -> str:
@@ -211,23 +201,19 @@ class SearchResult:
         s()
         for i, b in enumerate(self.buckets):
             s(f"Bucket {i}: {b.name}")
-            countries = set(s.country for s in b.symbols) - {None}
             types = set(s.type_ for s in b.symbols)
 
             if len(b.symbols) == 0:
                 s("No hits", indent=True)
             else:
                 s(
-                    f"{len(b.symbols)} hits, {len(types)} types, "
-                    f"{len(countries)} countries",
+                    f"{len(b.symbols)} hits, {len(types)} types",
                     indent=True,
                 )
                 if len(b.symbols) in range(1, 6):
                     s("Hits: " + ", ".join([s.name for s in b.symbols]), indent=True)
                 if len(types) in range(1, 6):
                     s("Types: " + ", ".join(types), indent=True)
-                if len(countries) in range(1, 6):
-                    s("Countries: " + ", ".join(countries), indent=True)
             s()
         return out
 

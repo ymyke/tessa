@@ -19,11 +19,6 @@ AssetType = Literal[
     "currency_cross",
 ]
 
-QueryType = Literal[
-    AssetType,
-    "searchobj",
-]
-
 
 CountryName = Literal[
     "andorra",

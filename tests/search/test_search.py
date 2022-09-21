@@ -9,7 +9,7 @@ from tessa.search import SearchResult
 
 
 @pytest.mark.parametrize(
-    "querytype, symbol",
+    "type_, symbol",
     [
         # # These test the results returned by investpy's direct searches:
         # ("certificate", "NL0006454928"),
@@ -27,10 +27,10 @@ from tessa.search import SearchResult
     ],
 )
 @pytest.mark.net
-def test_working_symbols_are_returned_by_search(querytype: str, symbol: str):
+def test_working_symbols_are_returned_by_search(type_: str, symbol: str):
     """For each possible type of symbol, will we get a working `Symbol` object?"""
     res = search(symbol)
     assert isinstance(res, SearchResult)
     # pylint: disable=protected-access
-    s = [s for s in res.symbols if s._querytype == querytype][0]
+    s = [s for s in res.symbols if s.type_ == type_][0]
     assert isinstance(s, Symbol)

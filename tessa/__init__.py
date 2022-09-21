@@ -1,6 +1,6 @@
 __version__ = "0.3.3"
 
-from .types import AssetType, QueryType, CountryName
+from .types import AssetType, CountryName
 from .price import (
     price_history,
     price_point,

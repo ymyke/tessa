@@ -5,6 +5,9 @@ from typing import Optional, List, Union
 from dataclasses import dataclass, field
 from . import Symbol
 from . import jurisdiction2region as j2r
+from .. import CountryName
+# FIXME This should not be this prominent -- better have this in this folder, along with
+# jurisdictions
 
 # Customizations to jurisdiction2region (remove or adapt according to your needs):
 j2r.jurisdiction2region.update(
@@ -36,6 +39,7 @@ class ExtendedSymbol(Symbol):
     # FIXME A design alternative could be to move the `description` attribute to
     # `Symbol` itself, rename it to `info` so it can be used for arbitrary additional
     # informaton around a symbol such as a description or similar.
+    country: Optional[CountryName] = "united states"
     watch: bool = False
     delisted: bool = False
     jurisdiction: str = "US"

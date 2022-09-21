@@ -5,7 +5,7 @@ from typing import Union, NamedTuple
 import pandas as pd
 
 from . import coingecko, yahoo
-from .. import QueryType  # FIXME Reconsider QueryType
+from .. import AssetType
 from ..utils.freezeargs import freezeargs
 from ..utils.rate_limiter import rate_limit
 
@@ -20,7 +20,7 @@ PricePoint = NamedTuple(
 @functools.lru_cache(maxsize=None)
 def price_history(
     query: str,
-    type_: QueryType,  # FIXME ???
+    type_: AssetType,
     currency_preference: str = "usd",
 ) -> PriceHistory:
     """Get price history and return tuple of dataframe and currency.
@@ -30,7 +30,7 @@ def price_history(
     - query: A query string that makes sense in combination with the type. E.g.,
       "bitcoin" for "crypto", "AAPL" for a "stock", or a `investpy.utils.search_obj`
       object's string representation for "searchobj".
-    - type_: A `QueryType` (i.e., including "searchobj").
+    - type_: A `AssetType` (i.e., including "searchobj").
     FIXME Is `type_` now more like a namespace or retriever spec?
 
     Optional/situational args:
@@ -72,7 +72,7 @@ def price_history(
 
 def price_point(
     query: str,
-    type_: QueryType,
+    type_: AssetType,
     when: Union[str, pd.Timestamp],
     currency_preference: str = "usd",
 ) -> PricePoint:
@@ -96,7 +96,7 @@ def price_point(
 
 def price_point_strict(
     query: str,
-    type_: QueryType,
+    type_: AssetType,
     when: str,
     currency_preference: str = "usd",
 ) -> PricePoint:
@@ -111,7 +111,7 @@ def price_point_strict(
 
 def price_latest(
     query: str,
-    type_: QueryType,
+    type_: AssetType,
     currency_preference: str = "usd",
 ) -> PricePoint:
     """Same as `price_point` but will return the latest price."""

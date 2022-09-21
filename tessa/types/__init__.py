@@ -1,1 +1,1 @@
-from .types import AssetType, QueryType, CountryName
+from .types import AssetType, CountryName

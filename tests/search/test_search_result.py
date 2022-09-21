@@ -42,12 +42,12 @@ def test_remove_duplicates():
 
 def test_sort_and_bucketize():
     symbol_ranking_specs = [
-        # name, type, query, country, aliases, expected_bucket_lengths
-        ("AAA", "", "", "", [], [1, 0, 0, 0]),  # perfect match on name
-        ("x1", "", "", "", ["aaa"], [2, 0, 0, 0]),  # perfect match on alias
-        ("x2", "", "...aaa...", "", [], [2, 1, 0, 0]),  # word bounadary match
-        ("xxaaaxxx", "", "", "", [], [2, 1, 1, 0]),  # anywhere match
-        ("x", "", "", "", [], [2, 1, 1, 1]),  # no match
+        # name, type, query, aliases, expected_bucket_lengths
+        ("AAA", "", "", [], [1, 0, 0, 0]),  # perfect match on name
+        ("x1", "", "", ["aaa"], [2, 0, 0, 0]),  # perfect match on alias
+        ("x2", "", "...aaa...", [], [2, 1, 0, 0]),  # word bounadary match
+        ("xxaaaxxx", "", "", [], [2, 1, 1, 0]),  # anywhere match
+        ("x", "", "", [], [2, 1, 1, 1]),  # no match
     ]
     res = SearchResult("aaa", [])
     for spec in symbol_ranking_specs:
@@ -62,31 +62,19 @@ def test_filtering():
         return set(s.name for s in sr.symbols)
 
     symbol_specs = [
-        # name, type, query, country, aliases
-        ("A", "stock", "", "switzerland", []),
-        ("B", "fund", "", "switzerland", []),
-        ("C", "stock", "", "spain", []),
-        ("D", "etf", "", "france", []),
+        # name, type, query,  aliases
+        ("A", "stock", "", []),
+        ("B", "fund", "", []),
+        ("C", "stock", "", []),
+        ("D", "etf", "", []),
     ]
     res = SearchResult("q", [Symbol(*spec) for spec in symbol_specs])
     assert names_as_set(res) == set("ABCD")
-    assert names_as_set(res.filter(country="switzerland")) == set("AB")
     assert names_as_set(res.filter(type_="stock")) == set("AC")
-    assert names_as_set(res.filter(country="nowhere")) == set()  # type: ignore
-    assert names_as_set(res.filter(country="spain", type_="stock")) == set("C")
-    assert names_as_set(res.filter(type_="stock").filter(country="spain")) == set("C")
-    assert (
-        names_as_set(
-            res.filter(country="nowhere").filter(type_="nothing")  # type:ignore
-        )
-        == set()
-    )
+    assert names_as_set(res.filter(type_="notype")) == set()  # type: ignore
 
 
 def test_filter_history_gets_updated():
     res = SearchResult("q", [])
     assert res.filter_history == []
-    assert res.filter(country="togo").filter(type_="fund").filter_history == [
-        "country=togo",
-        "type_=fund",
-    ]
+    assert res.filter(type_="fund").filter_history == ["type_=fund"]
