@@ -8,20 +8,16 @@ Explained with an example:
 SPICHA: # The entry's key; your name for this symbol
   query: SPICHA.SW  # The symbol/query to be used by tessa
   type: stock   # Anything tessa "understands", e.g. stock, crypto, etf, ...
-  country: switzerland  # Only where necessary, e.g. not with type crypto
   aliases: [ETF SPI, SPICHA.SW] # Opt. list of aliases this ticker shall be found under
 ```
 
 - Note that price information is retrieved using the tessa package. So the attributes
-  `query`, `type`, and `country` are used to build queries for tessa.
+  `query` and `type_` are used to build queries for tessa.
 - The `aliases` attribute is optional; the `lookup` function will also try and find
   matches in that list.
 - If an entry has no `query` attribute, it will be set to the entry's key.
-- If an entry has no `type` attribute, it will be set to the default type (usually
+- If an entry has no `type_` attribute, it will be set to the default type (usually
   "stock").
-- An entry's country will be set to the default country (usually "united states") if no
-  country is given (and unless a country doesn't make sense for the type of symbol or
-  query).
 
 This implies that a minimal entry can look like this:
 
@@ -30,37 +26,11 @@ MSFT:
   # Just the key; all of these are then set automatically:
   # query: MSFT
   # type: stock
-  # country: united states
 ```
-
-- Internal attribute `_querytype` is the actual type sent to tessa's price retrieval
-  functions and will be derived from `query` and `type_`.
-
 
 ## More examples
 
-```yaml
-CHINAOPPTY:
-  type: fund
-  aliases: [ UECOPMD:LX, Ubs-ChinaOppoPU ]
-  query:  # This is an investpy SearchObj in this case; use tessa.search to find these
-    {
-      "id_": 1160209,
-      "name": "Ubs (lux) Equity Fund - China Opportunity (usd) P-mdist",
-      "symbol": "0P000159H2",
-      "country": "luxembourg",
-      "tag": "/funds/lu1152091168",
-      "pair_type": "funds",
-      "exchange": "Luxembourg",
-    }
-  country: luxembourg
-ETH:
-  type: crypto
-  query: ethereum
-JENNY:
-  type: crypto
-  query: jenny-metaverse-dao-token  # Use tessa.search to find the right query
-```
+See `docs/example_symbols.yaml` file.
 
 
 ## Additional attributes
@@ -100,6 +70,5 @@ retriever:
     service: tessa
     query: SPICHA.SW
     type_: stock
-    country: switzerland
 ```
 

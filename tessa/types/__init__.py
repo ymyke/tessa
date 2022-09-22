@@ -1,1 +1,1 @@
-from .types import AssetType, CountryName
+from .types import AssetType
