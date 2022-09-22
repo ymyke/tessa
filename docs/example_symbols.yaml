@@ -1,7 +1,7 @@
 # FIXME Adjust types
 SPICHA:
     type_: etf
-    query: UBS SPI CHF A-dis
+    query: SPICHA.SW
 MSFT:
 PINS:
     type_: stock
