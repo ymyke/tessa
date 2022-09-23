@@ -28,38 +28,38 @@ def mock_price_history(mocker):
 
 
 def test_price_point_strict(mock_price_history):
-    assert price_point_strict("xx", "xx", "2018-01-11").price == 2.0
+    assert price_point_strict("xx", "2018-01-11").price == 2.0
 
 
-def test_price_point_strict_non_existent(mock_price_history):
+def test_price_point_strict_with_non_existent_timestamp_fails(mock_price_history):
     with pytest.raises(KeyError):
-        price_point_strict("xx", "xx", "2018-01-13")
+        price_point_strict("xx", "2018-01-13")
 
 
-def test_price_point_non_existent(mock_price_history):
-    assert price_point("xx", "xx", "2018-01-13") == PricePoint(
+def test_price_point_with_non_existent_timestamp_finds_nearest(mock_price_history):
+    assert price_point("xx", "2018-01-13") == PricePoint(
         when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="usd"
     )
 
 
 def test_price_latest(mock_price_history):
-    assert price_latest("xx", "xx") == PricePoint(
+    assert price_latest("xx") == PricePoint(
         when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="usd"
     )
 
 
 def test_verify_pricepoint_types_are_used(mock_price_history):
-    assert isinstance(price_point("xx", "xx", "2018-01-11"), PricePoint)
-    assert isinstance(price_point_strict("xx", "xx", "2018-01-11"), PricePoint)
-    assert isinstance(price_latest("xx", "xx"), PricePoint)
+    assert isinstance(price_point("xx", "2018-01-11"), PricePoint)
+    assert isinstance(price_point_strict("xx", "2018-01-11"), PricePoint)
+    assert isinstance(price_latest("xx"), PricePoint)
 
 
 # ----- Tests that do hit the net -----
 
 
 @pytest.mark.net
-def test_concrete_investing_price_point():
-    res = price_point("AAPL", "stock", "2018-01-11")
+def test_concrete_yahoo_price_point():
+    res = price_point("AAPL", "2018-01-11", "yahoo")
     assert isinstance(res, PricePoint)
     assert res.when == pd.Timestamp("2018-01-11", tz="utc")
     assert round(res.price) == 42
@@ -67,8 +67,8 @@ def test_concrete_investing_price_point():
 
 
 @pytest.mark.net
-def test_concrete_crypto_price_point():
-    res = price_point("bitcoin", "crypto", "2018-01-11")
+def test_concrete_coingecko_price_point():
+    res = price_point("bitcoin", "2018-01-11", "coingecko")
     assert isinstance(res, PricePoint)
     assert res.when == pd.Timestamp("2018-01-11", tz="utc")
     assert round(res.price) == 14051

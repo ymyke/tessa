@@ -15,14 +15,14 @@ from tessa.price import PriceHistory
 
 
 @pytest.mark.net
-def test_price_history_stock_including_caching_and_ratelimiting():
+def test_price_history_on_yahoo_including_caching_and_ratelimiting():
     # Make sure rate limiter and cache are in a pristine setup:
     rate_limiter.reset_guards()
     assert rate_limiter.guards["yahoofinance"]["last_call"] == pendulum.parse("1900")
     price_history.cache_clear()
 
-    # Retrieve stock and make sure the result is correct:
-    res = price_history("AAPL", "stock")
+    # Retrieve asset and make sure the result is correct:
+    res = price_history("AAPL", "yahoo")
     assert isinstance(res, PriceHistory)
     df, crncy = res
     assert crncy == "USD"
@@ -41,7 +41,7 @@ def test_price_history_stock_including_caching_and_ratelimiting():
     ).total_seconds() < 30
 
     # Retrieve again and check that the cache is used:
-    df2, crncy2 = price_history("AAPL", "stock")
+    df2, crncy2 = price_history("AAPL", "yahoo")
     assert crncy2 == crncy
     assert df2.equals(df)
     assert price_history.cache_info().misses == 1
@@ -49,8 +49,8 @@ def test_price_history_stock_including_caching_and_ratelimiting():
 
 
 @pytest.mark.net
-def test_price_history_crypto():
-    df, crncy = price_history("ethereum", "crypto", currency_preference="chf")
+def test_price_history_coingecko():
+    df, crncy = price_history("ethereum", "coingecko", currency_preference="chf")
     assert crncy == "CHF"
     assert df.index[0] == pd.Timestamp("2015-08-07", tz="UTC")
     assert df.shape[0] > 1000
