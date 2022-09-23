@@ -7,7 +7,7 @@ from . import SearchResult
 def search(query: str, silent: bool = False) -> SearchResult:
     """Unified search function. Returns a `tessa.search.SearchResult`.
 
-    !! ONLY SUPPORTS COINGECKO CURRENTLY BECAUSE INVESTPY IS END OF LIFE !!
+    !! ONLY SUPPORTS COINGECKO CURRENTLY BECAUSE INVESTPY IS END OF LIFE !! FIXME
 
     - `query`: The string to search for. (Note that this query attribute has a different
       semantics to the query attribute in the `Symbol` class.)

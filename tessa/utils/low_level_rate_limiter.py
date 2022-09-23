@@ -1,13 +1,13 @@
 """Rate Limiter -- makes sure we don't hit the APIs too often by waiting by default and
 waiting exponentially if a 429 error is encountered.
 
-The goal is to never run into errors in the first place, b/c at least investing.com
-takes substantial time until it allow-lists a blocked IP address again. That is also why
-we can't use a library such das Tenacity here.
+The goal is to never run into errors in the first place, because some sites like
+coingecko.com take substantial time until they allow-list a blocked IP address again.
+That is also why we can't use a library such das Tenacity here.
 
 Note that this module is no longer used by the package. But I left it in here anyway,
-because it might come in handy for people who use the pycoingecko and investpy libraries
-in other ways than through this package. 
+because it might come in handy for people who use the pycoingecko or some other library
+in other ways than through this package.
 
 Usage: Import the module and call `setup_guards()`.
 """
@@ -20,14 +20,14 @@ import pendulum
 
 guards = {
     # Additional attributes that will be added dynamically are: last_call, wait_seconds
-    "investing": {
+    "yahoo": {
         "func_name": "requests.post",
-        "initial_wait_seconds": 2,
-        "pattern": "investing.com",
+        "initial_wait_seconds": 0.2,
+        "pattern": "yahoo.com",
     },
     "coingecko": {
         "func_name": "requests.Session.get",
-        "initial_wait_seconds": 1,
+        "initial_wait_seconds": 2.5,
         "pattern": "coingecko.com",
     },
 }
