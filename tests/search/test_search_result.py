@@ -42,10 +42,10 @@ def test_remove_duplicates():
 
 def test_sort_and_bucketize():
     symbol_ranking_specs = [
-        # name, source, query, aliases, expected_bucket_lengths
+        # name, query, source, aliases, expected_bucket_lengths
         ("AAA", "", "", [], [1, 0, 0, 0]),  # perfect match on name
         ("x1", "", "", ["aaa"], [2, 0, 0, 0]),  # perfect match on alias
-        ("x2", "", "...aaa...", [], [2, 1, 0, 0]),  # word bounadary match
+        ("x2", "...aaa...", "", [], [2, 1, 0, 0]),  # word bounadary match
         ("xxaaaxxx", "", "", [], [2, 1, 1, 0]),  # anywhere match
         ("x", "", "", [], [2, 1, 1, 1]),  # no match
     ]
@@ -62,11 +62,11 @@ def test_filtering():
         return set(s.name for s in sr.symbols)
 
     symbol_specs = [
-        # name, source, query, aliases
-        ("A", "yahoo", "", []),
-        ("B", "coingecko", "", []),
-        ("C", "yahoo", "", []),
-        ("D", "coingecko", "", []),
+        # name, query, source, aliases
+        ("A", "", "yahoo", []),
+        ("B", "", "coingecko", []),
+        ("C", "", "yahoo", []),
+        ("D", "", "coingecko", []),
     ]
     res = SearchResult("q", [Symbol(*spec) for spec in symbol_specs])
     assert names_as_set(res) == set("ABCD")
