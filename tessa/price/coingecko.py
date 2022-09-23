@@ -1,9 +1,8 @@
 """Everything coingecko-related (other than search)."""
 
-from typing import Tuple
 import pandas as pd
 from pycoingecko import CoinGeckoAPI
-
+from . import PriceHistory
 
 def dataframify_price_list(prices: list) -> pd.DataFrame:
     """Turn price list returned by Coingecko API into a pricing dataframe in the form
@@ -18,9 +17,9 @@ def dataframify_price_list(prices: list) -> pd.DataFrame:
 
 def get_price_history(
     query: str, currency_preference: str = "USD"
-) -> Tuple[pd.DataFrame, str]:
+) -> PriceHistory:
     """Get price history for a given cryptocurrency."""
-    return (
+    return PriceHistory(
         dataframify_price_list(
             CoinGeckoAPI().get_coin_market_chart_by_id(
                 id=query,
