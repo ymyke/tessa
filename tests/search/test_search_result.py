@@ -62,7 +62,7 @@ def test_filtering():
         return set(s.name for s in sr.symbols)
 
     symbol_specs = [
-        # name, source, query,  aliases
+        # name, source, query, aliases
         ("A", "yahoo", "", []),
         ("B", "coingecko", "", []),
         ("C", "yahoo", "", []),
