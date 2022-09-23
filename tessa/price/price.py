@@ -1,19 +1,15 @@
 """Price information."""
 
 import functools
-from typing import Union, NamedTuple, Dict, Callable
+from typing import Union, Dict, Callable
 import pandas as pd
 
 from . import coingecko, yahoo
+from . import PriceHistory, PricePoint
 from .. import SourceType
 from ..utils.freezeargs import freezeargs
 from ..utils.rate_limiter import rate_limit
 
-# FIXME Move these elsewhere.
-PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])
-PricePoint = NamedTuple(
-    "PricePoint", [("when", pd.Timestamp), ("price", float), ("currency", str)]
-)
 
 # FIXME Move this to a separate file? Would it make sense to move this to the
 # __init__.py??
