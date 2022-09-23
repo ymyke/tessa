@@ -18,7 +18,7 @@ def test_load_yaml(tmp_path):
 A:
 B:
     aliases: [BB, BBB]
-    type_: etf
+    source: coingecko
     query: p
 C:
 """
@@ -28,7 +28,7 @@ C:
     assert sc.find_one("A")
     b = sc.find_one("B")
     assert b
-    assert b.type_ == "etf"
+    assert b.source == "coingecko"
     assert b.query == "p"
     assert sc.find_one("BB")
     assert sc.find_one("BBB")

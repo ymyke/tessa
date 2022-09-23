@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from ..price import price_history, price_latest, price_point, PricePoint, PriceHistory
-from .. import AssetType
+from .. import SourceType
 
 pd.plotting.register_matplotlib_converters()
 
@@ -27,14 +27,15 @@ class Symbol:
     name: str
     """Symbol's name and default query."""
 
-    type_: AssetType = "stock"
-    """FIXME ???"""
-
     query: Optional[str] = None
     """Use this to use a query that is different than the name."""
 
+    source: SourceType = "yahoo"
+    """The source to query for this symbol."""
+
     aliases: list[str] = field(default_factory=list)
-    """Other names this symbol should be found under."""
+    """Other names this symbol should be found under. (Will not be used as additional
+    queries but "internally" in the `matches` method.)"""
 
     # Class variables:
     currency_preference: ClassVar[str] = "USD"
@@ -53,7 +54,7 @@ class Symbol:
             self.query = self.name
 
     def __str__(self) -> str:
-        return f"Symbol {self.name} of type {self.type_}"
+        return f"Symbol {self.name} with source {self.source}"
 
     def p(self) -> None:
         """Convenience method to print the symbol."""
@@ -65,7 +66,7 @@ class Symbol:
 {self.name}:
     query: {self.query}
     aliases: [{", ".join(self.aliases)}]
-    type_: {self.type_}
+    source: {self.source}
 """
 
     def currency(self) -> str:
@@ -76,8 +77,8 @@ class Symbol:
     def _create_price_args(self) -> dict:
         """Create a dictionary of arguments that work with tessa's price functions."""
         args = {
-            "query": str(self.query),
-            "type_": self.type_,
+            "query": self.query,
+            "source": self.source,
             "currency_preference": self.currency_preference,
         }
         return args

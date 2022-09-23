@@ -59,10 +59,7 @@ def test_price_history_crypto():
     assert df.dtypes.to_string() == "close    float64"
 
 
-@pytest.mark.skip(reason="There are no unsupported asset types at this point")  # FIXME
-@pytest.mark.net
-def test_error_unsupported_asset_type():
-    # with pytest.raises(ValueError) as excinfo:
-    #     price_history("AAPL", "xxx")
-    #     assert "Unsupported asset type" in excinfo
-    pass
+def test_error_unsupported_asset_source():
+    with pytest.raises(ValueError) as excinfo:
+        price_history(query="AAPL", source="xxx")
+        assert "Unkown source" in excinfo

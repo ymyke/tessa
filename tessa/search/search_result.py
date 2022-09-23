@@ -6,7 +6,7 @@ from typing import List, NamedTuple, Callable
 import itertools
 import re
 from ..symbol import Symbol
-from .. import AssetType
+from .. import SourceType
 
 # ----- The predicates used to sort and bucketize results based on a query -----
 
@@ -108,14 +108,14 @@ def create_sort_key_for_query(query: str) -> Callable:
 
 
 def remove_duplicates(symbols: List[Symbol]) -> List[Symbol]:
-    """Return a list in which every `Symbol` is unique. Two symbols are considered
-    equivalent if they match in `type_` and `query`. Regardless of whether their names
+    """Return a list in which every symbol is unique. Two symbols are considered
+    equivalent if they match in `query` and `source`. Regardless of whether their names
     are the same or different.
 
     Note further that several symbols can have the same name but still be considered
-    different if they differ in any of `type_` or `query`.
+    different if they differ in any of `query` or `source`.
     """
-    equality_key = lambda symbol: str((symbol.type_, symbol.query))
+    equality_key = lambda symbol: str((symbol.source, symbol.query))
     return [k for k, _ in itertools.groupby(sorted(symbols, key=equality_key))]
 
 
@@ -132,7 +132,7 @@ class SearchResult:
 
     Design note 2: `SearchResult` and `SymbolCollection` have different definitions of
     equality between symbols: `SearchResult` considers 2 symbols to be equal if they are
-    equal in `type_` and `query`, regardless of whether they have the same name or not.
+    equal in `query` and `source`, regardless of whether they have the same name or not.
     A `SymbolCollection` does not have a definition of equality, but it does enforce
     that names are unique.)
 
@@ -143,8 +143,8 @@ class SearchResult:
     r = search("harmony")
     # Review results:
     r.p()
-    # Get the 1 symbol in crypto in the best bucket (i.e., bucket 0):
-    s = r.filter(type_="crypto").buckets[0].symbols[0]
+    # Get the 1 symbol from source "coingecko" in the best bucket (i.e., bucket 0):
+    s = r.filter(source="coingecko").buckets[0].symbols[0]
     s.price_latest()
     ```
     """
@@ -176,14 +176,14 @@ class SearchResult:
         self.buckets = bucketize(self.query, self.symbols)
         return self
 
-    def filter(self, type_: AssetType) -> SearchResult:
-        """Filter for type and return a new `SearchResult` with the results after
+    def filter(self, source: SourceType) -> SearchResult:
+        """Filter for `source` and return a new `SearchResult` with the results after
         filtering. Also updates the filter history.
         """
         symbols = self.symbols
-        symbols = [s for s in symbols if s.type_ == type_]
+        symbols = [s for s in symbols if s.source == source]
         newres = SearchResult(self.query, symbols)
-        newres.filter_history = self.filter_history + [f"type_={type_}"]
+        newres.filter_history = self.filter_history + [f"source={source}"]
         return newres
 
     def __str__(self) -> str:
@@ -201,19 +201,19 @@ class SearchResult:
         s()
         for i, b in enumerate(self.buckets):
             s(f"Bucket {i}: {b.name}")
-            types = set(s.type_ for s in b.symbols)
+            sources = set(s.source for s in b.symbols)
 
             if len(b.symbols) == 0:
                 s("No hits", indent=True)
             else:
                 s(
-                    f"{len(b.symbols)} hits, {len(types)} types",
+                    f"{len(b.symbols)} hits, {len(sources)} sources",
                     indent=True,
                 )
                 if len(b.symbols) in range(1, 6):
                     s("Hits: " + ", ".join([s.name for s in b.symbols]), indent=True)
-                if len(types) in range(1, 6):
-                    s("Types: " + ", ".join(types), indent=True)
+                if len(sources) in range(1, 6):
+                    s("Sources: " + ", ".join(sources), indent=True)
             s()
         return out
 

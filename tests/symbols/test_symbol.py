@@ -12,15 +12,15 @@ from tessa.symbol import Symbol
 
 
 def test_initializer():
-    s = Symbol(name="x", type_="etf", query="qq")
+    s = Symbol(name="x", source="coingecko", query="qq")
     assert s.name == "x"
-    assert s.type_ == "etf"
+    assert s.source == "coingecko"
     assert s.query == "qq"
 
 
 def test_initializer_with_defaults():
     s = Symbol(name="AAPL")
-    assert s.type_ == "stock"
+    assert s.source == "yahoo"
     assert s.query == "AAPL"
 
 
@@ -67,4 +67,4 @@ def test_price_functions():
 def test_currency_preference():
     for check_currency in ["USD", "CHF"]:
         Symbol.currency_preference = check_currency
-        assert Symbol("bitcoin", type_="crypto").currency() == check_currency
+        assert Symbol("bitcoin", source="coingecko").currency() == check_currency

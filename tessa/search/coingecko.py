@@ -19,7 +19,7 @@ def _matches_to_symbols(matches: list) -> list:
     return [
         Symbol(
             name=x["symbol"],
-            type_="crypto",
+            source="coingecko",
             query=x["id"],
             aliases=[x["id"], x["name"]],
         )
