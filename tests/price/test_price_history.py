@@ -18,7 +18,7 @@ from tessa.price import PriceHistory
 def test_price_history_on_yahoo_including_caching_and_ratelimiting():
     # Make sure rate limiter and cache are in a pristine setup:
     rate_limiter.reset_guards()
-    assert rate_limiter.guards["yahoofinance"]["last_call"] == pendulum.parse("1900")
+    assert rate_limiter.guards["yahoo"]["last_call"] == pendulum.parse("1900")
     price_history.cache_clear()
 
     # Retrieve asset and make sure the result is correct:
@@ -37,7 +37,7 @@ def test_price_history_on_yahoo_including_caching_and_ratelimiting():
 
     # Make sure the rate limiter was updated:
     assert (
-        pendulum.now() - rate_limiter.guards["yahoofinance"]["last_call"]
+        pendulum.now() - rate_limiter.guards["yahoo"]["last_call"]
     ).total_seconds() < 30
 
     # Retrieve again and check that the cache is used:

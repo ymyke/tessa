@@ -6,21 +6,20 @@ time until it allow-lists a blocked IP address again. That is also why we can't 
 library such das Tenacity here.
 """
 
+from typing import Dict
 import copy
 import time
 import pendulum
+from .. import SourceType
 
 guards = {}
 
-original_guards = {
+original_guards: Dict[SourceType, Dict] = {
     # `reset_guards` will add `last_call` to each guard.
-    "crypto": { 
-        # FIXME This should be coingecko to make more sense -- can maybe be improved if
-        # the type_ attribute of a symbol becomes more of a namespace at some point in
-        # the future
+    "coingecko": {
         "wait_seconds": 2.5,
     },
-    "yahoofinance": {
+    "yahoo": {
         "wait_seconds": 0.02,
     },
 }
@@ -40,11 +39,12 @@ def reset_guards() -> None:
 # point.)
 
 
-def rate_limit(type_: str) -> None:
+def rate_limit(source: SourceType) -> None:
     """Do the actual rate limiting."""
-    # This is necessary because the price functions simply send the `type_`:
-    which_guard = type_ if type_ in ["crypto"] else "yahoofinance"
-    guard = guards[which_guard]
+    try:
+        guard = guards[source]
+    except KeyError as exc:
+        raise ValueError("Unknown source.") from exc
     diff = (pendulum.now() - guard["last_call"]).total_seconds()
     if diff < guard["wait_seconds"]:
         time.sleep(guard["wait_seconds"] - diff)

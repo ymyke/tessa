@@ -29,6 +29,8 @@ def _matches_to_symbols(matches: list) -> list:
 
 def coingecko_search(query: str) -> SearchResult:
     """Find coingecko ids that match `query` somehow. Returns `SearchResult`."""
+    # Note: No rate limiting here because search is simply a lookup in the symbol map,
+    # which gets cached in the first retrieval.
     matches = [
         entry
         for entry in get_symbol_map()
