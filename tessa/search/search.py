@@ -13,6 +13,8 @@ def search(query: str, silent: bool = False) -> SearchResult:
       semantics to the query attribute in the `Symbol` class.)
     - `silent`: No print output if True.
     """
+    # FIXME Add similar map to the one in price.
+    # FIXME Add yahoo search somehow?
     res = coingecko_search(query)
     if not silent:
         res.p()

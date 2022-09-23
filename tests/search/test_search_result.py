@@ -35,17 +35,17 @@ def test_remove_duplicates():
     symbols = [Symbol(x) for x in "ABBBCBB"]
     res = SearchResult("q", symbols)
     assert [s.name for s in res.symbols] == ["A", "B", "C"]
-    symbols[-1].type_ = "zzz"
+    symbols[-1].source = "zzz"  # type: ignore
     res = SearchResult("q", symbols)
     assert [s.name for s in res.symbols] == ["A", "B", "C", "B"]
 
 
 def test_sort_and_bucketize():
     symbol_ranking_specs = [
-        # name, type, query, aliases, expected_bucket_lengths
+        # name, query, source, aliases, expected_bucket_lengths
         ("AAA", "", "", [], [1, 0, 0, 0]),  # perfect match on name
         ("x1", "", "", ["aaa"], [2, 0, 0, 0]),  # perfect match on alias
-        ("x2", "", "...aaa...", [], [2, 1, 0, 0]),  # word bounadary match
+        ("x2", "...aaa...", "", [], [2, 1, 0, 0]),  # word bounadary match
         ("xxaaaxxx", "", "", [], [2, 1, 1, 0]),  # anywhere match
         ("x", "", "", [], [2, 1, 1, 1]),  # no match
     ]
@@ -62,19 +62,19 @@ def test_filtering():
         return set(s.name for s in sr.symbols)
 
     symbol_specs = [
-        # name, type, query,  aliases
-        ("A", "stock", "", []),
-        ("B", "fund", "", []),
-        ("C", "stock", "", []),
-        ("D", "etf", "", []),
+        # name, query, source, aliases
+        ("A", "", "yahoo", []),
+        ("B", "", "coingecko", []),
+        ("C", "", "yahoo", []),
+        ("D", "", "coingecko", []),
     ]
     res = SearchResult("q", [Symbol(*spec) for spec in symbol_specs])
     assert names_as_set(res) == set("ABCD")
-    assert names_as_set(res.filter(type_="stock")) == set("AC")
-    assert names_as_set(res.filter(type_="notype")) == set()  # type: ignore
+    assert names_as_set(res.filter(source="yahoo")) == set("AC")
+    assert names_as_set(res.filter(source="nosource")) == set()  # type: ignore
 
 
 def test_filter_history_gets_updated():
     res = SearchResult("q", [])
     assert res.filter_history == []
-    assert res.filter(type_="fund").filter_history == ["type_=fund"]
+    assert res.filter(source="coingecko").filter_history == ["source=coingecko"]

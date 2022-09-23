@@ -7,16 +7,9 @@ suggestions from the IDE.
 from typing import Literal
 
 
-AssetType = Literal[
-    "crypto",
-    "stock",
-    "etf",
-    "fund",
-    "crypto",
-    "bond",
-    "index",
-    "certificate",
-    "currency_cross",
+SourceType = Literal[
+    "yahoo",
+    "coingecko",
 ]
 
 

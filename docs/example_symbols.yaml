@@ -1,12 +1,10 @@
-# FIXME Adjust types
 SPICHA:
-    type_: etf
     query: SPICHA.SW
+    source: yahoo
 MSFT:
+    # source can also be left out because default source is "yahoo"
 PINS:
-    type_: stock
 CHINAFUND:
-    type_: fund
     aliases:
         [
             UECOPMD:LX,
@@ -16,6 +14,9 @@ CHINAFUND:
             Ubs-LuxEquiFuAT,
         ]
     query: lu1152091168
+    source: yahoo
 ETH:
-    type_: crypto
     query: ethereum
+    source: coingecko
+ETH-USD:
+    source: yahoo

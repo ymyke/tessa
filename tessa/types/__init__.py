@@ -1,1 +1,1 @@
-from .types import AssetType
+from .types import SourceType

@@ -6,18 +6,18 @@ Explained with an example:
 
 ```yaml
 SPICHA: # The entry's key; your name for this symbol
-  query: SPICHA.SW  # The symbol/query to be used by tessa
-  type: stock   # Anything tessa "understands", e.g. stock, crypto, etf, ...
+  query: SPICHA.SW  # The query to be used
+  source: yahoo   # The source to be queried
   aliases: [ETF SPI, SPICHA.SW] # Opt. list of aliases this ticker shall be found under
 ```
 
 - Note that price information is retrieved using the tessa package. So the attributes
-  `query` and `type_` are used to build queries for tessa.
+  `query` and `source` are used to build queries for tessa.
 - The `aliases` attribute is optional; the `lookup` function will also try and find
   matches in that list.
 - If an entry has no `query` attribute, it will be set to the entry's key.
-- If an entry has no `type_` attribute, it will be set to the default type (usually
-  "stock").
+- If an entry has no `source` attribute, it will be set to the default source (usually
+  "yahoo").
 
 This implies that a minimal entry can look like this:
 
@@ -25,7 +25,7 @@ This implies that a minimal entry can look like this:
 MSFT:
   # Just the key; all of these are then set automatically:
   # query: MSFT
-  # type: stock
+  # source: yahoo
 ```
 
 ## More examples
@@ -58,17 +58,3 @@ AAPL:
   jurisdiction: CN  # main jurisdiction of the underlying asset(s) 
   # (not of the title representing the asset); default US, other examples: CN, several, 
   # irrelevant, EU
-
-
-## Misc notes
-
-- The syntax could later be extended to support different retrieval services; somehow
-  like this:
-
-```yaml
-retriever:
-    service: tessa
-    query: SPICHA.SW
-    type_: stock
-```
-

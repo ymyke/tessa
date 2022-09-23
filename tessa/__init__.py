@@ -1,6 +1,6 @@
 __version__ = "0.3.3"
 
-from .types import AssetType
+from .types import SourceType
 from .price import (
     price_history,
     price_point,
