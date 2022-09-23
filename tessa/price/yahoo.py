@@ -40,7 +40,7 @@ def get_ticker_info(query: str) -> dict:
 
 
 def get_price_history(
-    query: str, currency_preference: str = "usd"  # pylint: disable=unused-argument
+    query: str, currency_preference: str = "USD"  # pylint: disable=unused-argument
 ) -> Tuple[pd.DataFrame, str]:  # FIXME Use PriceHistory here (also in coingecko)
     """Get price history for a given query. Note that `currency_preference` will be
     ignored since Yahoo Finance returns each ticker in the one currency that is set for

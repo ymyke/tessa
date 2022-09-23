@@ -23,7 +23,7 @@ def mock_price_history(mocker):
     }
     mocker.patch(
         "tessa.price.price.price_history",
-        return_value=PriceHistory(pd.DataFrame(df_as_json).set_index("date"), "usd"),
+        return_value=PriceHistory(pd.DataFrame(df_as_json).set_index("date"), "USD"),
     )
 
 
@@ -38,13 +38,13 @@ def test_price_point_strict_with_non_existent_timestamp_fails(mock_price_history
 
 def test_price_point_with_non_existent_timestamp_finds_nearest(mock_price_history):
     assert price_point("xx", "2018-01-13") == PricePoint(
-        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="usd"
+        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="USD"
     )
 
 
 def test_price_latest(mock_price_history):
     assert price_latest("xx") == PricePoint(
-        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="usd"
+        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="USD"
     )
 
 

@@ -28,7 +28,7 @@ SOURCE_TO_PRICE_HISTORY_MAP: Dict[SourceType, Callable] = {
 def price_history(
     query: str,
     source: SourceType = "yahoo",
-    currency_preference: str = "usd",
+    currency_preference: str = "USD",
 ) -> PriceHistory:
     """Get price history and return `PriceHistory`, i.e., a tuple of a dataframe with
     the price history and the effective currency. Note that the effective currency
@@ -38,7 +38,7 @@ def price_history(
       "BTC-USD" for "yahoo" or "bitcoin" for "coingecko".
     - `source`: The source to query. Defaults to "yahoo".
     - `currency_preference`: The currency to the prices should be returned in; defaults
-      to "usd". The effective currency might differ and will be returned in the second
+      to "USD". The effective currency might differ and will be returned in the second
       return value.
     """
     rate_limit(source)
@@ -60,7 +60,7 @@ def price_point(
     query: str,
     when: Union[str, pd.Timestamp],
     source: SourceType = "yahoo",
-    currency_preference: str = "usd",
+    currency_preference: str = "USD",
 ) -> PricePoint:
     """Return the price at a given point in time given by `when`. Look for the closest
     point in time if the exact point in time is not found. Returns a `PricePoint`, i.e.,
@@ -82,7 +82,7 @@ def price_point_strict(
     query: str,
     when: str,
     source: SourceType = "yahoo",
-    currency_preference: str = "usd",
+    currency_preference: str = "USD",
 ) -> PricePoint:
     """Same as `price_point` but will return either the price at the exact point in time
     or raise a KeyError.
@@ -96,7 +96,7 @@ def price_point_strict(
 def price_latest(
     query: str,
     source: SourceType = "yahoo",
-    currency_preference: str = "usd",
+    currency_preference: str = "USD",
 ) -> PricePoint:
     """Same as `price_point` but will return the latest price."""
     df, currency = price_history(query, source, currency_preference)

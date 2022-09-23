@@ -50,7 +50,7 @@ def test_price_history_on_yahoo_including_caching_and_ratelimiting():
 
 @pytest.mark.net
 def test_price_history_coingecko():
-    df, crncy = price_history("ethereum", "coingecko", currency_preference="chf")
+    df, crncy = price_history("ethereum", "coingecko", currency_preference="CHF")
     assert crncy == "CHF"
     assert df.index[0] == pd.Timestamp("2015-08-07", tz="UTC")
     assert df.shape[0] > 1000

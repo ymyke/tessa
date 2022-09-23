@@ -17,7 +17,7 @@ def dataframify_price_list(prices: list) -> pd.DataFrame:
 
 
 def get_price_history(
-    query: str, currency_preference: str = "usd"
+    query: str, currency_preference: str = "USD"
 ) -> Tuple[pd.DataFrame, str]:
     """Get price history for a given cryptocurrency."""
     return (
