@@ -4,10 +4,8 @@
 from typing import Optional, List, Union
 from dataclasses import dataclass, field
 from . import Symbol
-from . import jurisdiction2region as j2r
-from ..types.types import CountryName
-# FIXME This should not be this prominent -- better have this in this folder, along with
-# jurisdictions
+from .geo import CountryName, j2r
+
 
 # Customizations to jurisdiction2region (remove or adapt according to your needs):
 j2r.jurisdiction2region.update(
