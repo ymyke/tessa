@@ -1,3 +1,7 @@
+"""
+.. include:: ../README.md
+"""
+
 __version__ = "0.3.3"
 
 from .sources import SourceType
