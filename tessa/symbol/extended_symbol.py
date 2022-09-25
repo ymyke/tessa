@@ -34,20 +34,45 @@ class ExtendedSymbol(Symbol):
     """
 
     description: Optional[str] = None
+    """Informational only."""
     # FIXME A design alternative could be to move the `description` attribute to
     # `Symbol` itself, rename it to `info` so it can be used for arbitrary additional
     # informaton around a symbol such as a description or similar.
-    country: Optional[CountryName] = "united states"
-    watch: bool = False
-    delisted: bool = False
-    jurisdiction: str = "US"
-    isin: Optional[str] = None
-    strategy: Union[str, List[str]] = field(default_factory=list)
-    strategy_comments: Optional[str] = None
-    region: str = field(init=False)
 
-    # You can also overwrite defaults from Symbol here, like so:
-    # country: str = "switzerland"
+    country: Optional[CountryName] = "united states"
+    """Country of HQ / listing."""
+
+    watch: bool = False
+    """Whether the ticker can produce alerts."""
+
+    delisted: bool = False
+    """Used to filter certain symbols from analysis."""
+
+    jurisdiction: str = "US"
+    """main jurisdiction of the underlying asset(s) (not of the title representing the
+    asset); default US, other examples: CN, EU, several, irrelevant, unknown
+    """
+
+    isin: Optional[str] = None
+    """Informational only."""
+
+    strategy: Union[str, List[str]] = field(default_factory=list)
+    """One strategy or a list of several strategies. Some strategies I use:
+      - F&F: Fire & Forget (implies HoldForGrowth)
+      - HoldForGrowth
+      - HoldForStability: low growth expected, but also low risk
+      - HoldForDiversification: titles I find important for diversification
+      - EnterIf: consider starting a position if prices for this title fall
+      - SellIf: consider selling if prices high and/or liquidity needed
+      - Sold: earlier holding that was sold at some point
+      - Quarterly: quarterly invest
+    """
+
+    strategy_comments: Optional[str] = None
+    """Additional comments re strategy."""
+
+    region: str = field(init=False)
+    """Will be set automatically."""
 
     def __post_init__(self) -> None:
         super().__post_init__()

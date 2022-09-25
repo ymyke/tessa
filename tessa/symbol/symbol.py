@@ -28,14 +28,16 @@ class Symbol:
     """Symbol's name and default query."""
 
     query: Optional[str] = None
-    """Use this to use a query that is different than the name."""
+    """Use this to use a query that is different than the name. `name` will be used as
+    the `query` if it is `None`.
+    """
 
     source: SourceType = "yahoo"
-    """The source to query for this symbol."""
+    """The source to query for this symbol. Defaults to "yahoo"."""
 
     aliases: list[str] = field(default_factory=list)
-    """Other names this symbol should be found under. (Will not be used as additional
-    queries but "internally" in the `matches` method.)"""
+    """Optional other names this symbol should be found under. (Will not be used as
+    additional queries but "internally" in the `matches` method.)"""
 
     # Class variables:
     currency_preference: ClassVar[str] = "USD"

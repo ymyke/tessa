@@ -2,6 +2,7 @@ SPICHA:
     query: SPICHA.SW
     source: yahoo
 MSFT:
+    # query will be set to "MSFT"
     # source can also be left out because default source is "yahoo"
 PINS:
 CHINAFUND:
