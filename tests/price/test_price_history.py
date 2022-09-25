@@ -65,4 +65,4 @@ def test_price_history_coingecko():
 def test_error_unsupported_asset_source():
     with pytest.raises(ValueError) as excinfo:
         price_history(query="AAPL", source="xxx")
-        assert "Unkown source" in excinfo
+    assert "Unknown source" in str(excinfo.value)

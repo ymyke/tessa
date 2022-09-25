@@ -30,4 +30,4 @@ def test_api_returns_reasonable_data(query: str, expected_currency: str):
 def test_non_existing_query_raises():
     with pytest.raises(SymbolNotFoundError) as excinfo:
         yahoo.get_price_history("thisshouldntexistreally")
-        assert "No symbol found" in str(excinfo)
+    assert "No symbol found" in str(excinfo.value)
