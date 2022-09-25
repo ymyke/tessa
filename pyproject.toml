@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/ymyke/tessa"
 homepage = "https://github.com/ymyke/tessa"
 readme = "README.md"
-keywords = ["python", "finance", "investing", "financial-analysis", "investment-analysis", "financial-data", "coingecko", "investing-com", "investpy", "pycoingecko"]
+keywords = ["python", "finance", "investing", "financial-analysis", "investment-analysis", "financial-data", "coingecko", "pycoingecko", "yahoo", "yahoo-finance", "yfinance"]
 
 [tool.poetry.dependencies]
 # General:
