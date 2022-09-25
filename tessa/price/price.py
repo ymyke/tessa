@@ -1,22 +1,12 @@
 """Price information."""
 
 import functools
-from typing import Union, Dict, Callable
+from typing import Union
 import pandas as pd
-
-from . import coingecko, yahoo
 from . import PriceHistory, PricePoint
 from .. import SourceType
 from ..utils.freezeargs import freezeargs
-from ..utils.rate_limiter import rate_limit
-
-
-# FIXME Move this to a separate file? Would it make sense to move this to the
-# __init__.py??
-SOURCE_TO_PRICE_HISTORY_MAP: Dict[SourceType, Callable] = {
-    "yahoo": yahoo.get_price_history,
-    "coingecko": coingecko.get_price_history,
-}
+from .. import sources
 
 
 @freezeargs
@@ -37,16 +27,9 @@ def price_history(
       to "USD". The effective currency might differ and will be returned in the second
       return value.
     """
-    rate_limit(source)
-    try:
-        df, effective_currency = SOURCE_TO_PRICE_HISTORY_MAP[source](
-            query, currency_preference
-        )
-    except KeyError as exc:
-        raise ValueError(
-            "Unknown source. Supported source are: "
-            f"{SOURCE_TO_PRICE_HISTORY_MAP.keys()}"
-        ) from exc
+    src = sources.get_source(source)
+    src.rate_limiter.rate_limit()
+    df, effective_currency = src.get_price_history(query, currency_preference)
     return PriceHistory(df.copy(), effective_currency.upper())
     # (Returning a copy of the dataframe so the cached original is preserved even if it
     # gets modified by the caller.)
