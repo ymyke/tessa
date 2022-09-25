@@ -6,8 +6,7 @@ import pandas as pd
 from . import PriceHistory, PricePoint
 from .. import SourceType
 from ..utils.freezeargs import freezeargs
-
-# from .. import sources    <- gets imported later to prevent circular dependency
+from .. import sources
 
 
 @freezeargs
@@ -28,8 +27,6 @@ def price_history(
       to "USD". The effective currency might differ and will be returned in the second
       return value.
     """
-    from .. import sources  # pylint: disable=import-outside-toplevel
-
     src = sources.get_source(source)
     src.rate_limiter.rate_limit()
     df, effective_currency = src.get_price_history(query, currency_preference)

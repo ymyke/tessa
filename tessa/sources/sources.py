@@ -1,12 +1,9 @@
-"""Source class and related functions as well as the directory of all sources
-(`sourcelist`).
-"""
+"""Source class and related functions."""
+
 from dataclasses import dataclass
-from typing import Callable, Dict, Generator
-from .. import SourceType
+from typing import Callable, Generator
+from .sourcetype import SourceType
 from .rate_limiter import RateLimiter
-from ..price import yahoo as yahooprice, coingecko as coingeckoprice
-from ..search import yahoo as yahoosearch, coingecko as coingeckosearch
 
 
 @dataclass
@@ -25,36 +22,25 @@ class Source:
     """Rate limiter object."""
 
 
-sourcelist: Dict[SourceType, Source] = {
-    "yahoo": Source(
-        get_price_history=yahooprice.get_price_history,
-        get_search_results=yahoosearch.yahoo_search,
-        rate_limiter=RateLimiter(0.2),
-    ),
-    "coingecko": Source(
-        get_price_history=coingeckoprice.get_price_history,
-        get_search_results=coingeckosearch.coingecko_search,
-        rate_limiter=RateLimiter(2.5),
-    ),
-}
-"""The dictionary of all know sources. To be accessed via the functions in this
-module.
-"""
-
-
 def get_source(name: SourceType) -> Source:
     """Get a specific source."""
+    # Prevent circular dependencies -- pylint: disable=import-outside-toplevel
+    from .sources_directory import SOURCES_DIRECTORY
+
     try:
-        return sourcelist[name]
+        return SOURCES_DIRECTORY[name]
     except KeyError as exc:
         raise ValueError(
-            f"Unknown source. Supported source are: {sourcelist.keys()}"
+            f"Unknown source. Supported source are: {SOURCES_DIRECTORY.keys()}"
         ) from exc
 
 
 def get_all_sources() -> Generator:
     """Get all the known sources."""
-    for source in sourcelist.values():
+    # Prevent circular dependencies -- pylint: disable=import-outside-toplevel
+    from .sources_directory import SOURCES_DIRECTORY
+
+    for source in SOURCES_DIRECTORY.values():
         yield source
 
 

@@ -1,8 +1,7 @@
 """Unified search."""
 
 from . import SearchResult
-
-# from .. import sources    <- gets imported later to prevent circular dependency
+from .. import sources
 
 
 def search(query: str, silent: bool = False) -> SearchResult:
@@ -12,8 +11,6 @@ def search(query: str, silent: bool = False) -> SearchResult:
       semantics to the query attribute in the `Symbol` class.)
     - `silent`: No print output if True.
     """
-    from .. import sources  # pylint: disable=import-outside-toplevel
-
     res = SearchResult(query, [])
     for source in sources.get_all_sources():
         res.add_symbols(source.get_search_results(query).symbols)
