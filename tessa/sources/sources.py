@@ -4,7 +4,7 @@
 from dataclasses import dataclass
 from typing import Callable, Dict, Generator
 from .. import SourceType
-from ..utils.rate_limiter import RateLimiter
+from .rate_limiter import RateLimiter
 from ..price import yahoo as yahooprice, coingecko as coingeckoprice
 from ..search import yahoo as yahoosearch, coingecko as coingeckosearch
 

@@ -6,8 +6,6 @@ time until it allow-lists a blocked IP address again. That is also why we can't 
 library such das Tenacity here.
 """
 
-# FIXME Move this to sources folder?
-
 from dataclasses import dataclass
 import datetime
 import time
