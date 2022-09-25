@@ -4,6 +4,7 @@
 
 import pytest
 from tessa.price import coingecko
+from tessa.price.types import SymbolNotFoundError, CurrencyPreferenceNotFoundError
 
 
 @pytest.mark.net
@@ -15,13 +16,13 @@ def test_api_returns_reasonable_data():
 
 @pytest.mark.net
 def test_error_non_existent_currency_preference():
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(CurrencyPreferenceNotFoundError) as excinfo:
         coingecko.get_price_history("ethereum", currency_preference="non-existent")
-        assert "invalid vs_currency" in excinfo
+        assert "No currency preference found" in str(excinfo)
 
 
 @pytest.mark.net
 def test_error_non_existent_name():
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(SymbolNotFoundError) as excinfo:
         coingecko.get_price_history("non-existent")
-        assert "Could not find coin with the given id" in excinfo
+        assert "No symbol found" in str(excinfo)

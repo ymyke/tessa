@@ -4,6 +4,7 @@
 
 import pytest
 from tessa.price import yahoo
+from tessa.price.types import SymbolNotFoundError
 
 
 @pytest.mark.parametrize(
@@ -27,6 +28,6 @@ def test_api_returns_reasonable_data(query: str, expected_currency: str):
 
 @pytest.mark.net
 def test_non_existing_query_raises():
-    with pytest.raises(RuntimeError) as excinfo:
+    with pytest.raises(SymbolNotFoundError) as excinfo:
         yahoo.get_price_history("thisshouldntexistreally")
-        assert "No data found" in excinfo
+        assert "No symbol found" in str(excinfo)

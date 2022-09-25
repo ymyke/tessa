@@ -2,7 +2,8 @@
 
 import pandas as pd
 from pycoingecko import CoinGeckoAPI
-from . import PriceHistory
+from .types import PriceHistory, SymbolNotFoundError, CurrencyPreferenceNotFoundError
+
 
 def dataframify_price_list(prices: list) -> pd.DataFrame:
     """Turn price list returned by Coingecko API into a pricing dataframe in the form
@@ -15,22 +16,20 @@ def dataframify_price_list(prices: list) -> pd.DataFrame:
     return df
 
 
-def get_price_history(
-    query: str, currency_preference: str = "USD"
-) -> PriceHistory:
+def get_price_history(query: str, currency_preference: str = "USD") -> PriceHistory:
     """Get price history for a given cryptocurrency."""
-    return PriceHistory(
-        dataframify_price_list(
-            CoinGeckoAPI().get_coin_market_chart_by_id(
-                id=query,
-                vs_currency=currency_preference,
-                days="max",  # FIXME Add some lower default bound similar to yahoo?
-                interval="daily",
-            )["prices"]
-        ),
-        currency_preference,
-    )
-    # FIXME Check for ValueError when id doesn't exist. Add common exception
-    # SymbolNotFoundError or so. Reraise that exception in such cases. Same in yahoo
-    # module. Add a test for such error condition to coingecko test module (already
-    # there -- move from generic price module to coingecko module)
+    try:
+        res = CoinGeckoAPI().get_coin_market_chart_by_id(
+            id=query,
+            vs_currency=currency_preference,
+            days="max",  # FIXME Add some lower default bound similar to yahoo?
+            interval="daily",
+        )["prices"]
+    except ValueError as exc:
+        if "invalid vs_currency" in str(exc):
+            raise CurrencyPreferenceNotFoundError(
+                source="coingecko", cur_pref=currency_preference
+            ) from exc
+        raise SymbolNotFoundError(source="coingecko", query=query) from exc
+
+    return PriceHistory(dataframify_price_list(res), currency_preference)

@@ -15,7 +15,7 @@ import contextlib
 import functools
 import pandas as pd
 import yfinance as yf
-from . import PriceHistory
+from .types import PriceHistory, SymbolNotFoundError
 from ..utils.freezeargs import freezeargs
 
 START_FROM = "2000-01-01"
@@ -35,7 +35,7 @@ def get_ticker_info(query: str) -> dict:
         "logo_url": "",
     }
     if res == failed_get_info_output:
-        raise RuntimeError(f"No data found on Yahoo for query {query}")
+        raise SymbolNotFoundError(source="yahoo", query=query)
     return res  # type: ignore
 
 
@@ -50,9 +50,7 @@ def get_price_history(
     with contextlib.redirect_stdout(stdout):
         df = yf.Ticker(query).history(start=START_FROM, debug=False)
     if "No data found" in stdout.getvalue():
-        raise RuntimeError(f"No data found on Yahoo for query {query}")
-        # FIXME Consider introducing a specific SymbolNotExistingException or so (also
-        # for coingecko).
+        raise SymbolNotFoundError(source="yahoo", query=query)
 
     # Simplify dataframe:
     df = df.copy()
