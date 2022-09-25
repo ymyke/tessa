@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 from .. import Symbol
 from ..search import SearchResult
+from .. import sources
 
 NUM_PER_PAGE = 1000
 URL_BLUEPRINT = "https://finance.yahoo.com/lookup/all?s={}&t=A&b={}&c=" + str(
@@ -35,6 +36,7 @@ def get_tables(query: str, offset: int) -> List[pd.DataFrame]:
     """Retrieve search page for query and at offset, parse all the tables into
     dataframes and return that list.
     """
+    sources.get_source("yahoo").rate_limiter.rate_limit()
     url = URL_BLUEPRINT.format(query, str(offset))
     page = requests.get(url, headers=create_headers(url))
     soup = BeautifulSoup(page.content, "lxml")
@@ -49,7 +51,6 @@ def get_search_results(query: str) -> pd.DataFrame:
     df = pd.DataFrame()
     tables = get_tables(query, offset)
     while len(tables) == 1:
-        # FIXME rate-limit!
         df = pd.concat([df, tables[0]])
         offset += NUM_PER_PAGE
         tables = get_tables(query, offset)
