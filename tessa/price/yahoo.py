@@ -27,7 +27,7 @@ extending this date will lead to increased load on the Yahoo Finance servers.
 @freezeargs
 @functools.lru_cache(maxsize=None)
 def get_ticker_info(query: str) -> dict:
-    """FIXME add documentation"""
+    """Get the meta information for a ticker and return it as a dict."""
     res = yf.Ticker(query).get_info()
     failed_get_info_output = {
         "regularMarketPrice": None,
