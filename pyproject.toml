@@ -18,6 +18,7 @@ investpy = ">=1"    # FIXME Remove
 frozendict = ">=2.3"
 pycoingecko = ">=2.2"
 yfinance = "^0.1.74"
+beautifulsoup4 = "^4.11.1"
 # symbol-specific:
 seaborn = ">=0.11"
 matplotlib = ">=3.5"
