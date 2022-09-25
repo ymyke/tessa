@@ -6,7 +6,6 @@ from typing import List, NamedTuple, Callable
 import itertools
 import re
 from ..symbol import Symbol
-from .. import SourceType
 
 # ----- The predicates used to sort and bucketize results based on a query -----
 
@@ -176,14 +175,19 @@ class SearchResult:
         self.buckets = bucketize(self.query, self.symbols)
         return self
 
-    def filter(self, source: SourceType) -> SearchResult:
-        """Filter for `source` and return a new `SearchResult` with the results after
+    def filter(self, **kwargs) -> SearchResult:
+        """Filter for arbitrary attribute-value-pairs (e.g., `source="coingecko"` or
+        `exchange="ebs"`) and return a new `SearchResult` with the results after the
         filtering. Also updates the filter history.
         """
-        symbols = self.symbols
-        symbols = [s for s in symbols if s.source == source]
+        symbols = []
+        for s in self.symbols:
+            if all(getattr(s, k, "DOESNOTEXISTEVER") == v for k, v in kwargs.items()):
+                symbols.append(s)
         newres = SearchResult(self.query, symbols)
-        newres.filter_history = self.filter_history + [f"source={source}"]
+        newres.filter_history = self.filter_history + [
+            f"{k}={v}" for k, v in kwargs.items()
+        ]
         return newres
 
     def __str__(self) -> str:
