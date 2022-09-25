@@ -78,5 +78,5 @@ def setup_guards() -> None:
 #     """Reset to the originals."""
 #     for guard in guards.values():
 #         exec(f"{guard['func_name']} = {guard['func_orig']}")
-#         # FIXME This doesn't work bc `func_orig` gets interpolated to a string
+#         # Note that his doesn't work bc `func_orig` gets interpolated to a string
 #         # representation, which in turn leads to a syntax error.
