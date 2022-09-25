@@ -10,15 +10,16 @@ import pendulum
 import pytest
 from pandas.core.dtypes.dtypes import DatetimeTZDtype
 from tessa import price_history
-from tessa.utils import rate_limiter
 from tessa.price import PriceHistory
+from tessa import sources
 
 
 @pytest.mark.net
 def test_price_history_on_yahoo_including_caching_and_ratelimiting():
     # Make sure rate limiter and cache are in a pristine setup:
-    rate_limiter.reset_guards()
-    assert rate_limiter.guards["yahoo"]["last_call"] == pendulum.parse("1900")
+    sources.reset_rate_limiters()
+    rate_limiter = sources.get_source("yahoo").rate_limiter
+    assert rate_limiter.last_call == pendulum.parse("1900")
     price_history.cache_clear()
 
     # Retrieve asset and make sure the result is correct:
@@ -36,9 +37,9 @@ def test_price_history_on_yahoo_including_caching_and_ratelimiting():
     assert price_history.cache_info().hits == 0
 
     # Make sure the rate limiter was updated:
-    assert (
-        pendulum.now() - rate_limiter.guards["yahoo"]["last_call"]
-    ).total_seconds() < 30
+    assert (pendulum.now() - rate_limiter.last_call).total_seconds() < 30
+    assert rate_limiter.count_all_calls == 1
+    assert rate_limiter.count_limited_calls == 0
 
     # Retrieve again and check that the cache is used:
     df2, crncy2 = price_history("AAPL", "yahoo")
@@ -46,6 +47,8 @@ def test_price_history_on_yahoo_including_caching_and_ratelimiting():
     assert df2.equals(df)
     assert price_history.cache_info().misses == 1
     assert price_history.cache_info().hits == 1
+    assert rate_limiter.count_all_calls == 1
+    assert rate_limiter.count_limited_calls == 0
 
 
 @pytest.mark.net

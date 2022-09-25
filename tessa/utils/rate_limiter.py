@@ -6,49 +6,43 @@ time until it allow-lists a blocked IP address again. That is also why we can't 
 library such das Tenacity here.
 """
 
-from typing import Dict
-import copy
+# FIXME Move this to sources folder?
+
+from dataclasses import dataclass
+import datetime
 import time
 import pendulum
-from .. import SourceType
-
-guards = {}
-
-original_guards: Dict[SourceType, Dict] = {
-    # `reset_guards` will add `last_call` to each guard.
-    "coingecko": {
-        "wait_seconds": 2.5,
-    },
-    "yahoo": {
-        "wait_seconds": 0.02,
-    },
-}
 
 
-def reset_guards() -> None:
-    """Reset the guards."""
-    global guards  # pylint: disable=invalid-name,global-statement
-    guards = copy.deepcopy(original_guards)
-    for guard in guards.values():
-        guard["last_call"] = pendulum.parse("1900")
+VERY_LONG_AGO = pendulum.parse("1900")
 
 
-# FIXME Turn rate_limit into a decorator that takes the type as an argument? cf
-# https://realpython.com/primer-on-python-decorators/#decorators-with-arguments (Only
-# possible if we split the price_history function up into multiple functions at some
-# point.)
+@dataclass
+class RateLimiter:
+    """Encapsulates state and stats of a rate limiter object."""
 
+    wait_seconds: float
+    """Enforce this amount of seconds between subsequent calls."""
 
-def rate_limit(source: SourceType) -> None:
-    """Do the actual rate limiting."""
-    try:
-        guard = guards[source]
-    except KeyError as exc:
-        raise ValueError("Unknown source.") from exc
-    diff = (pendulum.now() - guard["last_call"]).total_seconds()
-    if diff < guard["wait_seconds"]:
-        time.sleep(guard["wait_seconds"] - diff)
-    guard["last_call"] = pendulum.now()
+    last_call: datetime.datetime = VERY_LONG_AGO
+    """Keeps track of last call's timestamp."""
 
+    count_all_calls: int = 0
+    """Number of total calls."""
 
-reset_guards()
+    count_limited_calls: int = 0
+    """Number of calls that triggered some waiting."""
+
+    def reset(self):
+        """Reset state and stats."""
+        self.last_call = VERY_LONG_AGO
+        self.count_all_calls = self.count_limited_calls = 0
+
+    def rate_limit(self):
+        """Enforce the minimum wait time as specified in `wait_seconds`."""
+        diff = (pendulum.now() - self.last_call).total_seconds()
+        if diff < self.wait_seconds:
+            time.sleep(self.wait_seconds - diff)
+            self.count_limited_calls += 1
+        self.last_call = pendulum.now()
+        self.count_all_calls += 1

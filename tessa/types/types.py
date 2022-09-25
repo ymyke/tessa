@@ -6,6 +6,7 @@ suggestions from the IDE.
 
 from typing import Literal
 
+# FIXME Put this into sources folder or file. Remove this folder.
 
 SourceType = Literal[
     "yahoo",
