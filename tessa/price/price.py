@@ -1,4 +1,4 @@
-"""Price information."""
+"""Retrieve price information."""
 
 import functools
 from typing import Union

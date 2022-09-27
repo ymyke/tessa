@@ -57,6 +57,9 @@ def matches_inanyway(query: str, symbol: Symbol) -> int:
 # ----- Everything related to bucketizing symbols -----
 
 Bucket = NamedTuple("Bucket", [("name", str), ("symbols", List[Symbol])])
+"""A bucket is a set of results of a certain quality level in a larger search result. A
+bucket has a name and a list of symbols that belong into that bucket.
+"""
 
 
 BUCKET_SPEC = [
@@ -135,13 +138,15 @@ class SearchResult:
     A `SymbolCollection` does not have a definition of equality, but it does enforce
     that names are unique.)
 
-    Example usage:
+    Example use:
 
-    ```
+    ```python
     from tessa import search
     r = search("harmony")
+
     # Review results:
     r.p()
+
     # Get the 1 symbol from source "coingecko" in the best bucket (i.e., bucket 0):
     s = r.filter(source="coingecko").buckets[0].symbols[0]
     s.price_latest()

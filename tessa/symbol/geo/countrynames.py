@@ -1,4 +1,4 @@
-"""CountryName type"""
+"""`CountryName` type."""
 
 from typing import Literal
 

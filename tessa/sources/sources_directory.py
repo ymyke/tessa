@@ -1,6 +1,6 @@
 """The directory (i.e., dictionary) of all know sources. To be accessed via the
-functions in `.sources`. This module is factored out so the directory can be imported
-late within functions in order to prevent circular dependencies.
+functions in `tessa.sources.sources`. This module is factored out so the directory can
+be imported late within functions in order to prevent circular dependencies.
 """
 
 from typing import Dict, Final
