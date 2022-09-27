@@ -15,6 +15,8 @@ users from being blocked by 429 rate limiting errors** by 1) caching results upo
 retrieval and 2) keeping track of request timestamps and waiting appropriate amounts of
 time if necessary.
 
+[→ Check out the full documentation. 📖](https://ymyke.github.io/tessa/tessa.html)
+
 
 ## How to use
 
@@ -122,6 +124,11 @@ More sources can be added in the future. Let me know in the
 ## Prerequisites
 
 See `pyproject.toml`. Major prerequisites are the `investpy` and `pycoingecko` packages.
+
+
+## Repository
+
+https://github.com/ymyke/tessa
 
 
 ## Future Work

@@ -6,6 +6,7 @@ authors = ["ymyke"]
 license = "MIT"
 repository = "https://github.com/ymyke/tessa"
 homepage = "https://github.com/ymyke/tessa"
+documentation = "https://ymyke.github.io/tessa/tessa.html"
 readme = "README.md"
 keywords = ["python", "finance", "investing", "financial-analysis", "investment-analysis", "financial-data", "coingecko", "pycoingecko", "yahoo", "yahoo-finance", "yfinance"]
 
