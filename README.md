@@ -131,10 +131,19 @@ your suggestions and comments in the [Issues
 section](https://github.com/ymyke/tessa/issues).
 
 
-## Misc
+## On terminology
+
+I'm using symbol instead of ticker because a ticker is mainly used for stock on stock
+markets, whereas tessa is inteded to be used for any kind of financial assets, e.g. also
+crypto.
+
+
+## On investpy as a data source
 
 Tessa used to use the [investpy package](https://github.com/alvarobartt/investpy) as the
 main source of information until mid 2022 until investing.com introduced Cloudflare,
-which broke access by investpy. It is currently unclear if investpy will be available
+which broke access by investpy. 😖 It is currently unclear if investpy will be available
 again in the future. [You can follow the developments in issue
-600.](https://github.com/alvarobartt/investpy/issues/600)
+600.](https://github.com/alvarobartt/investpy/issues/600) The old tessa/investpy code is
+still available in the [add-symbols-based-on-investpy
+branch](https://github.com/ymyke/tessa/tree/add-symbols-based-on-investpy).
