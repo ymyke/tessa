@@ -2,7 +2,7 @@
 .. include:: ../README.md
 """
 
-__version__ = "0.3.3"
+__version__ = "0.4.0"
 
 from .sources import SourceType
 from .price import (
