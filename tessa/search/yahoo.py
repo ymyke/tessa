@@ -78,7 +78,9 @@ def dataframe_to_symbols(df: pd.DataFrame) -> List[Symbol]:
         symbol = Symbol(**args)
         # FIXME Not the optimal solution bc adding attributes that are unknown to the
         # dataclass Symbol. Add type and exchange as optional attributes to Symbol? Or
-        # add a mixin like YahooSymbol or TypedSymbol or so??
+        # add a mixin like YahooSymbol or TypedSymbol or so?? Or could/should the
+        # Symbols in general be much more lenient around which attributes they accept in
+        # addition to the mandatory ones?
         symbol.type = d["Type"]
         symbol.exchange = d["Exchange"]
         symbols.append(symbol)
