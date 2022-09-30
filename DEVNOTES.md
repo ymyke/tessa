@@ -8,6 +8,13 @@ These are internal notes that won't make much sense to anybody other than me...
 
 
 
+# Change notes that were specific for investpy
+
+- In the main search function, the parameters are now called investing_countries and
+  investing_types. (75426954040673cfd6c4b982a12221819ab86e8b)
+- search functions now use investing_type instead of product(s). The types are now
+  always singular rather than plural -- or sometimes this and sometimes that. But there
+  are now type hints thanks to InvestingType. (75426954040673cfd6c4b982a12221819ab86e8b)
 
 
 ## MetricHistory
