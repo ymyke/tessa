@@ -109,7 +109,7 @@ More sources can be added in the future. Let me know in the
 
 ## Main submodules
 
-- [symbol](tessa/symbol.html): Working with symbols and symbol collections.
+- [symbol](tessa/symbol.html): working with symbols and symbol collections.
 - [search](tessa/search.html): searching the different sources.
 - [price](tessa/price.html): accessing price functions directly instead of via the
   `Symbol` class.
