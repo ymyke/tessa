@@ -31,7 +31,7 @@ def get_source(name: SourceType) -> Source:
         return SOURCES_DIRECTORY[name]
     except KeyError as exc:
         raise ValueError(
-            f"Unknown source. Supported source are: {SOURCES_DIRECTORY.keys()}"
+            f"Unknown source '{name}'. Supported source are: {SOURCES_DIRECTORY.keys()}"
         ) from exc
 
 
