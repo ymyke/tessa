@@ -48,7 +48,7 @@ def get_price_history(
     """
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
-        df = yf.Ticker(query).history(start=START_FROM, debug=False)
+        df = yf.Ticker(query).history(start=START_FROM, debug=True)
     if "No data found" in stdout.getvalue():
         raise SymbolNotFoundError(source="yahoo", query=query)
 
