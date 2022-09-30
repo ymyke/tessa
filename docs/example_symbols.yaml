@@ -1,0 +1,24 @@
+SPICHA:
+    query: SPICHA.SW
+    source: yahoo
+MSFT:
+    # query will be set to "MSFT"
+    # source can also be left out because default source is "yahoo"
+PINS:
+CHINAFUND:
+    aliases:
+        [
+            UECOPMD:LX,
+            Ubs-ChinaOppoPU,
+            CHINAOPPOPU,
+            Ubs-LuxEquiFuAU,
+            Ubs-LuxEquiFuAT,
+            lu1152091168,
+        ]
+    query: 0P000159H2 # this is the ticker Yahoo Finance uses
+    source: yahoo
+ETH:
+    query: ethereum
+    source: coingecko
+ETH-USD:
+    source: yahoo

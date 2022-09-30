@@ -1,20 +1,28 @@
 [tool.poetry]
 name = "tessa"
-version = "0.3.3"
+version = "0.4.0"
 description = "Find financial assets and get their price history without worrying about different APIs or rate limiting."
 authors = ["ymyke"]
 license = "MIT"
 repository = "https://github.com/ymyke/tessa"
 homepage = "https://github.com/ymyke/tessa"
+documentation = "https://ymyke.github.io/tessa/tessa.html"
 readme = "README.md"
-keywords = ["python", "finance", "investing", "financial-analysis", "investment-analysis", "financial-data", "coingecko", "investing-com", "investpy", "pycoingecko"]
+keywords = ["python", "finance", "investing", "financial-analysis", "investment-analysis", "financial-data", "coingecko", "pycoingecko", "yahoo", "yahoo-finance", "yfinance"]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.10"
-investpy = ">=1"
+# General:
+python = ">=3.7.13,<3.10"
+pendulum = ">=2.1"
+# price- and search-specific:
 frozendict = ">=2.3"
 pycoingecko = ">=2.2"
-pendulum = ">=2.1"
+yfinance = "^0.1.74"
+beautifulsoup4 = "^4.11.1"
+# symbol-specific:
+seaborn = ">=0.11"
+matplotlib = ">=3.5"
+PyYAML = ">=6"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
@@ -22,6 +30,9 @@ ipykernel = "*"
 black = "*"
 pylint = "*"
 pytest-mock = "*"
+pdoc = "*"
+pdbpp = "*"
+pytest-random-order = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
