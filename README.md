@@ -135,7 +135,7 @@ https://github.com/ymyke/tessa
 
 ## Future Work
 
-This if an initial version. There are a number of ideas on how to extend. Please leave
+This is an initial version. There are a number of ideas on how to extend. Please leave
 your suggestions and comments in the [Issues
 section](https://github.com/ymyke/tessa/issues).
 
