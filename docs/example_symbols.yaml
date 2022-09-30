@@ -13,8 +13,9 @@ CHINAFUND:
             CHINAOPPOPU,
             Ubs-LuxEquiFuAU,
             Ubs-LuxEquiFuAT,
+            lu1152091168,
         ]
-    query: lu1152091168
+    query: 0P000159H2 # this is the ticker Yahoo Finance uses
     source: yahoo
 ETH:
     query: ethereum
