@@ -14,7 +14,7 @@ SOURCES_DIRECTORY: Final[Dict[SourceType, Source]] = {
     "yahoo": Source(
         get_price_history=yahooprice.get_price_history,
         get_search_results=yahoosearch.yahoo_search,
-        rate_limiter=RateLimiter(0.2),
+        rate_limiter=RateLimiter(0.5),
     ),
     "coingecko": Source(
         get_price_history=coingeckoprice.get_price_history,
