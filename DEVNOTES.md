@@ -10,6 +10,21 @@ These are internal notes that won't make much sense to anybody other than me...
 
 
 
+
+
+
+
+
+
+# How to build pdoc documentation:
+
+`pdoc -o docs -t docs/pdoc-dark-mode tessa`
+
+- Maybe try the pdoc workflow Github action to automate this. Would require
+  requirements.txt in the folder, which can be generated via `poetry export -f
+  requirements.txt --output requirements.txt`
+
+
 ## MetricHistory
 
 - What about MetricHistory? -- I guess this is part of alerts? Or should this be another
