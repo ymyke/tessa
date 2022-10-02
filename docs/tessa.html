@@ -33,6 +33,7 @@
     <li><a href="#repository">Repository</a></li>
     <li><a href="#future-work">Future Work</a></li>
     <li><a href="#on-terminology">On terminology</a></li>
+    <li><a href="#other-noteworthy-libraries">Other noteworthy libraries</a></li>
     <li><a href="#on-investpy-as-a-data-source">On investpy as a data source</a></li>
   </ul></li>
 </ul>
@@ -177,7 +178,7 @@ preferences (a function that is also exposed via tessa).</p>
 <h2 id="main-submodules">Main submodules</h2>
 
 <ul>
-<li><a href="tessa/symbol.html">symbol</a>: Working with symbols and symbol collections.</li>
+<li><a href="tessa/symbol.html">symbol</a>: working with symbols and symbol collections.</li>
 <li><a href="tessa/search.html">search</a>: searching the different sources.</li>
 <li><a href="tessa/price.html">price</a>: accessing price functions directly instead of via the
 <code>Symbol</code> class.</li>
@@ -190,7 +191,9 @@ preferences (a function that is also exposed via tessa).</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
-<p>See <code>pyproject.toml</code>. Major prerequisites are the <code>investpy</code> and <code>pycoingecko</code> packages.</p>
+<p>See <code>pyproject.toml</code>. Major prerequisites are the <code>yfinance</code> and <code>pycoingecko</code> packages
+to access finance information as well as the <code>beautifulsoup4</code> package to do some
+scraping for searching on Yahoo Finance.</p>
 
 <h2 id="repository">Repository</h2>
 
@@ -198,7 +201,7 @@ preferences (a function that is also exposed via tessa).</p>
 
 <h2 id="future-work">Future Work</h2>
 
-<p>This if an initial version. There are a number of ideas on how to extend. Please leave
+<p>This is an initial version. There are a number of ideas on how to extend. Please leave
 your suggestions and comments in the <a href="https://github.com/ymyke/tessa/issues">Issues
 section</a>.</p>
 
@@ -207,6 +210,14 @@ section</a>.</p>
 <p>I'm using symbol instead of ticker because a ticker is mainly used for stock on stock
 markets, whereas tessa is inteded to be used for any kind of financial assets, e.g. also
 crypto.</p>
+
+<h2 id="other-noteworthy-libraries">Other noteworthy libraries</h2>
+
+<ul>
+<li><a href="https://github.com/ymyke/strela">strela</a>: A python package for financial alerts.</li>
+<li><a href="https://github.com/ymyke/pypme">pypme</a>: A Python package for PME (Public Market
+Equivalent) calculation.</li>
+</ul>
 
 <h2 id="on-investpy-as-a-data-source">On investpy as a data source</h2>
 
@@ -227,7 +238,7 @@ branch</a>.</p>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">.. include:: ../README.md</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.4.0&quot;</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.4.1&quot;</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
 </span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">from</span> <span class="nn">.sources</span> <span class="kn">import</span> <span class="n">SourceType</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span> <span class="nn">.price</span> <span class="kn">import</span> <span class="p">(</span>
