@@ -147,6 +147,13 @@ markets, whereas tessa is inteded to be used for any kind of financial assets, e
 crypto.
 
 
+## Other noteworthy libraries
+
+- [strela](https://github.com/ymyke/strela): A python package for financial alerts.
+- [pypme](https://github.com/ymyke/pypme): A Python package for PME (Public Market
+  Equivalent) calculation.
+
+
 ## On investpy as a data source
 
 Tessa used to use the [investpy package](https://github.com/alvarobartt/investpy) as the
