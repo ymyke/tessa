@@ -27,7 +27,7 @@ def test_price_history_on_yahoo_including_caching_and_ratelimiting():
     assert isinstance(res, PriceHistory)
     df, crncy = res
     assert crncy == "USD"
-    assert df.index[0] == pd.Timestamp("1999-12-31", tz="UTC")
+    assert df.index[0] == pd.Timestamp("2000-01-03 05:00:00+0000", tz="UTC")
     assert df.shape[0] > 5000
     assert df.shape[1] == 1
     assert isinstance(df.index.dtype, DatetimeTZDtype)

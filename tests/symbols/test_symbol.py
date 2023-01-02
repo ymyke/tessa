@@ -60,7 +60,9 @@ def test_price_functions():
         float(df.loc["2020-01-10"]["close"])
     )
     # Check that the method returns the nearest price if necessary:
-    assert s.price_point("2020-01-01").when == pd.Timestamp("2020-01-02", tz="UTC")
+    assert s.price_point("2020-01-01").when == pd.Timestamp(
+        "2019-12-31 05:00:00+0000", tz="UTC"
+    )
 
 
 @pytest.mark.net

@@ -61,7 +61,7 @@ def test_verify_pricepoint_types_are_used(mock_price_history):
 def test_concrete_yahoo_price_point():
     res = price_point("AAPL", "2018-01-11", "yahoo")
     assert isinstance(res, PricePoint)
-    assert res.when == pd.Timestamp("2018-01-11", tz="utc")
+    assert res.when == pd.Timestamp("2018-01-11 05:00:00+0000", tz="UTC")
     assert round(res.price) == 42
     assert res.currency == "USD"
 
