@@ -12,7 +12,7 @@ keywords = ["python", "finance", "investing", "financial-analysis", "investment-
 
 [tool.poetry.dependencies]
 # General:
-python = ">=3.7.13,<3.10"
+python = ">=3.7.13"
 pendulum = ">=2.1"
 # price- and search-specific:
 pycoingecko = ">=2.2"
