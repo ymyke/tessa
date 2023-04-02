@@ -5,11 +5,9 @@ from typing import Union
 import pandas as pd
 from . import PriceHistory, PricePoint
 from .. import SourceType
-from ..utils.freezeargs import freezeargs
 from .. import sources
 
 
-@freezeargs
 @functools.lru_cache(maxsize=None)
 def price_history(
     query: str,
