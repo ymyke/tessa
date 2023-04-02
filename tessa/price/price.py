@@ -1,6 +1,6 @@
 """Retrieve price information."""
 
-import functools
+from functools import lru_cache, wraps
 from typing import Union
 import pandas as pd
 from . import PriceHistory, PricePoint
@@ -8,7 +8,14 @@ from .. import SourceType
 from .. import sources
 
 
-@functools.lru_cache(maxsize=None)
+def custom_cache_wrapper(func):
+    """To preserve the function's signature _and_ give access to `cache_clear` etc."""
+    cached_func = lru_cache(maxsize=None)(func)
+    wrapped_func = wraps(func)(cached_func)
+    return wrapped_func
+
+
+@custom_cache_wrapper
 def price_history(
     query: str,
     source: SourceType = "yahoo",
