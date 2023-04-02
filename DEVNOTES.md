@@ -34,7 +34,6 @@ These are internal notes that won't make much sense to anybody other than me...
 
 # Low prio stuff
 
-- Mention strela and pypme in docs/readme
 - Do we have a timezone issue? Do the different APIs return datetimes in different
   timezones and should the standardized?
 
