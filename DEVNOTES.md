@@ -24,6 +24,10 @@ These are internal notes that won't make much sense to anybody other than me...
   requirements.txt in the folder, which can be generated via `poetry export -f
   requirements.txt --output requirements.txt`
 
+To simply run the doc locally, use this:
+
+`pdoc -t docs/pdoc-dark-mode tessa`
+
 
 ## MetricHistory
 
