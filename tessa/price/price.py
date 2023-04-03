@@ -34,7 +34,9 @@ def price_history(
     """
     src = sources.get_source(source)
     src.rate_limiter.rate_limit()
-    df, effective_currency = src.get_price_history(query, currency_preference)
+    df, effective_currency = src.get_price_history_bruteforcefully(
+        query, currency_preference
+    )
     return PriceHistory(df.copy(), effective_currency.upper())
     # (Returning a copy of the dataframe so the cached original is preserved even if it
     # gets modified by the caller.)
