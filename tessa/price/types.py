@@ -1,8 +1,11 @@
 """Price-related types."""
 
-from typing import NamedTuple
+from __future__ import annotations
+from typing import NamedTuple, TYPE_CHECKING
 import pandas as pd
-from .. import SourceType
+
+if TYPE_CHECKING:
+    from ..sources.sourcetype import SourceType
 
 PriceHistory = NamedTuple("PriceHistory", [("df", pd.DataFrame), ("currency", str)])
 PricePoint = NamedTuple(

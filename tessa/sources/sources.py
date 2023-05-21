@@ -7,6 +7,7 @@ import warnings
 import requests
 from .sourcetype import SourceType
 from .rate_limiter import RateLimiter
+from ..price.types import RateLimitHitError
 
 if TYPE_CHECKING:
     from ..price import PriceHistory
@@ -34,8 +35,6 @@ class Source:
         (which often seem to be intermittent, at least on Coingecko) and just
         retries.
         """
-        from ..price.types import RateLimitHitError
-
         max_tries = 100
         tries = 0
         while True:

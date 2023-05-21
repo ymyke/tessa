@@ -1,11 +1,14 @@
 """Retrieve price information."""
 
+from __future__ import annotations
 from functools import lru_cache, wraps
-from typing import Union
+from typing import Union, TYPE_CHECKING
 import pandas as pd
 from . import PriceHistory, PricePoint
-from .. import SourceType
 from .. import sources
+
+if TYPE_CHECKING:
+    from .. import SourceType
 
 
 def custom_cache_wrapper(func):
