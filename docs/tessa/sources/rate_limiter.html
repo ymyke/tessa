@@ -49,10 +49,19 @@
                                 <a class="variable" href="#RateLimiter.count_limited_calls">count_limited_calls</a>
                         </li>
                         <li>
+                                <a class="variable" href="#RateLimiter.back_off_time">back_off_time</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#RateLimiter.reset_back_off">reset_back_off</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#RateLimiter.reset">reset</a>
                         </li>
                         <li>
                                 <a class="function" href="#RateLimiter.rate_limit">rate_limit</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#RateLimiter.back_off">back_off</a>
                         </li>
                 </ul>
 
@@ -100,37 +109,51 @@ library such das Tenacity here.</p>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">VERY_LONG_AGO</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;1900&quot;</span><span class="p">)</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="n">INITIAL_BACK_OFF_TIME</span> <span class="o">=</span> <span class="mi">10</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="nd">@dataclass</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="k">class</span> <span class="nc">RateLimiter</span><span class="p">:</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="sd">&quot;&quot;&quot;Encapsulates state and stats of a rate limiter object.&quot;&quot;&quot;</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="n">wait_seconds</span><span class="p">:</span> <span class="nb">float</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="sd">&quot;&quot;&quot;Enforce this amount of seconds between subsequent calls.&quot;&quot;&quot;</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="n">last_call</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="sd">&quot;&quot;&quot;Keeps track of last call&#39;s timestamp.&quot;&quot;&quot;</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">count_all_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="sd">&quot;&quot;&quot;Number of total calls.&quot;&quot;&quot;</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="n">count_limited_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="sd">&quot;&quot;&quot;Number of calls that triggered some waiting.&quot;&quot;&quot;</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="sd">&quot;&quot;&quot;Reset state and stats.&quot;&quot;&quot;</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="k">def</span> <span class="nf">rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>        <span class="sd">&quot;&quot;&quot;Enforce the minimum wait time as specified in `wait_seconds`.&quot;&quot;&quot;</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span><span class="p">:</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span> <span class="o">-</span> <span class="n">diff</span><span class="p">)</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="nd">@dataclass</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="k">class</span> <span class="nc">RateLimiter</span><span class="p">:</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="sd">&quot;&quot;&quot;Encapsulates state and stats of a rate limiter object.&quot;&quot;&quot;</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="n">wait_seconds</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="sd">&quot;&quot;&quot;Enforce this amount of seconds between subsequent calls.&quot;&quot;&quot;</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="n">last_call</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="sd">&quot;&quot;&quot;Keeps track of last call&#39;s timestamp.&quot;&quot;&quot;</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="n">count_all_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="sd">&quot;&quot;&quot;Number of total calls.&quot;&quot;&quot;</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="n">count_limited_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="sd">&quot;&quot;&quot;Number of calls that triggered some waiting.&quot;&quot;&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="n">back_off_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">INITIAL_BACK_OFF_TIME</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="sd">&quot;&quot;&quot;Number of seconds to wait after a rate limit hit.&quot;&quot;&quot;</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="k">def</span> <span class="nf">reset_back_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>        <span class="sd">&quot;&quot;&quot;Reset back-off time to initial value.&quot;&quot;&quot;</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span> <span class="o">=</span> <span class="n">INITIAL_BACK_OFF_TIME</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>        <span class="sd">&quot;&quot;&quot;Reset state and stats.&quot;&quot;&quot;</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_back_off</span><span class="p">()</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>    <span class="k">def</span> <span class="nf">rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>        <span class="sd">&quot;&quot;&quot;Enforce the minimum wait time as specified in `wait_seconds`.&quot;&quot;&quot;</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span><span class="p">:</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span> <span class="o">-</span> <span class="n">diff</span><span class="p">)</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>    <span class="k">def</span> <span class="nf">back_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>        <span class="sd">&quot;&quot;&quot;Back off exponentially.&quot;&quot;&quot;</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span><span class="p">)</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span> <span class="o">*=</span> <span class="mi">2</span>
 </span></pre></div>
 
 
@@ -147,35 +170,48 @@ library such das Tenacity here.</p>
 
     </div>
     <a class="headerlink" href="#RateLimiter"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter-19"><a href="#RateLimiter-19"><span class="linenos">19</span></a><span class="nd">@dataclass</span>
-</span><span id="RateLimiter-20"><a href="#RateLimiter-20"><span class="linenos">20</span></a><span class="k">class</span> <span class="nc">RateLimiter</span><span class="p">:</span>
-</span><span id="RateLimiter-21"><a href="#RateLimiter-21"><span class="linenos">21</span></a>    <span class="sd">&quot;&quot;&quot;Encapsulates state and stats of a rate limiter object.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-22"><a href="#RateLimiter-22"><span class="linenos">22</span></a>
-</span><span id="RateLimiter-23"><a href="#RateLimiter-23"><span class="linenos">23</span></a>    <span class="n">wait_seconds</span><span class="p">:</span> <span class="nb">float</span>
-</span><span id="RateLimiter-24"><a href="#RateLimiter-24"><span class="linenos">24</span></a>    <span class="sd">&quot;&quot;&quot;Enforce this amount of seconds between subsequent calls.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-25"><a href="#RateLimiter-25"><span class="linenos">25</span></a>
-</span><span id="RateLimiter-26"><a href="#RateLimiter-26"><span class="linenos">26</span></a>    <span class="n">last_call</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
-</span><span id="RateLimiter-27"><a href="#RateLimiter-27"><span class="linenos">27</span></a>    <span class="sd">&quot;&quot;&quot;Keeps track of last call&#39;s timestamp.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-28"><a href="#RateLimiter-28"><span class="linenos">28</span></a>
-</span><span id="RateLimiter-29"><a href="#RateLimiter-29"><span class="linenos">29</span></a>    <span class="n">count_all_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="RateLimiter-30"><a href="#RateLimiter-30"><span class="linenos">30</span></a>    <span class="sd">&quot;&quot;&quot;Number of total calls.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-31"><a href="#RateLimiter-31"><span class="linenos">31</span></a>
-</span><span id="RateLimiter-32"><a href="#RateLimiter-32"><span class="linenos">32</span></a>    <span class="n">count_limited_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="RateLimiter-33"><a href="#RateLimiter-33"><span class="linenos">33</span></a>    <span class="sd">&quot;&quot;&quot;Number of calls that triggered some waiting.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-34"><a href="#RateLimiter-34"><span class="linenos">34</span></a>
-</span><span id="RateLimiter-35"><a href="#RateLimiter-35"><span class="linenos">35</span></a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="RateLimiter-36"><a href="#RateLimiter-36"><span class="linenos">36</span></a>        <span class="sd">&quot;&quot;&quot;Reset state and stats.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-37"><a href="#RateLimiter-37"><span class="linenos">37</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
-</span><span id="RateLimiter-38"><a href="#RateLimiter-38"><span class="linenos">38</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="RateLimiter-39"><a href="#RateLimiter-39"><span class="linenos">39</span></a>
-</span><span id="RateLimiter-40"><a href="#RateLimiter-40"><span class="linenos">40</span></a>    <span class="k">def</span> <span class="nf">rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="RateLimiter-41"><a href="#RateLimiter-41"><span class="linenos">41</span></a>        <span class="sd">&quot;&quot;&quot;Enforce the minimum wait time as specified in `wait_seconds`.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter-42"><a href="#RateLimiter-42"><span class="linenos">42</span></a>        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
-</span><span id="RateLimiter-43"><a href="#RateLimiter-43"><span class="linenos">43</span></a>        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span><span class="p">:</span>
-</span><span id="RateLimiter-44"><a href="#RateLimiter-44"><span class="linenos">44</span></a>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span> <span class="o">-</span> <span class="n">diff</span><span class="p">)</span>
-</span><span id="RateLimiter-45"><a href="#RateLimiter-45"><span class="linenos">45</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="RateLimiter-46"><a href="#RateLimiter-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-</span><span id="RateLimiter-47"><a href="#RateLimiter-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter-20"><a href="#RateLimiter-20"><span class="linenos">20</span></a><span class="nd">@dataclass</span>
+</span><span id="RateLimiter-21"><a href="#RateLimiter-21"><span class="linenos">21</span></a><span class="k">class</span> <span class="nc">RateLimiter</span><span class="p">:</span>
+</span><span id="RateLimiter-22"><a href="#RateLimiter-22"><span class="linenos">22</span></a>    <span class="sd">&quot;&quot;&quot;Encapsulates state and stats of a rate limiter object.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-23"><a href="#RateLimiter-23"><span class="linenos">23</span></a>
+</span><span id="RateLimiter-24"><a href="#RateLimiter-24"><span class="linenos">24</span></a>    <span class="n">wait_seconds</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="RateLimiter-25"><a href="#RateLimiter-25"><span class="linenos">25</span></a>    <span class="sd">&quot;&quot;&quot;Enforce this amount of seconds between subsequent calls.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-26"><a href="#RateLimiter-26"><span class="linenos">26</span></a>
+</span><span id="RateLimiter-27"><a href="#RateLimiter-27"><span class="linenos">27</span></a>    <span class="n">last_call</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
+</span><span id="RateLimiter-28"><a href="#RateLimiter-28"><span class="linenos">28</span></a>    <span class="sd">&quot;&quot;&quot;Keeps track of last call&#39;s timestamp.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-29"><a href="#RateLimiter-29"><span class="linenos">29</span></a>
+</span><span id="RateLimiter-30"><a href="#RateLimiter-30"><span class="linenos">30</span></a>    <span class="n">count_all_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="RateLimiter-31"><a href="#RateLimiter-31"><span class="linenos">31</span></a>    <span class="sd">&quot;&quot;&quot;Number of total calls.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-32"><a href="#RateLimiter-32"><span class="linenos">32</span></a>
+</span><span id="RateLimiter-33"><a href="#RateLimiter-33"><span class="linenos">33</span></a>    <span class="n">count_limited_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="RateLimiter-34"><a href="#RateLimiter-34"><span class="linenos">34</span></a>    <span class="sd">&quot;&quot;&quot;Number of calls that triggered some waiting.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-35"><a href="#RateLimiter-35"><span class="linenos">35</span></a>
+</span><span id="RateLimiter-36"><a href="#RateLimiter-36"><span class="linenos">36</span></a>    <span class="n">back_off_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">INITIAL_BACK_OFF_TIME</span>
+</span><span id="RateLimiter-37"><a href="#RateLimiter-37"><span class="linenos">37</span></a>    <span class="sd">&quot;&quot;&quot;Number of seconds to wait after a rate limit hit.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-38"><a href="#RateLimiter-38"><span class="linenos">38</span></a>
+</span><span id="RateLimiter-39"><a href="#RateLimiter-39"><span class="linenos">39</span></a>    <span class="k">def</span> <span class="nf">reset_back_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter-40"><a href="#RateLimiter-40"><span class="linenos">40</span></a>        <span class="sd">&quot;&quot;&quot;Reset back-off time to initial value.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-41"><a href="#RateLimiter-41"><span class="linenos">41</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span> <span class="o">=</span> <span class="n">INITIAL_BACK_OFF_TIME</span>
+</span><span id="RateLimiter-42"><a href="#RateLimiter-42"><span class="linenos">42</span></a>
+</span><span id="RateLimiter-43"><a href="#RateLimiter-43"><span class="linenos">43</span></a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter-44"><a href="#RateLimiter-44"><span class="linenos">44</span></a>        <span class="sd">&quot;&quot;&quot;Reset state and stats.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-45"><a href="#RateLimiter-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
+</span><span id="RateLimiter-46"><a href="#RateLimiter-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="RateLimiter-47"><a href="#RateLimiter-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_back_off</span><span class="p">()</span>
+</span><span id="RateLimiter-48"><a href="#RateLimiter-48"><span class="linenos">48</span></a>
+</span><span id="RateLimiter-49"><a href="#RateLimiter-49"><span class="linenos">49</span></a>    <span class="k">def</span> <span class="nf">rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter-50"><a href="#RateLimiter-50"><span class="linenos">50</span></a>        <span class="sd">&quot;&quot;&quot;Enforce the minimum wait time as specified in `wait_seconds`.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-51"><a href="#RateLimiter-51"><span class="linenos">51</span></a>        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+</span><span id="RateLimiter-52"><a href="#RateLimiter-52"><span class="linenos">52</span></a>        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span><span class="p">:</span>
+</span><span id="RateLimiter-53"><a href="#RateLimiter-53"><span class="linenos">53</span></a>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span> <span class="o">-</span> <span class="n">diff</span><span class="p">)</span>
+</span><span id="RateLimiter-54"><a href="#RateLimiter-54"><span class="linenos">54</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="RateLimiter-55"><a href="#RateLimiter-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span id="RateLimiter-56"><a href="#RateLimiter-56"><span class="linenos">56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="RateLimiter-57"><a href="#RateLimiter-57"><span class="linenos">57</span></a>
+</span><span id="RateLimiter-58"><a href="#RateLimiter-58"><span class="linenos">58</span></a>    <span class="k">def</span> <span class="nf">back_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter-59"><a href="#RateLimiter-59"><span class="linenos">59</span></a>        <span class="sd">&quot;&quot;&quot;Back off exponentially.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter-60"><a href="#RateLimiter-60"><span class="linenos">60</span></a>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span><span class="p">)</span>
+</span><span id="RateLimiter-61"><a href="#RateLimiter-61"><span class="linenos">61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span> <span class="o">*=</span> <span class="mi">2</span>
 </span></pre></div>
 
 
@@ -186,7 +222,7 @@ library such das Tenacity here.</p>
                             <div id="RateLimiter.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">RateLimiter</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">wait_seconds</span><span class="p">:</span> <span class="nb">float</span>,</span><span class="param">	<span class="n">last_call</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">DateTime</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">Timezone</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>,</span><span class="param">	<span class="n">count_all_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>,</span><span class="param">	<span class="n">count_limited_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></span>)</span>
+        <span class="name">RateLimiter</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">wait_seconds</span><span class="p">:</span> <span class="nb">float</span>,</span><span class="param">	<span class="n">last_call</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">DateTime</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">Timezone</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>,</span><span class="param">	<span class="n">count_all_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>,</span><span class="param">	<span class="n">count_limited_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>,</span><span class="param">	<span class="n">back_off_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span></span>)</span>
 
         
     </div>
@@ -247,6 +283,41 @@ library such das Tenacity here.</p>
 
 
                             </div>
+                            <div id="RateLimiter.back_off_time" class="classattr">
+                                <div class="attr variable">
+            <span class="name">back_off_time</span><span class="annotation">: int</span><span class="default_value"> = 10</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RateLimiter.back_off_time"></a>
+    
+            <div class="docstring"><p>Number of seconds to wait after a rate limit hit.</p>
+</div>
+
+
+                            </div>
+                            <div id="RateLimiter.reset_back_off" class="classattr">
+                                        <input id="RateLimiter.reset_back_off-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">reset_back_off</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="RateLimiter.reset_back_off-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#RateLimiter.reset_back_off"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter.reset_back_off-39"><a href="#RateLimiter.reset_back_off-39"><span class="linenos">39</span></a>    <span class="k">def</span> <span class="nf">reset_back_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter.reset_back_off-40"><a href="#RateLimiter.reset_back_off-40"><span class="linenos">40</span></a>        <span class="sd">&quot;&quot;&quot;Reset back-off time to initial value.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter.reset_back_off-41"><a href="#RateLimiter.reset_back_off-41"><span class="linenos">41</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span> <span class="o">=</span> <span class="n">INITIAL_BACK_OFF_TIME</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Reset back-off time to initial value.</p>
+</div>
+
+
+                            </div>
                             <div id="RateLimiter.reset" class="classattr">
                                         <input id="RateLimiter.reset-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
@@ -258,10 +329,11 @@ library such das Tenacity here.</p>
 
     </div>
     <a class="headerlink" href="#RateLimiter.reset"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter.reset-35"><a href="#RateLimiter.reset-35"><span class="linenos">35</span></a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="RateLimiter.reset-36"><a href="#RateLimiter.reset-36"><span class="linenos">36</span></a>        <span class="sd">&quot;&quot;&quot;Reset state and stats.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter.reset-37"><a href="#RateLimiter.reset-37"><span class="linenos">37</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
-</span><span id="RateLimiter.reset-38"><a href="#RateLimiter.reset-38"><span class="linenos">38</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">=</span> <span class="mi">0</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter.reset-43"><a href="#RateLimiter.reset-43"><span class="linenos">43</span></a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter.reset-44"><a href="#RateLimiter.reset-44"><span class="linenos">44</span></a>        <span class="sd">&quot;&quot;&quot;Reset state and stats.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter.reset-45"><a href="#RateLimiter.reset-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">VERY_LONG_AGO</span>
+</span><span id="RateLimiter.reset-46"><a href="#RateLimiter.reset-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="RateLimiter.reset-47"><a href="#RateLimiter.reset-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_back_off</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -281,18 +353,41 @@ library such das Tenacity here.</p>
 
     </div>
     <a class="headerlink" href="#RateLimiter.rate_limit"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter.rate_limit-40"><a href="#RateLimiter.rate_limit-40"><span class="linenos">40</span></a>    <span class="k">def</span> <span class="nf">rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="RateLimiter.rate_limit-41"><a href="#RateLimiter.rate_limit-41"><span class="linenos">41</span></a>        <span class="sd">&quot;&quot;&quot;Enforce the minimum wait time as specified in `wait_seconds`.&quot;&quot;&quot;</span>
-</span><span id="RateLimiter.rate_limit-42"><a href="#RateLimiter.rate_limit-42"><span class="linenos">42</span></a>        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
-</span><span id="RateLimiter.rate_limit-43"><a href="#RateLimiter.rate_limit-43"><span class="linenos">43</span></a>        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span><span class="p">:</span>
-</span><span id="RateLimiter.rate_limit-44"><a href="#RateLimiter.rate_limit-44"><span class="linenos">44</span></a>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span> <span class="o">-</span> <span class="n">diff</span><span class="p">)</span>
-</span><span id="RateLimiter.rate_limit-45"><a href="#RateLimiter.rate_limit-45"><span class="linenos">45</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="RateLimiter.rate_limit-46"><a href="#RateLimiter.rate_limit-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-</span><span id="RateLimiter.rate_limit-47"><a href="#RateLimiter.rate_limit-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter.rate_limit-49"><a href="#RateLimiter.rate_limit-49"><span class="linenos">49</span></a>    <span class="k">def</span> <span class="nf">rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter.rate_limit-50"><a href="#RateLimiter.rate_limit-50"><span class="linenos">50</span></a>        <span class="sd">&quot;&quot;&quot;Enforce the minimum wait time as specified in `wait_seconds`.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter.rate_limit-51"><a href="#RateLimiter.rate_limit-51"><span class="linenos">51</span></a>        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+</span><span id="RateLimiter.rate_limit-52"><a href="#RateLimiter.rate_limit-52"><span class="linenos">52</span></a>        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span><span class="p">:</span>
+</span><span id="RateLimiter.rate_limit-53"><a href="#RateLimiter.rate_limit-53"><span class="linenos">53</span></a>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_seconds</span> <span class="o">-</span> <span class="n">diff</span><span class="p">)</span>
+</span><span id="RateLimiter.rate_limit-54"><a href="#RateLimiter.rate_limit-54"><span class="linenos">54</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">count_limited_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="RateLimiter.rate_limit-55"><a href="#RateLimiter.rate_limit-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span id="RateLimiter.rate_limit-56"><a href="#RateLimiter.rate_limit-56"><span class="linenos">56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">count_all_calls</span> <span class="o">+=</span> <span class="mi">1</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>Enforce the minimum wait time as specified in <code><a href="#RateLimiter.wait_seconds">wait_seconds</a></code>.</p>
+</div>
+
+
+                            </div>
+                            <div id="RateLimiter.back_off" class="classattr">
+                                        <input id="RateLimiter.back_off-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">back_off</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="RateLimiter.back_off-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#RateLimiter.back_off"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RateLimiter.back_off-58"><a href="#RateLimiter.back_off-58"><span class="linenos">58</span></a>    <span class="k">def</span> <span class="nf">back_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="RateLimiter.back_off-59"><a href="#RateLimiter.back_off-59"><span class="linenos">59</span></a>        <span class="sd">&quot;&quot;&quot;Back off exponentially.&quot;&quot;&quot;</span>
+</span><span id="RateLimiter.back_off-60"><a href="#RateLimiter.back_off-60"><span class="linenos">60</span></a>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span><span class="p">)</span>
+</span><span id="RateLimiter.back_off-61"><a href="#RateLimiter.back_off-61"><span class="linenos">61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_off_time</span> <span class="o">*=</span> <span class="mi">2</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Back off exponentially.</p>
 </div>
 
 
