@@ -2,9 +2,11 @@
 
 # pylint: disable=missing-docstring
 
+import time
 import warnings
 import pytest
 import requests
+from tessa.price.types import RateLimitHitError
 from tessa.sources import rate_limiter, Source, sources
 from tessa.price import PriceHistory
 
@@ -44,7 +46,7 @@ def test_get_price_history_bruteforcefully_success(mocker):
     source = Source(
         get_price_history=mock_get_price_history_success,
         get_search_results=None,
-        rate_limiter=None,
+        rate_limiter=rate_limiter.RateLimiter(wait_seconds=1),
     )
     source.get_price_history_bruteforcefully("BTC")
     warnings.warn.assert_not_called()
@@ -85,3 +87,28 @@ def test_get_price_history_bruteforcefully_non_retriable_error(mocker):
         source.get_price_history_bruteforcefully("BTC")
     assert exc_info.value.response.status_code == 400
     warnings.warn.assert_not_called()
+
+
+def test_get_price_history_bruteforcefully_rate_limit_hit(mocker):
+    def mock_get_price_history_rate_limit_hit(*_, **__) -> PriceHistory:
+        nonlocal is_first_call
+        if is_first_call:
+            is_first_call = False
+            raise RateLimitHitError(source="coingecko")
+        return PriceHistory(df=None, currency=None)
+
+    mocker.patch("warnings.warn")
+    mocker.patch("time.sleep")
+    is_first_call = True
+    source = Source(
+        get_price_history=mock_get_price_history_rate_limit_hit,
+        get_search_results=None,
+        rate_limiter=rate_limiter.RateLimiter(wait_seconds=1),
+    )
+    source.get_price_history_bruteforcefully("BTC")
+    # back_off_time gets reset after the successful second request:
+    assert source.rate_limiter.back_off_time == 10
+    assert time.sleep.call_count == 1
+    warnings.warn.assert_called_once_with(
+        "Rate limit hit (429). Backing off 10 seconds."
+    )

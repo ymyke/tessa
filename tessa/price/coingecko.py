@@ -2,7 +2,12 @@
 
 import pandas as pd
 from pycoingecko import CoinGeckoAPI
-from .types import PriceHistory, SymbolNotFoundError, CurrencyPreferenceNotFoundError
+from .types import (
+    PriceHistory,
+    SymbolNotFoundError,
+    CurrencyPreferenceNotFoundError,
+    RateLimitHitError,
+)
 
 
 def dataframify_price_list(prices: list) -> pd.DataFrame:
@@ -30,6 +35,9 @@ def get_price_history(query: str, currency_preference: str = "USD") -> PriceHist
             raise CurrencyPreferenceNotFoundError(
                 source="coingecko", cur_pref=currency_preference
             ) from exc
+        if "429" in str(exc):
+            # (pycoingecko masks the underlying HTTPError.)
+            raise RateLimitHitError(source="coingecko") from exc
         raise SymbolNotFoundError(source="coingecko", query=query) from exc
 
     return PriceHistory(dataframify_price_list(res), currency_preference)

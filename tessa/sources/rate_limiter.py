@@ -13,6 +13,7 @@ import pendulum
 
 
 VERY_LONG_AGO = pendulum.parse("1900")
+INITIAL_BACK_OFF_TIME = 10
 
 
 @dataclass
@@ -31,10 +32,18 @@ class RateLimiter:
     count_limited_calls: int = 0
     """Number of calls that triggered some waiting."""
 
+    back_off_time: int = INITIAL_BACK_OFF_TIME
+    """Number of seconds to wait after a rate limit hit."""
+
+    def reset_back_off(self):
+        """Reset back-off time to initial value."""
+        self.back_off_time = INITIAL_BACK_OFF_TIME
+
     def reset(self):
         """Reset state and stats."""
         self.last_call = VERY_LONG_AGO
         self.count_all_calls = self.count_limited_calls = 0
+        self.reset_back_off()
 
     def rate_limit(self):
         """Enforce the minimum wait time as specified in `wait_seconds`."""
@@ -44,3 +53,8 @@ class RateLimiter:
             self.count_limited_calls += 1
         self.last_call = pendulum.now()
         self.count_all_calls += 1
+
+    def back_off(self):
+        """Back off exponentially."""
+        time.sleep(self.back_off_time)
+        self.back_off_time *= 2

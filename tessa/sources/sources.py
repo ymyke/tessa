@@ -34,12 +34,16 @@ class Source:
         (which often seem to be intermittent, at least on Coingecko) and just
         retries.
         """
+        from ..price.types import RateLimitHitError
+
         max_tries = 100
         tries = 0
         while True:
             tries += 1
             try:
-                return self.get_price_history(query, currency_preference)
+                res = self.get_price_history(query, currency_preference)
+                self.rate_limiter.reset_back_off()
+                return res
             except requests.HTTPError as exc:
                 if exc.response.status_code not in [504, 503, 502]:
                     raise exc
@@ -54,6 +58,12 @@ class Source:
                     f" Retrying ({tries}/{max_tries}).",
                     RuntimeWarning,
                 )
+            except RateLimitHitError:
+                warnings.warn(
+                    "Rate limit hit (429). "
+                    f"Backing off {self.rate_limiter.back_off_time} seconds."
+                )
+                self.rate_limiter.back_off()
 
 
 def get_source(name: SourceType) -> Source:
