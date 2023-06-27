@@ -1,7 +1,5 @@
 """Everything Yahoo-Finance-related (other than search)."""
 
-import io
-import contextlib
 import pandas as pd
 import yfinance as yf
 from .types import PriceHistory, SymbolNotFoundError
@@ -18,17 +16,13 @@ def get_price_history(
     """Get price history for a given query. Note that `currency_preference` will be
     ignored since Yahoo Finance returns each ticker in the one currency that is set for
     that ticker.
-
-    Note that yfinance has some strange error behavior, e.g., when a ticker doesn't
-    exist: `history()` will return an empty dataframe (but with all the column headers
-    as usual) and print "No data found, symbol may be delisted" to stdout.
     """
-    stdout = io.StringIO()
     ticker = yf.Ticker(query)
-    with contextlib.redirect_stdout(stdout):
-        df = ticker.history(start=START_FROM, debug=True)
-    if "No data found" in stdout.getvalue():
-        raise SymbolNotFoundError(source="yahoo", query=query)
+    try:
+        df = ticker.history(start=START_FROM, raise_errors=True)
+    except Exception as exc:  # pylint: disable=broad-except
+        if "No timezone found" in str(exc):
+            raise SymbolNotFoundError(source="yahoo", query=query) from exc
 
     # Simplify dataframe:
     df = df.copy()
