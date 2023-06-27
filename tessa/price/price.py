@@ -64,7 +64,7 @@ def price_point(
     """
     df, currency = price_history(query, source, currency_preference)
     price = df.iloc[df.index.get_indexer([when], method="nearest")[0]]
-    return PricePoint(when=price.name, price=float(price), currency=currency)
+    return PricePoint(when=price.name, price=float(price.iloc[0]), currency=currency)
 
 
 def price_point_strict(
