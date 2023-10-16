@@ -13,7 +13,8 @@ and load them, and extend their functionality.
 Finally, tessa makes sure to be nice to the sites being accessed and tries to **prevent
 users from being blocked by 429 rate limiting errors** by 1) caching results upon
 retrieval and 2) keeping track of request timestamps and waiting appropriate amounts of
-time if necessary.
+time if necessary. tessa also automatically waits and retries requests that fail with a
+5xx error.
 
 [→ Check out the full documentation. 📖](https://ymyke.github.io/tessa/tessa.html)
 
@@ -51,14 +52,14 @@ s3 = Symbol("bitcoin", source="coingecko")
 s3.price_graph()            # show price graph
 ```
 
-- Search for a more crypto ticker on coingecko:
+- Search for a crypto ticker on coingecko:
 
 ```python
-res = search("GAME")        # search and print search result summary
+res = search("name")        # search and print search result summary
 filtered = res.filter(source="coingecko")  # filter results
 filtered.p()                # print summary of filtered results
-filtered.buckets[0].symbols # review the best bucket in the filtered results
-s4 = filtered.buckets[0].symbols[2]   # our symbol is the 3rd in that list
+filtered.buckets[1].symbols # review the 2nd bucket in the filtered results
+s4 = filtered.buckets[1].symbols[2]   # our symbol is the 3rd in that list
 s4.price_history()          # get entire history
 ```
 
@@ -81,9 +82,9 @@ sc_new.load_yaml("my_symbols.yaml")
 - Use a different currency preference:
 
 ```python
-sc.find_one("game").price_latest()  # will return price in USD
+sc.find_one("ens").price_latest()   # will return price in USD
 Symbol.currency_preference = "CHF"
-sc.find_one("game").price_latest()  # will return price in CHF
+sc.find_one("ens").price_latest()   # will return price in CHF
 ```
 
 Note that `currency_preference` will only have an effect with sources that support it.
