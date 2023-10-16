@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tessa"
-version = "0.8.0"
+version = "0.8.1"
 description = "Find financial assets and get their price history without worrying about different APIs or rate limiting."
 authors = ["ymyke"]
 license = "MIT"
