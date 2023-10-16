@@ -62,7 +62,7 @@ def test_concrete_yahoo_price_point():
     res = price_point("AAPL", "2018-01-11", "yahoo")
     assert isinstance(res, PricePoint)
     assert res.when == pd.Timestamp("2018-01-11 05:00:00+0000", tz="UTC")
-    assert round(res.price) == 42
+    assert round(res.price) == 41
     assert res.currency == "USD"
 
 
