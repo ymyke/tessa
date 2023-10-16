@@ -13,7 +13,8 @@ and load them, and extend their functionality.
 Finally, tessa makes sure to be nice to the sites being accessed and tries to **prevent
 users from being blocked by 429 rate limiting errors** by 1) caching results upon
 retrieval and 2) keeping track of request timestamps and waiting appropriate amounts of
-time if necessary.
+time if necessary. tessa also automatically waits and retries requests that fail with a
+5xx error.
 
 [→ Check out the full documentation. 📖](https://ymyke.github.io/tessa/tessa.html)
 
