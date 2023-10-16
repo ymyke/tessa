@@ -52,7 +52,7 @@ s3 = Symbol("bitcoin", source="coingecko")
 s3.price_graph()            # show price graph
 ```
 
-- Search for a more crypto ticker on coingecko:
+- Search for a crypto ticker on coingecko:
 
 ```python
 res = search("GAME")        # search and print search result summary
