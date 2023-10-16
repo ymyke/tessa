@@ -2,7 +2,7 @@
 
 import pandas as pd
 import yfinance as yf
-from .types import PriceHistory, SymbolNotFoundError
+from .types import PriceHistory
 
 START_FROM = "2000-01-01"
 """Adjust this date if you need to get historical data further in the past. Note that
@@ -18,11 +18,7 @@ def get_price_history(
     that ticker.
     """
     ticker = yf.Ticker(query)
-    try:
-        df = ticker.history(start=START_FROM, raise_errors=True)
-    except Exception as exc:  # pylint: disable=broad-except
-        if "No timezone found" in str(exc):
-            raise SymbolNotFoundError(source="yahoo", query=query) from exc
+    df = ticker.history(start=START_FROM, raise_errors=True)
 
     # Simplify dataframe:
     df = df.copy()
