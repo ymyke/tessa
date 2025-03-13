@@ -125,8 +125,7 @@ More sources can be added in the future. Let me know in the
 ## Prerequisites
 
 See `pyproject.toml`. Major prerequisites are the `yfinance` and `pycoingecko` packages
-to access finance information as well as the `beautifulsoup4` package to do some
-scraping for searching on Yahoo Finance.
+to access finance information.
 
 
 ## Repository
