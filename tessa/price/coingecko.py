@@ -38,6 +38,10 @@ def get_price_history(query: str, currency_preference: str = "USD") -> PriceHist
         if "429" in str(exc):
             # (pycoingecko masks the underlying HTTPError.)
             raise RateLimitHitError(source="coingecko") from exc
+        if "exceeds the allowed time range" in str(exc):
+            raise ValueError(
+                "Coingecko's public API is limited to historical data 365 days back."
+            ) from exc
         raise SymbolNotFoundError(source="coingecko", query=query) from exc
 
     return PriceHistory(dataframify_price_list(res), currency_preference)
