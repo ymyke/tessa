@@ -14,7 +14,7 @@ s1 = Symbol("MSFT")                 # will use "yahoo" as the default source
 s1.price_latest()                   # get latest price
 sc = SymbolCollection([s1])         # create collection
 sc.add(Symbol("ethereum", source="coingecko"))       # add another symbol
-sc.find_one("ethereum").price_graph(monthsback=600)  # graph of 10 past yearss
+sc.find_one("ethereum").price_graph(monthsback=6)    # graph of 6 past months
 sc.save_yaml("my_symbols.yaml")     # save
 ```
 

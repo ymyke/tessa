@@ -42,6 +42,19 @@ def test_price_point_with_non_existent_timestamp_finds_nearest(mock_price_histor
     )
 
 
+def test_price_point_works_correctly_with_max_date_deviation_days(mock_price_history):
+    assert price_point("xx", "2018-01-13", max_date_deviation_days=1) == PricePoint(
+        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="USD"
+    )
+    with pytest.raises(ValueError):
+        price_point("xx", "2018-01-13", max_date_deviation_days=0)
+        price_point("xx", "2022-01-01", max_date_deviation_days=10)
+
+    assert price_point("xx", "2022-01-01", max_date_deviation_days=None) == PricePoint(
+        when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="USD"
+    )
+
+
 def test_price_latest(mock_price_history):
     assert price_latest("xx") == PricePoint(
         when=pd.Timestamp("2018-01-12", tz="utc"), price=3.0, currency="USD"
@@ -68,8 +81,11 @@ def test_concrete_yahoo_price_point():
 
 @pytest.mark.net
 def test_concrete_coingecko_price_point():
-    res = price_point("bitcoin", "2018-01-11", "coingecko")
+    """Since coingecko only reports prices for 1 year and in order to make this test
+    robust, we use price_latest below and do some basic checks.
+    """
+    res = price_latest("bitcoin", "coingecko")
     assert isinstance(res, PricePoint)
-    assert res.when == pd.Timestamp("2018-01-11", tz="utc")
-    assert round(res.price) == 14051
+    assert pd.Timestamp.now("utc") - res.when < pd.Timedelta("7 days")
+    assert res.price > 0
     assert res.currency == "USD"

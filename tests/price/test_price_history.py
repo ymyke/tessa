@@ -55,8 +55,7 @@ def test_price_history_on_yahoo_including_caching_and_ratelimiting():
 def test_price_history_coingecko():
     df, crncy = price_history("ethereum", "coingecko", currency_preference="CHF")
     assert crncy == "CHF"
-    assert df.index[0] == pd.Timestamp("2015-08-07", tz="UTC")
-    assert df.shape[0] > 1000
+    assert df.shape[0] == 366
     assert df.shape[1] == 1
     assert isinstance(df.index.dtype, DatetimeTZDtype)
     assert df.dtypes.to_string() == "close    float64"
