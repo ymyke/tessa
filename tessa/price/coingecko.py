@@ -27,7 +27,7 @@ def get_price_history(query: str, currency_preference: str = "USD") -> PriceHist
         res = CoinGeckoAPI().get_coin_market_chart_by_id(
             id=query,
             vs_currency=currency_preference,
-            days="max",  # FIXME Add some lower default bound similar to yahoo?
+            days="365",  # Public API is limited to 365 days back
             interval="daily",
         )["prices"]
     except ValueError as exc:
