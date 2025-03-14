@@ -50,6 +50,13 @@ class Symbol:
     Since this is a class variable, you can set your preference once for all objects.
     """
 
+    max_date_deviation_days: ClassVar[int] = 10
+    """The maximum number of days a date can deviate from the requested date in the
+    `price_point` method. Use `None` to disable this check.
+
+    Since this is a class variable, you can set your preference once for all objects.
+    """
+
     def __post_init__(self) -> None:
         """Re/set some attributes."""
         if self.query is None:
@@ -97,7 +104,11 @@ class Symbol:
         """Look up price at given date `when`. Look for the closest point in time if the
         exact point in time is not found.
         """
-        return price_point(**self._create_price_args(), when=when)
+        return price_point(
+            **self._create_price_args(),
+            when=when,
+            max_date_deviation_days=self.max_date_deviation_days,
+        )
 
     def price_graph(self, monthsback: int = 6) -> tuple:
         """Display this symbol's price graph over the last monthsback months.

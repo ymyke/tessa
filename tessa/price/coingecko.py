@@ -27,7 +27,7 @@ def get_price_history(query: str, currency_preference: str = "USD") -> PriceHist
         res = CoinGeckoAPI().get_coin_market_chart_by_id(
             id=query,
             vs_currency=currency_preference,
-            days="max",  # FIXME Add some lower default bound similar to yahoo?
+            days="365",  # Public API is limited to 365 days back
             interval="daily",
         )["prices"]
     except ValueError as exc:
@@ -38,6 +38,10 @@ def get_price_history(query: str, currency_preference: str = "USD") -> PriceHist
         if "429" in str(exc):
             # (pycoingecko masks the underlying HTTPError.)
             raise RateLimitHitError(source="coingecko") from exc
+        if "exceeds the allowed time range" in str(exc):
+            raise ValueError(
+                "Coingecko's public API is limited to historical data 365 days back."
+            ) from exc
         raise SymbolNotFoundError(source="coingecko", query=query) from exc
 
     return PriceHistory(dataframify_price_list(res), currency_preference)

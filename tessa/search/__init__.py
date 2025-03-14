@@ -9,16 +9,12 @@ Example use:
 ```python
 from tessa import search
 
->>> r = search("roche")                 # search
->>> r.p()                               # print result statistics
->>> r.filter(exchange="EBS").symbols    # filter and get list of resulting symbols
-
->>> r = search("jenny")                 # another search
->>> r.filter(source="coingecko").symbols # filter for source (i.e., yahoo or coingecko)
-
->>> r = search("carbon")                # yet another search
->>> r.filter(source="yahoo", type="ETF").symbols # filter for source and type
+>>> r = search("botto")
+>>> r.filter(source="coingecko").symbols
 ```
+
+(Note that the filter currently doesn't make much sense because coingecko is the only
+search source currently with Yahoo Finance disabled.)
 
 """
 
