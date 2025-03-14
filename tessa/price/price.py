@@ -31,7 +31,7 @@ def price_history(
     - `query`: A query string that makes sense in combination with the source. E.g.,
       "BTC-USD" for "yahoo" or "bitcoin" for "coingecko".
     - `source`: The source to query. Defaults to "yahoo".
-    - `currency_preference`: The currency to the prices should be returned in; defaults
+    - `currency_preference`: The currency the prices should be returned in; defaults
       to "USD". The effective currency might differ and will be returned in the second
       return value.
     """
