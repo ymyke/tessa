@@ -50,10 +50,14 @@ def price_point(
     when: Union[str, pd.Timestamp],
     source: SourceType = "yahoo",
     currency_preference: str = "USD",
+    max_date_deviation_days: Union[int, None] = 10,
 ) -> PricePoint:
     """Return the price at a given point in time given by `when`. Look for the closest
     point in time if the exact point in time is not found. Returns a `PricePoint`, i.e.,
     a tuple of the price, the effective timestamp of the price, and the currency.
+
+    Raises a `ValueError` if the found date is more than `max_date_deviation_days` from
+    `when`. Use `None` to disable this check.
 
     Arguments other than `when` are the same as with `price_history`.
 
@@ -63,8 +67,25 @@ def price_point(
     ```
     """
     df, currency = price_history(query, source, currency_preference)
-    price = df.iloc[df.index.get_indexer([when], method="nearest")[0]]
-    return PricePoint(when=price.name, price=float(price.iloc[0]), currency=currency)
+
+    when = pd.Timestamp(when)
+    if df.index.tz is not None:  # Ensure when matches the timezone of df.index
+        when = when.tz_localize("UTC") if when.tz is None else when.tz_convert("UTC")
+
+    nearest_index = df.index.get_indexer([when], method="nearest")[0]
+    found_date = df.index[nearest_index]
+
+    if (
+        max_date_deviation_days is not None
+        and abs((found_date - when).days) > max_date_deviation_days
+    ):
+        raise ValueError(
+            f"Found date {found_date} is more than {max_date_deviation_days} days away "
+            f"from requested date {when}"
+        )
+
+    price = df.iloc[nearest_index]
+    return PricePoint(when=found_date, price=float(price.iloc[0]), currency=currency)
 
 
 def price_point_strict(
