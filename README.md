@@ -1,7 +1,7 @@
 
-# tessa – simple, hassle-free access to price information of financial assets 📉🤓📈
+# tessa – simple, hassle-free access to price information of financial assets
 
-tessa is a Python library to help you ** easily retrieve price information** for assets
+tessa is a Python library to help you **easily retrieve price information** for assets
 from different sources such as Yahoo or Coingecko. It takes care of the different APIs,
 caching, rate limiting, and other hassles.
 
@@ -24,35 +24,35 @@ Here's a longer example that shows all aspects of the library. Refer to
 submodules [symbol](tessa/symbol.html), [search](tessa/search.html), and
 [price](tessa/price.html) for more information.
 
-- Imports:
+###### Imports:
 
 ```python
 from tessa import Symbol, SymbolCollection, search
 import pendulum
 ```
 
-- Create a symbol for MSFT and access some functions:
+###### Create a symbol for MSFT and access some functions:
 
 ```python
 s1 = Symbol("MSFT")             # will use "yahoo" as the default source
 s1.price_latest()               # get latest price
 ```
 
-- Create another symbol from a bloomberg ticker as it is used by Yahoo Finance:
+###### Create another symbol from a bloomberg ticker as it is used by Yahoo Finance:
 
 ```python
 s2 = Symbol("SREN.SW")
 s2.price_point("2022-06-30")    # get price at specific point in time
 ```
 
-- Create a symbol from the coingecko source with an id as it is used by coingecko:
+###### Create a symbol from the coingecko source with an id as it is used by coingecko:
 
 ```python
 s3 = Symbol("bitcoin", source="coingecko")
 s3.price_graph()                # show price graph
 ```
 
-- Search for a crypto ticker on coingecko:
+###### Search for a crypto ticker on coingecko:
 
 ```python
 res = search("name")  # search and print search result summary
@@ -64,7 +64,7 @@ s4.price_history()  # get entire history
 s4.price_graph()  # visualize the price history
 ```
 
-- Build a collection of several symbols and use the collection to retrieve symbols:
+###### Build a collection of several symbols and use the collection to retrieve symbols:
 
 ```python
 sc = SymbolCollection([s1, s2, s3, s4])   # create a collection w/ symbols from above
@@ -72,7 +72,7 @@ sc.add(Symbol("AAPL"))                    # add another one
 sc.find_one("SREN").price_graph()
 ```
 
-- Store and load a symbol collection:
+###### Store and load a symbol collection:
 
 ```python
 sc.save_yaml("my_symbols.yaml")
@@ -80,7 +80,7 @@ sc_new = SymbolCollection()
 sc_new.load_yaml("my_symbols.yaml")
 ```
 
-- Use a different currency preference:
+###### Use a different currency preference:
 
 ```python
 sc.find_one("ens").price_latest()   # will return price in USD
@@ -100,7 +100,7 @@ Symbol("ETH-USD").price_latest()  # will return the price in USD
 Symbol("ETH-EUR").price_latest()  # will return the price in EUR
 ```
 
-- Accessing older crypto price information:
+###### Accessing older crypto price information:
 
 Coingecko only provides a limited amount of historical data:
 
@@ -119,7 +119,7 @@ source as well:
 Symbol("BTC-USD").price_point(from_date)  # Should work, "yahoo" is the default source
 ```
 
-- `price_point` tries to be lenient and you can adjust the leniency:
+###### `price_point` tries to be lenient and you can adjust the leniency:
 
 By default, `price_point` will try to find the closest price to the requested date as
 long as it's not more than `max_date_deviation_days` days away (default: 10 days).
