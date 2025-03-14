@@ -94,13 +94,16 @@ def price_point_strict(
     source: SourceType = "yahoo",
     currency_preference: str = "USD",
 ) -> PricePoint:
-    """Same as `price_point` but will return either the price at the exact point in time
-    or raise a KeyError.
+    """Same as `price_point` but will raise a `KeyError` if no price is found. This
+    function is offered for backwards compatibility and is largely obsolete with the
+    introduction of `max_date_deviation_days` in `price_point`.
     """
-    df, currency = price_history(query, source, currency_preference)
-    return PricePoint(
-        when=df.loc[when].name, price=float(df.loc[when]["close"]), currency=currency
-    )
+    try:
+        return price_point(
+            query, when, source, currency_preference, max_date_deviation_days=0
+        )
+    except ValueError as e:
+        raise KeyError(f"No price found for {query} at {when}") from e
 
 
 def price_latest(
