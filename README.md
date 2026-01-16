@@ -187,13 +187,3 @@ crypto.
 - [pypme](https://github.com/ymyke/pypme): A Python package for PME (Public Market
   Equivalent) calculation.
 
-
-## On investpy as a data source
-
-Tessa used to use the [investpy package](https://github.com/alvarobartt/investpy) as the
-main source of information until mid 2022 until investing.com introduced Cloudflare,
-which broke access by investpy. 😖 It is currently unclear if investpy will be available
-again in the future. [You can follow the developments in issue
-600.](https://github.com/alvarobartt/investpy/issues/600) The old tessa/investpy code is
-still available in the [add-symbols-based-on-investpy
-branch](https://github.com/ymyke/tessa/tree/add-symbols-based-on-investpy).
