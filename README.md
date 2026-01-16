@@ -17,6 +17,8 @@ time if necessary. tessa also automatically waits and retries requests that fail
 
 [→ Check out the full documentation. 📖](https://ymyke.github.io/tessa/tessa.html)
 
+<img src="demo.gif" width="50%">
+
 
 ## How to use
 
