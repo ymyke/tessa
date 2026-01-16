@@ -110,5 +110,5 @@ def test_get_price_history_bruteforcefully_rate_limit_hit(mocker):
     assert source.rate_limiter.back_off_time == 10
     assert time.sleep.call_count == 1
     warnings.warn.assert_called_once_with(
-        "Rate limit hit (429). Backing off 10 seconds."
+        "Rate limit hit (429). Backing off 10 seconds. (1/100)"
     )

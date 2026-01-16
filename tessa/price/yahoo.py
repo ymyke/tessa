@@ -2,7 +2,11 @@
 
 import pandas as pd
 import yfinance as yf
-from .types import PriceHistory
+from yfinance.exceptions import YFRateLimitError
+from .types import PriceHistory, RateLimitHitError
+
+# Ensure yfinance raises exceptions instead of silently failing
+yf.config.debug.hide_exceptions = False
 
 START_FROM = "2000-01-01"
 """Adjust this date if you need to get historical data further in the past. Note that
@@ -17,8 +21,11 @@ def get_price_history(
     ignored since Yahoo Finance returns each ticker in the one currency that is set for
     that ticker.
     """
-    ticker = yf.Ticker(query)
-    df = ticker.history(start=START_FROM, raise_errors=True)
+    try:
+        ticker = yf.Ticker(query)
+        df = ticker.history(start=START_FROM)
+    except YFRateLimitError as exc:
+        raise RateLimitHitError(source="yahoo") from exc
 
     # Simplify dataframe:
     df = df.copy()

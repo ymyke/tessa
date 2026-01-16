@@ -16,7 +16,6 @@ from tessa.price import yahoo
 )
 @pytest.mark.net
 def test_api_returns_reasonable_data(query: str, expected_currency: str):
-    # FIXME Why does this test take so long?
     old_start_from = yahoo.START_FROM
     yahoo.START_FROM = "2022-01-01"
     df, crncy = yahoo.get_price_history(query)

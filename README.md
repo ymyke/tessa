@@ -160,6 +160,8 @@ More sources can be added in the future. Let me know in the
 
 `pip install tessa`
 
+Requires Python 3.10 or higher.
+
 
 ## Prerequisites
 

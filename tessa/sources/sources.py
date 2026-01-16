@@ -58,9 +58,12 @@ class Source:
                     RuntimeWarning,
                 )
             except RateLimitHitError:
+                if tries > max_tries:
+                    raise
                 warnings.warn(
                     "Rate limit hit (429). "
-                    f"Backing off {self.rate_limiter.back_off_time} seconds."
+                    f"Backing off {self.rate_limiter.back_off_time} seconds. "
+                    f"({tries}/{max_tries})"
                 )
                 self.rate_limiter.back_off()
 
