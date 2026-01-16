@@ -3,3 +3,4 @@ poetry.lock
 dist/
 settings.json
 http_cache.sqlite
+.claude/
