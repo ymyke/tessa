@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tessa"
-version = "0.10.0"
+version = "0.10.1"
 description = "Find financial assets and get their price history without worrying about different APIs or rate limiting."
 authors = ["ymyke"]
 license = "MIT"
@@ -14,7 +14,7 @@ keywords = ["python", "finance", "investing", "financial-analysis", "investment-
 python = ">=3.10,<4.0"
 pendulum = ">=3.0"
 pycoingecko = ">=3.0"
-yfinance = ">=0.2.58"
+yfinance = ">=1.0"
 seaborn = ">=0.12"
 matplotlib = ">=3.5"
 PyYAML = ">=6"

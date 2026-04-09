@@ -34,4 +34,9 @@ def get_price_history(
     df.index.name = "date"
     df.rename(columns={"Close": "close"}, inplace=True)
 
-    return PriceHistory(df, ticker.get_history_metadata()["currency"])
+    # Get currency from metadata already populated by history() above.
+    # Don't use get_history_metadata() — it triggers a second intraday request
+    # that fails for some tickers. See https://github.com/ranaroussi/yfinance/issues/2745
+    # TODO Revert to get_history_metadata() once the issue is fixed in yfinance.
+    currency = ticker._price_history._history_metadata["currency"]
+    return PriceHistory(df, currency)
