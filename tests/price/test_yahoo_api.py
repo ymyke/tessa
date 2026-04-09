@@ -12,6 +12,7 @@ from tessa.price import yahoo
         ("TSLA", "USD"),
         ("SPICHA.SW", "CHF"),
         ("ZAL.DE", "EUR"),
+        ("ROG.SW", "CHF"),
     ],
 )
 @pytest.mark.net
